@@ -118,6 +118,7 @@ class DeepReferenceParser:
         self.padding_style = padding_style
 
         self.output_path = output_path
+        os.makedirs(self.output_path, exist_ok=True)
         self.weights_path = os.path.join(output_path, "weights.h5")
 
 
