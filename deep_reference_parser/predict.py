@@ -4,23 +4,21 @@
 Run predictions from a pre-trained model
 """
 
+import itertools
 import os
 
 import en_core_web_sm
-import pkg_resources
 import plac
 import spacy
 import wasabi
-import itertools
 
 from deep_reference_parser import __file__
-from deep_reference_parser.__version__ import __model_version__
+from deep_reference_parser.common import LATEST_CFG, download_model_artefact
 from deep_reference_parser.deep_reference_parser import DeepReferenceParser
 from deep_reference_parser.logger import logger
 from deep_reference_parser.model_utils import get_config
 from deep_reference_parser.reference_utils import break_into_chunks
 from deep_reference_parser.tokens_to_references import tokens_to_references
-from deep_reference_parser.common import download_model_artefact, LATEST_CFG
 
 msg = wasabi.Printer(icons={"check":"\u2023"})
 
@@ -142,6 +140,7 @@ class Predictor:
 
                     msg.good(f"Found {len(refs)} references.")
                     msg.info("Printing found references:")
+
                     for ref in refs:
                         msg.text(ref, icon="check", spaced=True)
 
@@ -162,5 +161,6 @@ class Predictor:
 def predict(text, config_file=LATEST_CFG, tokens=False, verbose=False):
     predictor = Predictor(config_file)
     out = predictor.split(text, return_tokens=tokens, verbose=verbose)
+
     if not verbose:
         print(out)
