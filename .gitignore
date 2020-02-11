@@ -1,0 +1,12 @@
+.mypy_cache/
+build/
+data/
+dist/
+deep_reference_parser.egg-info/
+*/__pycache__/
+deep_reference_parser/embeddings/
+deep_reference_parser/models/
+*.whl
+embeddings/
+models/
+.tox/
