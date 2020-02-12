@@ -10,7 +10,7 @@ from deep_reference_parser import DeepReferenceParser, get_config, load_tsv
 from deep_reference_parser.__version__ import __model_version__
 from deep_reference_parser.common import LATEST_CFG
 
-from .common import TEST_CFG, TEST_TSV_PREDICT, TEST_TSV_TRAIN
+from .common import TEST_CFG, TEST_TSV_PREDICT, TEST_TSV_TRAIN, TEST_EMBEDDING
 from wasabi import msg
 
 
@@ -47,7 +47,7 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
 
     drp.build_model(
         output=cfg["build"]["output"],
-        word_embeddings=cfg["build"]["word_embeddings"],
+        word_embeddings=TEST_EMBEDDING,
         pretrained_embedding=cfg["build"]["pretrained_embedding"],
         dropout=float(cfg["build"]["dropout"]),
         lstm_hidden=int(cfg["build"]["lstm_hidden"]),
@@ -98,7 +98,7 @@ def test_DeepReferenceParser_predict(tmpdir, cfg):
 
     drp.build_model(
         output=cfg["build"]["output"],
-        word_embeddings=cfg["build"]["word_embeddings"],
+        word_embeddings=TEST_EMBEDDING,
         pretrained_embedding=False,
         dropout=float(cfg["build"]["dropout"]),
         lstm_hidden=int(cfg["build"]["lstm_hidden"]),
