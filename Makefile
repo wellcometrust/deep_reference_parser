@@ -141,6 +141,6 @@ $(test_artefacts):
 
 .PHONY: test
 test:
-	$(VIRTUALENV)/bin/tox -- --disable-warnings --tb=line
+	tox -- --disable-warnings --tb=line
 
 all: virtualenv model embedding test
