@@ -51,7 +51,7 @@ class Predictor:
                     download_model_artefact(artefact, S3_SLUG)
                     msg.good(f"Found {artefact}")
                 except:
-                    msg.fail(f"Could not download {artefact}")
+                    msg.fail(f"Could not download {S3_SLUG}{artefact}")
                     logger.exception()
 
         # Check on word embedding and download if not exists
@@ -63,7 +63,7 @@ class Predictor:
                 download_model_artefact(WORD_EMBEDDINGS, S3_SLUG)
                 msg.good(f"Found {WORD_EMBEDDINGS}")
             except:
-                msg.fail(f"Could not download {WORD_EMBEDDINGS}")
+                msg.fail(f"Could not download {S3_SLUG}{WORD_EMBEDDINGS}")
                 logger.exception()
 
 
