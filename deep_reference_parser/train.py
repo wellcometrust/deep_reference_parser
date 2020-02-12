@@ -5,18 +5,14 @@ Runs the model using configuration defined in a config file. This is suitable fo
 running model versions < 2019.10.8
 """
 
-import os
-import sys
 import plac
 import wasabi
 
-from deep_reference_parser import (
-    DeepReferenceParser,
-    get_config,
-    load_data,
-    load_tsv,
-    logger,
-)
+from deep_reference_parser import load_tsv
+from deep_reference_parser.common import download_model_artefact
+from deep_reference_parser.deep_reference_parser import DeepReferenceParser
+from deep_reference_parser.logger import logger
+from deep_reference_parser.model_utils import get_config
 
 msg = wasabi.Printer()
 
@@ -35,7 +31,6 @@ def train(config_file):
 
     # Data config
 
-    RODRIGUES_TRAIN = cfg["data"]["rodrigues_train"]
     POLICY_TRAIN = cfg["data"]["policy_train"]
     POLICY_TEST = cfg["data"]["policy_test"]
     POLICY_VALID = cfg["data"]["policy_valid"]
@@ -43,6 +38,20 @@ def train(config_file):
     # Build config
 
     OUTPUT_PATH = cfg["build"]["output_path"]
+    S3_SLUG = cfg["data"]["s3_slug"]
+
+    # Check on word embedding and download if not exists
+
+    WORD_EMBEDDINGS = cfg["build"]["word_embeddings"]
+
+    with msg.loading(f"Could not find {WORD_EMBEDDINGS} locally, downloading..."):
+        try:
+            download_model_artefact(WORD_EMBEDDINGS, S3_SLUG)
+            msg.good(f"Found {WORD_EMBEDDINGS}")
+        except:
+            msg.fail(f"Could not download {WORD_EMBEDDINGS}")
+            logger.exception()
+
     OUTPUT = cfg["build"]["output"]
     WORD_EMBEDDINGS = cfg["build"]["word_embeddings"]
     PRETRAINED_EMBEDDING = cfg["build"]["pretrained_embedding"]
@@ -62,28 +71,13 @@ def train(config_file):
 
     OUT_FILE = cfg["evaluate"]["out_file"]
 
-    # Load the Rodrigues data
-
-    X_train, _, _, y_train = load_data(RODRIGUES_TRAIN)
-
     # Load policy data
 
-    # Test and validation set us not set and defined separately in this version,
-    # but created on the fly when the policy data is loaded.
-
-    X_train_policy, y_train_policy = load_tsv(POLICY_TRAIN)
+    X_train, y_train = load_tsv(POLICY_TRAIN)
     X_test, y_test = load_tsv(POLICY_TEST)
     X_valid, y_valid = load_tsv(POLICY_VALID)
 
-    X_train = X_train + X_train_policy
-    y_train = y_train + y_train_policy
-
-    logger.info(
-        "X_train, y_train examples after adding policy data : %s, %s",
-        len(X_train),
-        len(y_train),
-    )
-
+    logger.info("X_train, y_train examples: %s, %s", len(X_train), len(y_train))
     logger.info("X_test, y_test  examples: %s, %s", len(X_test), len(y_test))
     logger.info("X_valid, y_valid  examples: %s, %s", len(X_valid), len(y_valid))
 
@@ -132,5 +126,3 @@ def train(config_file):
         print_padding=False,
         out_file=cfg["evaluate"]["out_file"],
     )
-
-

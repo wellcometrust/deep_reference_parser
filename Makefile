@@ -116,7 +116,7 @@ sync_model_to_s3:
 # the wheel is granted with the --acl public-read flag.
 
 .PHONY: dist
-dist: embedding model
+dist:
 	-rm build/bin build/bdist.linux-x86_64 -r
 	-rm deep_reference_parser-20* -r
 	-rm dist/*
