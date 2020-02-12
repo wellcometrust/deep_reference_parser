@@ -140,7 +140,7 @@ $(test_artefacts):
 	curl $(S3_BUCKET_HTTP)/models/test/$(@F) --output $@
 
 .PHONY: test
-test: $(test_artefacts) test_embedding
-	$(VIRTUALENV)/bin/pytest --disable-warnings --tb=line
+test:
+	$(VIRTUALENV)/bin/tox -- --disable-warnings --tb=line
 
 all: virtualenv model embedding test
