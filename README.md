@@ -165,7 +165,7 @@ To train your own models you will need to define the model hyperparameters in a 
 python -m deep_reference_parser train test.ini
 ```
 
-Data must be prepared in the following tab separated format (tsv). We may publish further tools in the future to assist in the preparation of data following annotation. In this case the data the data for reference span ddetection follows an IOBE schema.
+Data must be prepared in the following tab separated format (tsv). We use [prodi.gy](https://prodi.gy) for annotations. Some utilities to help with manual annotations and various format conversions are available in the [prodigy](./prodigy/) module. Data for reference span detection follows an IOBE schema.
 
 You must provide the train/test/validation data splits in this format in pre-prepared files that are defined in the config file.
 

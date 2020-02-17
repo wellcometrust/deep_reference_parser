@@ -9,12 +9,16 @@ if __name__ == "__main__":
     import plac
     import sys
     from wasabi import msg
-    from .train import train
-    from .predict import predict
+    from .numbered_reference_annotator import annotate_numbered_references
+    from .prodigy_to_tsv import prodigy_to_tsv
+    from .reach_to_prodigy import reach_to_prodigy
+    from .reference_to_token_annotations import reference_to_token_annotations
 
     commands = {
-        "predict": predict,
-        "train": train,
+        "annotate_numbered_refs": annotate_numbered_references,
+        "prodigy_to_tsv": prodigy_to_tsv,
+        "reach_to_prodigy": reach_to_prodigy,
+        "refs_to_token_annotations": reference_to_token_annotations,
     }
 
     if len(sys.argv) == 1:
