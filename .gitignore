@@ -10,3 +10,4 @@ deep_reference_parser/models/
 embeddings/
 models/
 .tox/
+*__pycache__/
