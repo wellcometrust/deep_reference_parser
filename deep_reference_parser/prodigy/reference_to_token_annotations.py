@@ -10,31 +10,52 @@ from ..logger import logger
 
 
 class TokenTagger:
-    """
-    Converts data in prodigy format with full reference spans to per-token spans
 
-    Expects one of four lables for the spans:
+    def __init__(self, task="splitting"):
+        """
+        Converts data in prodigy format with full reference spans to per-token
+            spans
 
-    * BE: A complete reference
-    * BI: A frgament of reference that captures the beginning but not the end
-    * IE: A frgament of reference that captures the end but not the beginning
-    * II: A fragment of a reference that captures neither the beginning nor the
-        end .
-    """
+        Args:
+            task (str): One of ["parsing", "splitting"]. See below further
+                explanation.
 
-    def __init__(self):
+        Since the parsing, splitting, and classification tasks have quite
+        different labelling requirements, this class behaves differently
+        depending on which task is specified in the task argument.
+
+        For splitting:
+
+        Expects one of four labels for the spans:
+
+        * BE: A complete reference
+        * BI: A frgament of reference that captures the beginning but not the end
+        * IE: A frgament of reference that captures the end but not the beginning
+        * II: A fragment of a reference that captures neither the beginning nor the
+            end .
+
+        Depending on which label is applied the tokens within the span will be
+        labelled differently as one of ["b-r", "i-r", "e-r", "o"].
+
+        For parsing:
+
+        Expects any arbitrary label for spans. All tokens within that span will
+        be labelled with the same span.
+
+        """
 
         self.out = []
+        self.task = task
 
     def tag_doc(self, doc):
         """
-        Tags a document with the appropriate labels
+        Tags a document with appropriate labels for the parsing task
 
         Args:
             doc(dict): A single document in prodigy dict format to be labelled.
         """
 
-        bie_spans = self.reference_spans(doc["spans"], doc["tokens"])
+        bie_spans = self.reference_spans(doc["spans"], doc["tokens"], task=self.task)
         o_spans = self.outside_spans(bie_spans, doc["tokens"])
 
         # Flatten into one list.
@@ -63,7 +84,8 @@ class TokenTagger:
 
         return self.out
 
-    def reference_spans(self, spans, tokens):
+
+    def reference_spans(self, spans, tokens, task):
         """
         Given a whole reference span as labelled in prodigy, break this into
         appropriate single token spans depending on the label that was applied to
@@ -71,29 +93,38 @@ class TokenTagger:
         """
         split_spans = []
 
-        for span in spans:
-            if span["label"] in ["BE", "be"]:
+        if task == "splitting":
 
+            for span in spans:
+                if span["label"] in ["BE", "be"]:
+
+                    split_spans.extend(
+                        self.split_long_span(tokens, span, "b-r", "e-r", "i-r")
+                    )
+
+                elif span["label"] in ["BI", "bi"]:
+
+                    split_spans.extend(
+                        self.split_long_span(tokens, span, "b-r", "i-r", "i-r")
+                    )
+
+                elif span["label"] in ["IE", "ie"]:
+
+                    split_spans.extend(
+                        self.split_long_span(tokens, span, "i-r", "e-r", "i-r")
+                    )
+
+                elif span["label"] in ["II", "ii"]:
+
+                    split_spans.extend(
+                        self.split_long_span(tokens, span, "i-r", "i-r", "i-r")
+                    )
+
+        elif task == "parsing":
+
+            for span in spans:
                 split_spans.extend(
-                    self.split_long_span(tokens, span, "b-r", "e-r")
-                )
-
-            elif span["label"] in ["BI", "bi"]:
-
-                split_spans.extend(
-                    self.split_long_span(tokens, span, "b-r", "i-r")
-                )
-
-            elif span["label"] in ["IE", "ie"]:
-
-                split_spans.extend(
-                    self.split_long_span(tokens, span, "i-r", "e-r")
-                )
-
-            elif span["label"] in ["II", "ii"]:
-
-                split_spans.extend(
-                    self.split_long_span(tokens, span, "i-r", "i-r")
+                    self.split_long_span(tokens, span, span["label"], span["label"], span["label"])
                 )
 
         return split_spans
@@ -146,9 +177,9 @@ class TokenTagger:
         return span
 
 
-    def split_long_span(self, tokens, span, start_label, end_label):
+    def split_long_span(self, tokens, span, start_label, end_label, inside_label):
         """
-        Split a milti-token span into `n` spans of lengh `1`, where `n=len(tokens)`
+        Split a multi-token span into `n` spans of lengh `1`, where `n=len(tokens)`
         """
 
         spans = []
@@ -156,7 +187,7 @@ class TokenTagger:
         spans.append(self.create_span(tokens, span["token_end"], end_label))
 
         for index in range(span["token_start"] + 1, span["token_end"]):
-            spans.append(self.create_span(tokens, index, "i-r"))
+                spans.append(self.create_span(tokens, index, inside_label))
 
         spans = sorted(spans, key=lambda k: k['token_start'])
 
@@ -174,10 +205,16 @@ class TokenTagger:
         "positional",
         None,
         str
+    ),
+    task=(
+        "Which task is being performed. Either splitting or parsing.",
+        "positional",
+        None,
+        str
     )
 )
 
-def reference_to_token_annotations(input_file, output_file):
+def reference_to_token_annotations(input_file, output_file, task="splitting"):
     """ Converts a file output by prodigy (using prodigy db-out) from
     references level annotations to individual level annotations. The rationale
     for this is that reference level annotations are much easier for humans to
@@ -195,7 +232,7 @@ def reference_to_token_annotations(input_file, output_file):
 
     logger.info("Loaded %s documents with reference annotations", len(partially_annotated))
 
-    annotator = TokenTagger(partially_annotated)
+    annotator = TokenTagger(partially_annotated, task=task)
 
     fully_annotated = annotator.run()
 

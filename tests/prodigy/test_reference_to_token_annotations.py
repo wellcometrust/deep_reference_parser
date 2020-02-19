@@ -42,108 +42,6 @@ def test_TokenTagger(tagger):
     assert out == tagged[0]["spans"]
 
 
-#def test_real_case():
-#    """
-#    Test real case observed where no `b-r` or `e-r` is present, the first and
-#    last `i-r` tokens are being replicated as `o` tokens when no bounding
-#    `b-r` or `e-r` tokens are present.
-#    """
-#
-#    doc = {
-#        "text": "d\n 2010, Actual",
-#        "spans":[
-#            {
-#                "start": 3,
-#                "end": 7,
-#                "token_start": 2,
-#                "token_end": 2,
-#                "label": "i-r"
-#            },
-#            {
-#                "start": 9,
-#                "end": 15,
-#                "token_start": 4,
-#                "token_end": 4,
-#                "label": "i-r"
-#            }
-#        ],
-#        "tokens":[
-#            {
-#                "text": "d",
-#                "start": 0,
-#                "end": 1,
-#                "id": 0
-#            },
-#            {
-#                "text": "\n ",
-#                "start": 1,
-#                "end": 3,
-#                "id": 1
-#            },
-#            {
-#                "text": "2010",
-#                "start": 3,
-#                "end": 7,
-#                "id": 2
-#            },
-#            {
-#                "text": ",",
-#                "start": 7,
-#                "end": 8,
-#                "id": 3
-#            },
-#            {
-#                "text": "Actual",
-#                "start": 9,
-#                "end": 15,
-#                "id": 4
-#            }
-#        ]}
-#
-#    after_spans = [
-#        {
-#            "start": 0,
-#            "end": 1,
-#            "token_start": 0,
-#            "token_end": 0,
-#            "label": "o"
-#        },
-#        {
-#            "start": 1,
-#            "end": 3,
-#            "token_start": 1,
-#            "token_end": 1,
-#            "label": "o"
-#        },
-#        {
-#            "start": 3,
-#            "end": 7,
-#            "token_start": 2,
-#            "token_end": 2,
-#            "label": "i-r"
-#        },
-#        {
-#            "start": 7,
-#            "end": 8,
-#            "token_start": 3,
-#            "token_end": 3,
-#            "label": "i-r"
-#        },
-#        {
-#            "start": 9,
-#            "end": 15,
-#            "token_start": 4,
-#            "token_end": 4,
-#            "label": "i-r"
-#        }
-#    ]
-#
-#
-#    tagger = TokenTagger([doc])
-#    tagged = tagger.run()
-#
-#    assert after_spans == tagged[0]["spans"]
-
 def test_create_span(tagger):
 
     tokens = [
@@ -179,7 +77,7 @@ def test_split_long_span(tagger):
         {'start': 4, 'end': 4, 'token_start': 4, 'token_end': 4, 'label': 'e-r'},
     ]
 
-    out = tagger.split_long_span(tokens, span, start_label="b-r", end_label="e-r")
+    out = tagger.split_long_span(tokens, span, start_label="b-r", end_label="e-r", inside_label="i-r")
 
     assert out == after
 
@@ -206,7 +104,7 @@ def test_reference_spans_be(tagger):
         {'start': 4, 'end': 4, 'token_start': 4, 'token_end': 4, 'label': 'e-r'},
     ]
 
-    out = tagger.reference_spans(spans, tokens)
+    out = tagger.reference_spans(spans, tokens, task="splitting")
 
     assert out == after
 
@@ -232,7 +130,7 @@ def test_reference_spans_bi(tagger):
         {'start': 4, 'end': 4, 'token_start': 4, 'token_end': 4, 'label': 'i-r'},
     ]
 
-    out = tagger.reference_spans(spans, tokens)
+    out = tagger.reference_spans(spans, tokens, task="splitting")
 
     assert out == after
 
@@ -258,7 +156,7 @@ def test_reference_spans_ie(tagger):
         {'start': 4, 'end': 4, 'token_start': 4, 'token_end': 4, 'label': 'e-r'},
     ]
 
-    out = tagger.reference_spans(spans, tokens)
+    out = tagger.reference_spans(spans, tokens, task="splitting")
 
     assert out == after
 
@@ -284,7 +182,33 @@ def test_reference_spans_ii(tagger):
         {'start': 4, 'end': 4, 'token_start': 4, 'token_end': 4, 'label': 'i-r'},
     ]
 
-    out = tagger.reference_spans(spans, tokens)
+    out = tagger.reference_spans(spans, tokens, task="splitting")
+
+    assert out == after
+
+def test_reference_spans_author(tagger):
+
+    tokens = [
+        {'start': 0, 'end': 0, 'id': 0},
+        {'start': 1, 'end': 1, 'id': 1},
+        {'start': 2, 'end': 2, 'id': 2},
+        {'start': 3, 'end': 3, 'id': 3},
+        {'start': 4, 'end': 4, 'id': 4},
+        {'start': 5, 'end': 5, 'id': 5},
+        {'start': 6, 'end': 6, 'id': 6},
+    ]
+
+    spans = [
+        {'start': 2, 'end': 4, 'token_start': 2, 'token_end': 4, 'label': 'author'}
+    ]
+
+    after = [
+        {'start': 2, 'end': 2, 'token_start': 2, 'token_end': 2, 'label': 'author'},
+        {'start': 3, 'end': 3, 'token_start': 3, 'token_end': 3, 'label': 'author'},
+        {'start': 4, 'end': 4, 'token_start': 4, 'token_end': 4, 'label': 'author'},
+    ]
+
+    out = tagger.reference_spans(spans, tokens, task="parsing")
 
     assert out == after
 
