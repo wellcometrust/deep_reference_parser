@@ -78,9 +78,12 @@ $(artefacts):
 models: $(artefacts)
 
 
-datasets = data/2019.12.0_train.tsv \
-           data/2019.12.0_test.tsv \
-           data/2019.12.0_valid.tsv
+datasets = data/splitting/2019.12.0_splitting_train.tsv \
+           data/splitting/2019.12.0_splitting_test.tsv \
+           data/splitting/2019.12.0_splitting_valid.tsv \
+		   data/splitting/2020.2.0_parsing_train.tsv \
+           data/splitting/2020.2.0_parsing_test.tsv \
+           data/splitting/2020.2.0_parsing_valid.tsv
 
 
 rodrigues_datasets = data/rodrigues/clean_train.txt \
@@ -90,7 +93,7 @@ rodrigues_datasets = data/rodrigues/clean_train.txt \
 RODRIGUES_DATA_URL =  https://github.com/dhlab-epfl/LinkedBooksDeepReferenceParsing/raw/master/dataset/
 
 $(datasets): 
-	@ mkdir -p data
+	@ mkdir -p $(@D)
 	curl -s $(S3_BUCKET_HTTP)/$@ --output $@
 
 $(rodrigues_datasets): 
