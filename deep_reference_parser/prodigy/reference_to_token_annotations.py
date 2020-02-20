@@ -215,27 +215,53 @@ class TokenTagger:
 )
 
 def reference_to_token_annotations(input_file, output_file, task="splitting"):
-    """ Converts a file output by prodigy (using prodigy db-out) from
-    references level annotations to individual level annotations. The rationale
-    for this is that reference level annotations are much easier for humans to
-    do, but not useful when training a token level model.
+    """
+    Creates a span for every token from existing multi-token spans
 
-    This function is predominantly useful fot tagging reference spans, but may
-    also have a function with other references annotations.
+    Converts a jsonl file output by prodigy (using prodigy db-out) with spans
+    extending over more than a single token to individual token level spans.
+
+    The rationale for this is that reference level annotations are much easier
+    for humans to do, but not useful when training a token level model.
+
+    This command functions in two ways:
+
+    * task=splitting: For the splitting task where we are interested in
+        labelling the beginning (b-r) and end (e-r) of references, reference
+        spans are labelled with one of BI, BE, IE, II. These are then converted
+        to token level spans b-r, i-r, e-r, and o using logic. Symbolically:
+            * BE: [BE, BE, BE] becomes [b-r][i-r][e-r]
+            * BI: [BI, BI, BI] becomes [b-r][i-r][i-r]
+            * IE: [IE, IE, IE] becomes [i-r][i-r][e-r]
+            * II: [II, II, II] becomes [i-r][i-r][i-r]
+            * All other tokens become [o]
+
+    * task=parsing: For the parsing task, multi-task annotations are much
+        simpler and would tend to be just 'author', or 'title'. These simple
+        labels can be applied directly to the individual tokens contained within
+        these multi-token spans; for each token in the multi-token span, a span
+        is created with the same label. Symbolically:
+            * [author author author] becomes [author][author][author]
     """
 
-    partially_annotated = read_jsonl(input_file)
+    ref_annotated_docs = read_jsonl(input_file)
 
     # Only run the tagger on annotated examples.
 
-    partially_annotated = [doc for doc in partially_annotated if doc.get("spans")]
+    not_annotated_docs = [doc for doc in ref_annotated_docs if not doc.get("spans")]
+    ref_annotated_docs = [doc for doc in ref_annotated_docs if doc.get("spans")]
 
-    logger.info("Loaded %s documents with reference annotations", len(partially_annotated))
+    logger.info("Loaded %s documents with reference annotations", len(ref_annotated_docs))
+    logger.info("Loaded %s documents with no reference annotations", len(not_annotated_docs))
 
-    annotator = TokenTagger(partially_annotated, task=task)
+    annotator = TokenTagger(task)
 
-    fully_annotated = annotator.run()
+    token_annotated_docs = annotator.run(ref_annotated_docs)
+    all_docs = token_annotated_docs + token_annotated_docs
 
-    write_jsonl(fully_annotated, output_file=output_file)
+    write_jsonl(all_docs, output_file=output_file)
 
-    logger.info("Fully annotated references written to %s", output_file)
+    logger.info("Wrote %s docs with token annotations to %s",
+                len(token_annotated_docs), output_file)
+    logger.info("Wrote %s docs with no annotations to %s",
+                len(not_annotated_docs), output_file)
