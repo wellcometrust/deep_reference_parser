@@ -10,7 +10,6 @@ from ..logger import logger
 
 
 class TokenTagger:
-
     def __init__(self, task="splitting", lowercase=True):
         """
         Converts data in prodigy format with full reference spans to per-token
@@ -67,7 +66,7 @@ class TokenTagger:
 
         # Sort by token id to ensure it is ordered.
 
-        spans = sorted(spans, key=lambda k: k['token_start'])
+        spans = sorted(spans, key=lambda k: k["token_start"])
 
         doc["spans"] = spans
 
@@ -86,7 +85,6 @@ class TokenTagger:
             self.out.append(self.tag_doc(doc))
 
         return self.out
-
 
     def reference_spans(self, spans, tokens, task):
         """
@@ -134,7 +132,6 @@ class TokenTagger:
 
         return split_spans
 
-
     def outside_spans(self, spans, tokens):
         """
         Label tokens with `o` if they are outside a reference
@@ -161,7 +158,6 @@ class TokenTagger:
 
         return outside_spans
 
-
     def create_span(self, tokens, index, label):
         """
         Given a list of tokens, (in prodigy format) and an index relating to one of
@@ -181,7 +177,6 @@ class TokenTagger:
 
         return span
 
-
     def split_long_span(self, tokens, span, start_label, end_label, inside_label):
         """
         Split a multi-token span into `n` spans of lengh `1`, where `n=len(tokens)`
@@ -192,40 +187,42 @@ class TokenTagger:
         spans.append(self.create_span(tokens, span["token_end"], end_label))
 
         for index in range(span["token_start"] + 1, span["token_end"]):
-                spans.append(self.create_span(tokens, index, inside_label))
+            spans.append(self.create_span(tokens, index, inside_label))
 
-        spans = sorted(spans, key=lambda k: k['token_start'])
+        spans = sorted(spans, key=lambda k: k["token_start"])
 
         return spans
+
 
 @plac.annotations(
     input_file=(
         "Path to jsonl file containing chunks of references in prodigy format.",
         "positional",
         None,
-        str
+        str,
     ),
     output_file=(
         "Path to jsonl file into which fully annotate files will be saved.",
         "positional",
         None,
-        str
+        str,
     ),
     task=(
         "Which task is being performed. Either splitting or parsing.",
         "positional",
         None,
-        str
+        str,
     ),
     lowercase=(
         "Convert UPPER case reference labels to lower case token labels?",
         "flag",
         "f",
-        bool
-    )
+        bool,
+    ),
 )
-
-def reference_to_token_annotations(input_file, output_file, task="splitting", lowercase=False):
+def reference_to_token_annotations(
+    input_file, output_file, task="splitting", lowercase=False
+):
     """
     Creates a span for every token from existing multi-token spans
 
@@ -262,8 +259,12 @@ def reference_to_token_annotations(input_file, output_file, task="splitting", lo
     not_annotated_docs = [doc for doc in ref_annotated_docs if not doc.get("spans")]
     ref_annotated_docs = [doc for doc in ref_annotated_docs if doc.get("spans")]
 
-    logger.info("Loaded %s documents with reference annotations", len(ref_annotated_docs))
-    logger.info("Loaded %s documents with no reference annotations", len(not_annotated_docs))
+    logger.info(
+        "Loaded %s documents with reference annotations", len(ref_annotated_docs)
+    )
+    logger.info(
+        "Loaded %s documents with no reference annotations", len(not_annotated_docs)
+    )
 
     annotator = TokenTagger(task=task, lowercase=lowercase)
 
@@ -272,7 +273,11 @@ def reference_to_token_annotations(input_file, output_file, task="splitting", lo
 
     write_jsonl(all_docs, output_file=output_file)
 
-    logger.info("Wrote %s docs with token annotations to %s",
-                len(token_annotated_docs), output_file)
-    logger.info("Wrote %s docs with no annotations to %s",
-                len(not_annotated_docs), output_file)
+    logger.info(
+        "Wrote %s docs with token annotations to %s",
+        len(token_annotated_docs),
+        output_file,
+    )
+    logger.info(
+        "Wrote %s docs with no annotations to %s", len(not_annotated_docs), output_file
+    )
