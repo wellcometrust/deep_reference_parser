@@ -11,7 +11,7 @@ from ..logger import logger
 
 class TokenTagger:
 
-    def __init__(self, task="splitting"):
+    def __init__(self, task="splitting", lowercase=True):
         """
         Converts data in prodigy format with full reference spans to per-token
             spans
@@ -19,6 +19,8 @@ class TokenTagger:
         Args:
             task (str): One of ["parsing", "splitting"]. See below further
                 explanation.
+            lowercase (bool): Automatically convert upper case annotations to
+                lowercase under the parsing scenario.
 
         Since the parsing, splitting, and classification tasks have quite
         different labelling requirements, this class behaves differently
@@ -46,6 +48,7 @@ class TokenTagger:
 
         self.out = []
         self.task = task
+        self.lowercase = lowercase
 
     def tag_doc(self, doc):
         """
@@ -123,8 +126,10 @@ class TokenTagger:
         elif task == "parsing":
 
             for span in spans:
+                if self.lowercase:
+                    label = span["label"].lower()
                 split_spans.extend(
-                    self.split_long_span(tokens, span, span["label"], span["label"], span["label"])
+                    self.split_long_span(tokens, span, label, label, label)
                 )
 
         return split_spans
@@ -211,10 +216,16 @@ class TokenTagger:
         "positional",
         None,
         str
+    ),
+    lowercase=(
+        "Convert UPPER case reference labels to lower case token labels?",
+        "flag",
+        "f",
+        bool
     )
 )
 
-def reference_to_token_annotations(input_file, output_file, task="splitting"):
+def reference_to_token_annotations(input_file, output_file, task="splitting", lowercase=False):
     """
     Creates a span for every token from existing multi-token spans
 
@@ -254,7 +265,7 @@ def reference_to_token_annotations(input_file, output_file, task="splitting"):
     logger.info("Loaded %s documents with reference annotations", len(ref_annotated_docs))
     logger.info("Loaded %s documents with no reference annotations", len(not_annotated_docs))
 
-    annotator = TokenTagger(task)
+    annotator = TokenTagger(task=task, lowercase=lowercase)
 
     token_annotated_docs = annotator.run(ref_annotated_docs)
     all_docs = token_annotated_docs + token_annotated_docs
