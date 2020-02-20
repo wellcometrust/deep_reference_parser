@@ -126,6 +126,8 @@ class TokenTagger:
             for span in spans:
                 if self.lowercase:
                     label = span["label"].lower()
+                else:
+                    label = span["label"]
                 split_spans.extend(
                     self.split_long_span(tokens, span, label, label, label)
                 )
