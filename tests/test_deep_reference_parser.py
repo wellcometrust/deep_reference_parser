@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # coding: utf-8
 
@@ -18,9 +17,11 @@ from wasabi import msg
 def tmpdir(tmpdir_factory):
     return tmpdir_factory.mktemp("data")
 
+
 @pytest.fixture(scope="module")
 def cfg():
     return get_config(TEST_CFG)
+
 
 @pytest.mark.slow
 def test_DeepReferenceParser_train(tmpdir, cfg):
@@ -34,9 +35,13 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
     y_test = y_test[0:100]
 
     drp = DeepReferenceParser(
-        X_train=X_test, X_test=X_test, X_valid=X_test,
-        y_train=y_test, y_test=y_test, y_valid=y_test,
-        output_path=tmpdir
+        X_train=X_test,
+        X_test=X_test,
+        X_valid=X_test,
+        y_train=y_test,
+        y_test=y_test,
+        y_valid=y_test,
+        output_path=tmpdir,
     )
 
     # Prepare the data
@@ -58,18 +63,13 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
     # Train the model (quickly)
 
     drp.train_model(
-        epochs=int(cfg["train"]["epochs"]),
-        batch_size=int(cfg["train"]["batch_size"])
+        epochs=int(cfg["train"]["epochs"]), batch_size=int(cfg["train"]["batch_size"])
     )
 
     # Evaluate the model. This will write some evalutaion data to the
     # tempoary directory.
 
-    drp.evaluate(
-        load_weights=False,
-        test_set=True,
-        validation_set=True
-    )
+    drp.evaluate(load_weights=False, test_set=True, validation_set=True)
 
     examples = [
         "This is an example".split(" "),
@@ -86,7 +86,7 @@ def test_DeepReferenceParser_predict(tmpdir, cfg):
 
     drp = DeepReferenceParser(
         # Nothign will be written here
-        #output_path=cfg["build"]["output_path"]
+        # output_path=cfg["build"]["output_path"]
         output_path=tmpdir
     )
 

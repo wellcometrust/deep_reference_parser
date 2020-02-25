@@ -740,9 +740,4 @@ def test_reference_spans_real_example(doc):
 
     import pprint
 
-    #pp = pprint.PrettyPrinter()
-    #pp.pprint(actual)
-    #for token, span in zip(doc["tokens"], doc["spans"]):
-    #    print({token["text"]:span["label"]})
-
     assert actual == expected

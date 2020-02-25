@@ -6,19 +6,25 @@ import tempfile
 
 import pytest
 
-from deep_reference_parser.reference_utils import (break_into_chunks, load_tsv,
-                                                   prodigy_to_conll, write_tsv,
-                                                   yield_token_label_pairs)
+from deep_reference_parser.reference_utils import (
+    break_into_chunks,
+    load_tsv,
+    prodigy_to_conll,
+    write_tsv,
+    yield_token_label_pairs,
+)
 
-from.common import TEST_TSV_PREDICT, TEST_TSV_TRAIN
+from .common import TEST_TSV_PREDICT, TEST_TSV_TRAIN
 
 
 def test_prodigy_to_conll():
 
     before = [
-        {"text": "References", },
+        {"text": "References",},
         {"text": "37. No single case of malaria reported in"},
-        {"text": "an essential requirement for the correct labelling of potency for therapeutic"},
+        {
+            "text": "an essential requirement for the correct labelling of potency for therapeutic"
+        },
         {"text": "EQAS, quality control for STI"},
     ]
 
@@ -27,6 +33,7 @@ def test_prodigy_to_conll():
     out = prodigy_to_conll(before)
 
     assert after == out
+
 
 def test_load_tsv_train():
     """
@@ -55,17 +62,16 @@ def test_load_tsv_train():
 
     expected = (
         [
-            ['the', 'focus', 'in', 'Daloa', ',', 'Côte', 'd’Ivoire].'],
-            ['Bulletin', 'de', 'la', 'Société', 'de', 'Pathologie'],
-            ['Exotique', 'et'],
+            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+            ["Exotique", "et"],
         ],
         [
-            ['i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r'],
-            ['i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r'],
-            ['i-r', 'i-r'],
-        ]
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r"],
+        ],
     )
-
 
     actual = load_tsv(TEST_TSV_TRAIN)
 
@@ -99,58 +105,54 @@ def test_load_tsv_predict():
 
     expected = (
         [
-            ['the', 'focus', 'in', 'Daloa', ',', 'Côte', 'd’Ivoire].'],
-            ['Bulletin', 'de', 'la', 'Société', 'de', 'Pathologie'],
-            ['Exotique', 'et'],
+            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+            ["Exotique", "et"],
         ],
-        [
-            [],
-            [],
-            [],
-        ]
+        [[], [], [],],
     )
-
 
     actual = load_tsv(TEST_TSV_PREDICT)
 
     assert actual == expected
 
+
 def test_yield_toke_label_pairs():
 
     tokens = [
         [],
-        ['the', 'focus', 'in', 'Daloa', ',', 'Côte', 'd’Ivoire].'],
-        ['Bulletin', 'de', 'la', 'Société', 'de', 'Pathologie'],
-        ['Exotique', 'et'],
+        ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+        ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+        ["Exotique", "et"],
     ]
 
     labels = [
         [],
-        ['i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r'],
-        ['i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r'],
-        ['i-r', 'i-r'],
-        ]
+        ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+        ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+        ["i-r", "i-r"],
+    ]
 
     expected = [
         (None, None),
-        ('the', 'i-r'),
-        ('focus', 'i-r'),
-        ('in', 'i-r'),
-        ('Daloa', 'i-r'),
-        (',', 'i-r'),
-        ('Côte', 'i-r'),
-        ('d’Ivoire].', 'i-r'),
+        ("the", "i-r"),
+        ("focus", "i-r"),
+        ("in", "i-r"),
+        ("Daloa", "i-r"),
+        (",", "i-r"),
+        ("Côte", "i-r"),
+        ("d’Ivoire].", "i-r"),
         (None, None),
-        ('Bulletin', 'i-r'),
-        ('de', 'i-r'),
-        ('la', 'i-r'),
-        ('Société', 'i-r'),
-        ('de', 'i-r'),
-        ('Pathologie', 'i-r'),
+        ("Bulletin", "i-r"),
+        ("de", "i-r"),
+        ("la", "i-r"),
+        ("Société", "i-r"),
+        ("de", "i-r"),
+        ("Pathologie", "i-r"),
         (None, None),
-        ('Exotique', 'i-r'),
-        ('et', 'i-r'),
-        (None, None)
+        ("Exotique", "i-r"),
+        ("et", "i-r"),
+        (None, None),
     ]
 
     actual = list(yield_token_label_pairs(tokens, labels))
@@ -163,16 +165,16 @@ def test_write_tsv():
     expected = (
         [
             [],
-            ['the', 'focus', 'in', 'Daloa', ',', 'Côte', 'd’Ivoire].'],
-            ['Bulletin', 'de', 'la', 'Société', 'de', 'Pathologie'],
-            ['Exotique', 'et'],
+            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+            ["Exotique", "et"],
         ],
         [
             [],
-            ['i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r'],
-            ['i-r', 'i-r', 'i-r', 'i-r', 'i-r', 'i-r'],
-            ['i-r', 'i-r'],
-        ]
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r"],
+        ],
     )
 
     _, path = tempfile.mkstemp()
@@ -186,10 +188,11 @@ def test_write_tsv():
 
     os.remove(path)
 
+
 def test_break_into_chunks():
 
-    before = ["a","b","c","d","e"]
-    expected = [["a","b"],["c","d"], ["e"]]
+    before = ["a", "b", "c", "d", "e"]
+    expected = [["a", "b"], ["c", "d"], ["e"]]
 
     actual = break_into_chunks(before, max_words=2)
 

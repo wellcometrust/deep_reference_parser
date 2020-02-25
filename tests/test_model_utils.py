@@ -5,6 +5,7 @@ import pytest
 
 from deep_reference_parser.model_utils import remove_padding_from_predictions
 
+
 def test_remove_pre_padding():
 
     predictions = [
@@ -22,6 +23,7 @@ def test_remove_pre_padding():
     out = remove_padding_from_predictions(X, predictions, "pre")
 
     assert out == X
+
 
 def test_remove_post_padding():
 
