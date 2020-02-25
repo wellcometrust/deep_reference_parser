@@ -2,14 +2,38 @@
 # coding: utf-8
 
 import pytest
+
+from deep_reference_parser.io import read_jsonl
 from deep_reference_parser.prodigy.reference_to_token_annotations import TokenTagger
+
+from .common import TEST_REF_EXPECTED_SPANS, TEST_REF_SPANS, TEST_REF_TOKENS
 
 
 @pytest.fixture(scope="function")
-def tagger():
-    return TokenTagger()
+def splitter():
+    return TokenTagger(task="splitting", text=False)
 
-def test_TokenTagger(tagger):
+
+@pytest.fixture(scope="function")
+def parser():
+    return TokenTagger(task="parsing", text=True)
+
+
+@pytest.fixture(scope="module")
+def doc():
+    doc = {}
+    doc["tokens"] = read_jsonl(TEST_REF_TOKENS)[0]
+    doc["spans"] = read_jsonl(TEST_REF_SPANS)[0]
+
+    return doc
+
+
+@pytest.fixture(scope="module")
+def expected():
+    spans = read_jsonl(TEST_REF_EXPECTED_SPANS)
+
+    return spans
+
 
     doc = dict()
 
@@ -241,3 +265,7 @@ def test_outside_spans(tagger):
     out = tagger.outside_spans(spans, tokens)
 
     assert out == after
+def test_reference_spans_real_example(doc, parser, expected):
+
+    actual = parser.run([doc])[0]["spans"]
+    assert actual == expected

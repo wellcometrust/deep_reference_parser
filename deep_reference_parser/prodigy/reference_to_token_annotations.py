@@ -10,7 +10,7 @@ from ..logger import logger
 
 
 class TokenTagger:
-    def __init__(self, task="splitting", lowercase=True):
+    def __init__(self, task="splitting", lowercase=True, text=True):
         """
         Converts data in prodigy format with full reference spans to per-token
             spans
@@ -20,6 +20,8 @@ class TokenTagger:
                 explanation.
             lowercase (bool): Automatically convert upper case annotations to
                 lowercase under the parsing scenario.
+            text (bool): Include the token text in the output span (very useful
+                for debugging).
 
         Since the parsing, splitting, and classification tasks have quite
         different labelling requirements, this class behaves differently
@@ -48,6 +50,7 @@ class TokenTagger:
         self.out = []
         self.task = task
         self.lowercase = lowercase
+        self.text = text
 
     def tag_doc(self, doc):
         """
@@ -177,6 +180,9 @@ class TokenTagger:
             "label": label,
         }
 
+        if self.text:
+            span["text"] = token["text"]
+
         return span
 
     def split_long_span(self, tokens, span, start_label, end_label, inside_label):
@@ -221,9 +227,15 @@ class TokenTagger:
         "f",
         bool,
     ),
+    text=(
+        "Output the token text in the span (useful for debugging).",
+        "flag",
+        "t",
+        bool,
+    ),
 )
 def reference_to_token_annotations(
-    input_file, output_file, task="splitting", lowercase=False
+    input_file, output_file, task="splitting", lowercase=False, text=False
 ):
     """
     Creates a span for every token from existing multi-token spans
@@ -268,7 +280,7 @@ def reference_to_token_annotations(
         "Loaded %s documents with no reference annotations", len(not_annotated_docs)
     )
 
-    annotator = TokenTagger(task=task, lowercase=lowercase)
+    annotator = TokenTagger(task=task, lowercase=lowercase, text=text)
 
     token_annotated_docs = annotator.run(ref_annotated_docs)
     all_docs = token_annotated_docs + token_annotated_docs
