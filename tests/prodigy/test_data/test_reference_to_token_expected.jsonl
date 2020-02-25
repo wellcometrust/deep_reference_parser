@@ -1,0 +1,420 @@
+{"start": 0, "end": 10, "token_start": 0, "token_end": 0, "label": "o", "text": "References"}
+{"start": 11, "end": 16, "token_start": 1, "token_end": 1, "label": "o", "text": "\n  \n "}
+{"start": 16, "end": 17, "token_start": 2, "token_end": 2, "label": "o", "text": "1"}
+{"start": 17, "end": 18, "token_start": 3, "token_end": 3, "label": "o", "text": "."}
+{"start": 19, "end": 21, "token_start": 4, "token_end": 4, "label": "o", "text": "\n "}
+{"start": 21, "end": 27, "token_start": 5, "token_end": 5, "label": "author", "text": "United"}
+{"start": 28, "end": 35, "token_start": 6, "token_end": 6, "label": "author", "text": "Nations"}
+{"start": 36, "end": 47, "token_start": 7, "token_end": 7, "label": "author", "text": "Development"}
+{"start": 48, "end": 57, "token_start": 8, "token_end": 8, "label": "author", "text": "Programme"}
+{"start": 58, "end": 59, "token_start": 9, "token_end": 9, "label": "author", "text": "("}
+{"start": 59, "end": 63, "token_start": 10, "token_end": 10, "label": "author", "text": "UNDP"}
+{"start": 63, "end": 64, "token_start": 11, "token_end": 11, "label": "author", "text": ")"}
+{"start": 64, "end": 65, "token_start": 12, "token_end": 12, "label": "o", "text": "."}
+{"start": 66, "end": 67, "token_start": 13, "token_end": 13, "label": "o", "text": "A"}
+{"start": 68, "end": 73, "token_start": 14, "token_end": 14, "label": "title", "text": "Guide"}
+{"start": 74, "end": 76, "token_start": 15, "token_end": 15, "label": "title", "text": "to"}
+{"start": 77, "end": 82, "token_start": 16, "token_end": 16, "label": "title", "text": "Civil"}
+{"start": 83, "end": 90, "token_start": 17, "token_end": 17, "label": "title", "text": "Society"}
+{"start": 91, "end": 104, "token_start": 18, "token_end": 18, "label": "title", "text": "Organizations"}
+{"start": 105, "end": 107, "token_start": 19, "token_end": 19, "label": "title", "text": "\n "}
+{"start": 107, "end": 114, "token_start": 20, "token_end": 20, "label": "title", "text": "working"}
+{"start": 115, "end": 117, "token_start": 21, "token_end": 21, "label": "title", "text": "on"}
+{"start": 118, "end": 128, "token_start": 22, "token_end": 22, "label": "title", "text": "Democratic"}
+{"start": 129, "end": 139, "token_start": 23, "token_end": 23, "label": "title", "text": "Governance"}
+{"start": 140, "end": 141, "token_start": 24, "token_end": 24, "label": "title", "text": "["}
+{"start": 141, "end": 147, "token_start": 25, "token_end": 25, "label": "title", "text": "online"}
+{"start": 148, "end": 161, "token_start": 26, "token_end": 26, "label": "title", "text": "publication]."}
+{"start": 162, "end": 165, "token_start": 27, "token_end": 27, "label": "o", "text": "New"}
+{"start": 166, "end": 170, "token_start": 28, "token_end": 28, "label": "o", "text": "York"}
+{"start": 170, "end": 171, "token_start": 29, "token_end": 29, "label": "o", "text": ","}
+{"start": 172, "end": 174, "token_start": 30, "token_end": 30, "label": "o", "text": "NY"}
+{"start": 174, "end": 175, "token_start": 31, "token_end": 31, "label": "o", "text": ";"}
+{"start": 176, "end": 180, "token_start": 32, "token_end": 32, "label": "o", "text": "UNDP"}
+{"start": 180, "end": 181, "token_start": 33, "token_end": 33, "label": "o", "text": ";"}
+{"start": 182, "end": 186, "token_start": 34, "token_end": 34, "label": "year", "text": "2005"}
+{"start": 182, "end": 186, "token_start": 34, "token_end": 34, "label": "year", "text": "2005"}
+{"start": 186, "end": 187, "token_start": 35, "token_end": 35, "label": "o", "text": "."}
+{"start": 188, "end": 190, "token_start": 36, "token_end": 36, "label": "o", "text": "\n "}
+{"start": 190, "end": 191, "token_start": 37, "token_end": 37, "label": "o", "text": "("}
+{"start": 191, "end": 200, "token_start": 38, "token_end": 38, "label": "o", "text": "Available"}
+{"start": 201, "end": 205, "token_start": 39, "token_end": 39, "label": "o", "text": "from"}
+{"start": 205, "end": 206, "token_start": 40, "token_end": 40, "label": "o", "text": ":"}
+{"start": 207, "end": 209, "token_start": 41, "token_end": 41, "label": "o", "text": "\n "}
+{"start": 209, "end": 228, "token_start": 42, "token_end": 42, "label": "o", "text": "http://www.undp.org"}
+{"start": 228, "end": 229, "token_start": 43, "token_end": 43, "label": "o", "text": "/"}
+{"start": 229, "end": 236, "token_start": 44, "token_end": 44, "label": "o", "text": "content"}
+{"start": 236, "end": 237, "token_start": 45, "token_end": 45, "label": "o", "text": "/"}
+{"start": 237, "end": 240, "token_start": 46, "token_end": 46, "label": "o", "text": "dam"}
+{"start": 240, "end": 241, "token_start": 47, "token_end": 47, "label": "o", "text": "/"}
+{"start": 241, "end": 247, "token_start": 48, "token_end": 48, "label": "o", "text": "aplaws"}
+{"start": 247, "end": 248, "token_start": 49, "token_end": 49, "label": "o", "text": "/"}
+{"start": 248, "end": 259, "token_start": 50, "token_end": 50, "label": "o", "text": "publication"}
+{"start": 259, "end": 260, "token_start": 51, "token_end": 51, "label": "o", "text": "/"}
+{"start": 260, "end": 262, "token_start": 52, "token_end": 52, "label": "o", "text": "en"}
+{"start": 262, "end": 263, "token_start": 53, "token_end": 53, "label": "o", "text": "/"}
+{"start": 263, "end": 275, "token_start": 54, "token_end": 54, "label": "o", "text": "publications"}
+{"start": 275, "end": 276, "token_start": 55, "token_end": 55, "label": "o", "text": "/"}
+{"start": 276, "end": 287, "token_start": 56, "token_end": 56, "label": "o", "text": "democratic-"}
+{"start": 287, "end": 289, "token_start": 57, "token_end": 57, "label": "o", "text": "\n "}
+{"start": 289, "end": 299, "token_start": 58, "token_end": 58, "label": "o", "text": "governance"}
+{"start": 299, "end": 300, "token_start": 59, "token_end": 59, "label": "o", "text": "/"}
+{"start": 300, "end": 304, "token_start": 60, "token_end": 60, "label": "o", "text": "oslo"}
+{"start": 304, "end": 305, "token_start": 61, "token_end": 61, "label": "o", "text": "-"}
+{"start": 305, "end": 315, "token_start": 62, "token_end": 62, "label": "o", "text": "governance"}
+{"start": 315, "end": 316, "token_start": 63, "token_end": 63, "label": "o", "text": "-"}
+{"start": 316, "end": 322, "token_start": 64, "token_end": 64, "label": "o", "text": "center"}
+{"start": 322, "end": 323, "token_start": 65, "token_end": 65, "label": "o", "text": "/"}
+{"start": 323, "end": 328, "token_start": 66, "token_end": 66, "label": "o", "text": "civic"}
+{"start": 328, "end": 329, "token_start": 67, "token_end": 67, "label": "o", "text": "-"}
+{"start": 329, "end": 339, "token_start": 68, "token_end": 68, "label": "o", "text": "engagement"}
+{"start": 339, "end": 340, "token_start": 69, "token_end": 69, "label": "o", "text": "/"}
+{"start": 340, "end": 341, "token_start": 70, "token_end": 70, "label": "o", "text": "a"}
+{"start": 341, "end": 342, "token_start": 71, "token_end": 71, "label": "o", "text": "-"}
+{"start": 342, "end": 347, "token_start": 72, "token_end": 72, "label": "o", "text": "guide"}
+{"start": 347, "end": 348, "token_start": 73, "token_end": 73, "label": "o", "text": "-"}
+{"start": 348, "end": 350, "token_start": 74, "token_end": 74, "label": "o", "text": "to"}
+{"start": 350, "end": 351, "token_start": 75, "token_end": 75, "label": "o", "text": "-"}
+{"start": 351, "end": 356, "token_start": 76, "token_end": 76, "label": "o", "text": "civil"}
+{"start": 356, "end": 357, "token_start": 77, "token_end": 77, "label": "o", "text": "-"}
+{"start": 357, "end": 365, "token_start": 78, "token_end": 78, "label": "o", "text": "society-"}
+{"start": 365, "end": 367, "token_start": 79, "token_end": 79, "label": "o", "text": "\n "}
+{"start": 367, "end": 380, "token_start": 80, "token_end": 80, "label": "o", "text": "organizations"}
+{"start": 380, "end": 381, "token_start": 81, "token_end": 81, "label": "o", "text": "-"}
+{"start": 381, "end": 388, "token_start": 82, "token_end": 82, "label": "o", "text": "working"}
+{"start": 388, "end": 389, "token_start": 83, "token_end": 83, "label": "o", "text": "-"}
+{"start": 389, "end": 391, "token_start": 84, "token_end": 84, "label": "o", "text": "on"}
+{"start": 391, "end": 392, "token_start": 85, "token_end": 85, "label": "o", "text": "-"}
+{"start": 392, "end": 402, "token_start": 86, "token_end": 86, "label": "o", "text": "democratic"}
+{"start": 402, "end": 403, "token_start": 87, "token_end": 87, "label": "o", "text": "-"}
+{"start": 403, "end": 442, "token_start": 88, "token_end": 88, "label": "o", "text": "governance-/3665%20Booklet_heleWEB_.pdf"}
+{"start": 442, "end": 444, "token_start": 89, "token_end": 89, "label": "o", "text": "\n "}
+{"start": 444, "end": 445, "token_start": 90, "token_end": 90, "label": "o", "text": ","}
+{"start": 446, "end": 448, "token_start": 91, "token_end": 91, "label": "o", "text": "\n "}
+{"start": 448, "end": 456, "token_start": 92, "token_end": 92, "label": "o", "text": "accessed"}
+{"start": 457, "end": 459, "token_start": 93, "token_end": 93, "label": "o", "text": "15"}
+{"start": 460, "end": 468, "token_start": 94, "token_end": 94, "label": "o", "text": "February"}
+{"start": 469, "end": 473, "token_start": 95, "token_end": 95, "label": "o", "text": "2017"}
+{"start": 473, "end": 474, "token_start": 96, "token_end": 96, "label": "o", "text": ")"}
+{"start": 474, "end": 475, "token_start": 97, "token_end": 97, "label": "o", "text": "."}
+{"start": 476, "end": 478, "token_start": 98, "token_end": 98, "label": "o", "text": "\n "}
+{"start": 478, "end": 479, "token_start": 99, "token_end": 99, "label": "o", "text": "2"}
+{"start": 479, "end": 480, "token_start": 100, "token_end": 100, "label": "o", "text": "."}
+{"start": 481, "end": 483, "token_start": 101, "token_end": 101, "label": "o", "text": "\n "}
+{"start": 483, "end": 489, "token_start": 102, "token_end": 102, "label": "author", "text": "Mental"}
+{"start": 490, "end": 496, "token_start": 103, "token_end": 103, "label": "author", "text": "Health"}
+{"start": 497, "end": 501, "token_start": 104, "token_end": 104, "label": "author", "text": "Peer"}
+{"start": 502, "end": 512, "token_start": 105, "token_end": 105, "label": "author", "text": "Connection"}
+{"start": 513, "end": 514, "token_start": 106, "token_end": 106, "label": "author", "text": "("}
+{"start": 514, "end": 518, "token_start": 107, "token_end": 107, "label": "author", "text": "MHPC"}
+{"start": 518, "end": 519, "token_start": 108, "token_end": 108, "label": "author", "text": ")"}
+{"start": 519, "end": 520, "token_start": 109, "token_end": 109, "label": "o", "text": "."}
+{"start": 521, "end": 527, "token_start": 110, "token_end": 110, "label": "title", "text": "Mental"}
+{"start": 528, "end": 534, "token_start": 111, "token_end": 111, "label": "title", "text": "Health"}
+{"start": 535, "end": 539, "token_start": 112, "token_end": 112, "label": "title", "text": "Peer"}
+{"start": 540, "end": 550, "token_start": 113, "token_end": 113, "label": "title", "text": "Connection"}
+{"start": 551, "end": 552, "token_start": 114, "token_end": 114, "label": "o", "text": "["}
+{"start": 552, "end": 561, "token_start": 115, "token_end": 115, "label": "o", "text": "website]."}
+{"start": 562, "end": 569, "token_start": 116, "token_end": 116, "label": "o", "text": "Buffalo"}
+{"start": 569, "end": 570, "token_start": 117, "token_end": 117, "label": "o", "text": ","}
+{"start": 571, "end": 573, "token_start": 118, "token_end": 118, "label": "o", "text": "\n "}
+{"start": 573, "end": 575, "token_start": 119, "token_end": 119, "label": "o", "text": "NY"}
+{"start": 575, "end": 576, "token_start": 120, "token_end": 120, "label": "o", "text": ";"}
+{"start": 577, "end": 581, "token_start": 121, "token_end": 121, "label": "o", "text": "MHPC"}
+{"start": 581, "end": 582, "token_start": 122, "token_end": 122, "label": "o", "text": ";"}
+{"start": 583, "end": 586, "token_start": 123, "token_end": 123, "label": "o", "text": "n.d"}
+{"start": 586, "end": 587, "token_start": 124, "token_end": 124, "label": "o", "text": "."}
+{"start": 588, "end": 589, "token_start": 125, "token_end": 125, "label": "o", "text": "("}
+{"start": 589, "end": 598, "token_start": 126, "token_end": 126, "label": "o", "text": "Available"}
+{"start": 599, "end": 603, "token_start": 127, "token_end": 127, "label": "o", "text": "from"}
+{"start": 604, "end": 605, "token_start": 128, "token_end": 128, "label": "o", "text": ":"}
+{"start": 606, "end": 608, "token_start": 129, "token_end": 129, "label": "o", "text": "\n "}
+{"start": 608, "end": 634, "token_start": 130, "token_end": 130, "label": "o", "text": "http://wnyil.org/mhpc.html"}
+{"start": 634, "end": 636, "token_start": 131, "token_end": 131, "label": "o", "text": "\n "}
+{"start": 636, "end": 637, "token_start": 132, "token_end": 132, "label": "o", "text": ","}
+{"start": 638, "end": 639, "token_start": 133, "token_end": 133, "label": "o", "text": "a"}
+{"start": 640, "end": 647, "token_start": 134, "token_end": 134, "label": "o", "text": "ccessed"}
+{"start": 648, "end": 650, "token_start": 135, "token_end": 135, "label": "o", "text": "15"}
+{"start": 651, "end": 659, "token_start": 136, "token_end": 136, "label": "o", "text": "February"}
+{"start": 660, "end": 664, "token_start": 137, "token_end": 137, "label": "o", "text": "2017"}
+{"start": 664, "end": 665, "token_start": 138, "token_end": 138, "label": "o", "text": ")"}
+{"start": 665, "end": 666, "token_start": 139, "token_end": 139, "label": "o", "text": "."}
+{"start": 667, "end": 669, "token_start": 140, "token_end": 140, "label": "o", "text": "\n "}
+{"start": 669, "end": 670, "token_start": 141, "token_end": 141, "label": "o", "text": "3"}
+{"start": 670, "end": 671, "token_start": 142, "token_end": 142, "label": "o", "text": "."}
+{"start": 672, "end": 674, "token_start": 143, "token_end": 143, "label": "o", "text": "\n "}
+{"start": 674, "end": 679, "token_start": 144, "token_end": 144, "label": "author", "text": "Avery"}
+{"start": 680, "end": 681, "token_start": 145, "token_end": 145, "label": "author", "text": "S"}
+{"start": 681, "end": 682, "token_start": 146, "token_end": 146, "label": "author", "text": ","}
+{"start": 683, "end": 689, "token_start": 147, "token_end": 147, "label": "author", "text": "Mental"}
+{"start": 690, "end": 696, "token_start": 148, "token_end": 148, "label": "author", "text": "Health"}
+{"start": 697, "end": 701, "token_start": 149, "token_end": 149, "label": "author", "text": "Peer"}
+{"start": 702, "end": 712, "token_start": 150, "token_end": 150, "label": "author", "text": "Connection"}
+{"start": 713, "end": 714, "token_start": 151, "token_end": 151, "label": "author", "text": "("}
+{"start": 714, "end": 718, "token_start": 152, "token_end": 152, "label": "author", "text": "MHPC"}
+{"start": 718, "end": 719, "token_start": 153, "token_end": 153, "label": "author", "text": ")"}
+{"start": 719, "end": 720, "token_start": 154, "token_end": 154, "label": "o", "text": "."}
+{"start": 721, "end": 729, "token_start": 155, "token_end": 155, "label": "o", "text": "Channels"}
+{"start": 730, "end": 734, "token_start": 156, "token_end": 156, "label": "o", "text": "2013"}
+{"start": 734, "end": 735, "token_start": 157, "token_end": 157, "label": "o", "text": ","}
+{"start": 736, "end": 737, "token_start": 158, "token_end": 158, "label": "title", "text": "\u201c"}
+{"start": 737, "end": 740, "token_start": 159, "token_end": 159, "label": "title", "text": "Not"}
+{"start": 741, "end": 748, "token_start": 160, "token_end": 160, "label": "title", "text": "Without"}
+{"start": 749, "end": 751, "token_start": 161, "token_end": 161, "label": "title", "text": "Us"}
+{"start": 751, "end": 752, "token_start": 162, "token_end": 162, "label": "title", "text": "\u201d"}
+{"start": 753, "end": 754, "token_start": 163, "token_end": 163, "label": "o", "text": "["}
+{"start": 754, "end": 761, "token_start": 164, "token_end": 164, "label": "o", "text": "video]."}
+{"start": 762, "end": 764, "token_start": 165, "token_end": 165, "label": "o", "text": "\n "}
+{"start": 764, "end": 771, "token_start": 166, "token_end": 166, "label": "o", "text": "Western"}
+{"start": 772, "end": 775, "token_start": 167, "token_end": 167, "label": "o", "text": "New"}
+{"start": 776, "end": 780, "token_start": 168, "token_end": 168, "label": "o", "text": "York"}
+{"start": 781, "end": 782, "token_start": 169, "token_end": 169, "label": "o", "text": "("}
+{"start": 782, "end": 785, "token_start": 170, "token_end": 170, "label": "o", "text": "WNY"}
+{"start": 785, "end": 786, "token_start": 171, "token_end": 171, "label": "o", "text": ")"}
+{"start": 786, "end": 787, "token_start": 172, "token_end": 172, "label": "o", "text": ";"}
+{"start": 788, "end": 795, "token_start": 173, "token_end": 173, "label": "o", "text": "Squeeky"}
+{"start": 796, "end": 801, "token_start": 174, "token_end": 174, "label": "o", "text": "Wheel"}
+{"start": 801, "end": 802, "token_start": 175, "token_end": 175, "label": "o", "text": ";"}
+{"start": 803, "end": 807, "token_start": 176, "token_end": 176, "label": "year", "text": "2013"}
+{"start": 803, "end": 807, "token_start": 176, "token_end": 176, "label": "year", "text": "2013"}
+{"start": 807, "end": 808, "token_start": 177, "token_end": 177, "label": "o", "text": "."}
+{"start": 809, "end": 810, "token_start": 178, "token_end": 178, "label": "o", "text": "("}
+{"start": 810, "end": 819, "token_start": 179, "token_end": 179, "label": "o", "text": "Available"}
+{"start": 820, "end": 824, "token_start": 180, "token_end": 180, "label": "o", "text": "from"}
+{"start": 824, "end": 825, "token_start": 181, "token_end": 181, "label": "o", "text": ":"}
+{"start": 826, "end": 828, "token_start": 182, "token_end": 182, "label": "o", "text": "\n "}
+{"start": 828, "end": 854, "token_start": 183, "token_end": 183, "label": "o", "text": "https://vimeo.com/62705552"}
+{"start": 854, "end": 855, "token_start": 184, "token_end": 184, "label": "o", "text": ","}
+{"start": 856, "end": 864, "token_start": 185, "token_end": 185, "label": "o", "text": "accessed"}
+{"start": 865, "end": 867, "token_start": 186, "token_end": 186, "label": "o", "text": "15"}
+{"start": 868, "end": 876, "token_start": 187, "token_end": 187, "label": "o", "text": "February"}
+{"start": 877, "end": 881, "token_start": 188, "token_end": 188, "label": "o", "text": "2017"}
+{"start": 881, "end": 882, "token_start": 189, "token_end": 189, "label": "o", "text": ")"}
+{"start": 882, "end": 883, "token_start": 190, "token_end": 190, "label": "o", "text": "."}
+{"start": 884, "end": 886, "token_start": 191, "token_end": 191, "label": "o", "text": "\n "}
+{"start": 886, "end": 887, "token_start": 192, "token_end": 192, "label": "o", "text": "4"}
+{"start": 887, "end": 888, "token_start": 193, "token_end": 193, "label": "o", "text": "."}
+{"start": 889, "end": 891, "token_start": 194, "token_end": 194, "label": "o", "text": "\n "}
+{"start": 891, "end": 900, "token_start": 195, "token_end": 195, "label": "author", "text": "Alzheimer"}
+{"start": 900, "end": 902, "token_start": 196, "token_end": 196, "label": "author", "text": "'s"}
+{"start": 903, "end": 910, "token_start": 197, "token_end": 197, "label": "author", "text": "Disease"}
+{"start": 911, "end": 924, "token_start": 198, "token_end": 198, "label": "author", "text": "International"}
+{"start": 925, "end": 926, "token_start": 199, "token_end": 199, "label": "author", "text": "("}
+{"start": 926, "end": 929, "token_start": 200, "token_end": 200, "label": "author", "text": "ADI"}
+{"start": 929, "end": 930, "token_start": 201, "token_end": 201, "label": "author", "text": ")"}
+{"start": 930, "end": 931, "token_start": 202, "token_end": 202, "label": "o", "text": "."}
+{"start": 932, "end": 935, "token_start": 203, "token_end": 203, "label": "title", "text": "How"}
+{"start": 936, "end": 938, "token_start": 204, "token_end": 204, "label": "title", "text": "to"}
+{"start": 939, "end": 946, "token_start": 205, "token_end": 205, "label": "title", "text": "develop"}
+{"start": 947, "end": 949, "token_start": 206, "token_end": 206, "label": "title", "text": "an"}
+{"start": 950, "end": 959, "token_start": 207, "token_end": 207, "label": "title", "text": "Alzheimer"}
+{"start": 959, "end": 961, "token_start": 208, "token_end": 208, "label": "title", "text": "'s"}
+{"start": 962, "end": 973, "token_start": 209, "token_end": 209, "label": "title", "text": "association"}
+{"start": 974, "end": 977, "token_start": 210, "token_end": 210, "label": "title", "text": "and"}
+{"start": 978, "end": 981, "token_start": 211, "token_end": 211, "label": "title", "text": "get"}
+{"start": 982, "end": 984, "token_start": 212, "token_end": 212, "label": "title", "text": "\n "}
+{"start": 984, "end": 991, "token_start": 213, "token_end": 213, "label": "title", "text": "results"}
+{"start": 992, "end": 993, "token_start": 214, "token_end": 214, "label": "title", "text": "["}
+{"start": 993, "end": 1002, "token_start": 215, "token_end": 215, "label": "title", "text": "website]."}
+{"start": 1003, "end": 1009, "token_start": 216, "token_end": 216, "label": "o", "text": "United"}
+{"start": 1010, "end": 1017, "token_start": 217, "token_end": 217, "label": "o", "text": "Kingdom"}
+{"start": 1017, "end": 1018, "token_start": 218, "token_end": 218, "label": "o", "text": ";"}
+{"start": 1019, "end": 1022, "token_start": 219, "token_end": 219, "label": "o", "text": "ADI"}
+{"start": 1022, "end": 1023, "token_start": 220, "token_end": 220, "label": "o", "text": ";"}
+{"start": 1024, "end": 1028, "token_start": 221, "token_end": 221, "label": "year", "text": "2006"}
+{"start": 1024, "end": 1028, "token_start": 221, "token_end": 221, "label": "year", "text": "2006"}
+{"start": 1028, "end": 1029, "token_start": 222, "token_end": 222, "label": "o", "text": "."}
+{"start": 1030, "end": 1031, "token_start": 223, "token_end": 223, "label": "o", "text": "("}
+{"start": 1031, "end": 1040, "token_start": 224, "token_end": 224, "label": "o", "text": "Available"}
+{"start": 1041, "end": 1045, "token_start": 225, "token_end": 225, "label": "o", "text": "from"}
+{"start": 1045, "end": 1046, "token_start": 226, "token_end": 226, "label": "o", "text": ":"}
+{"start": 1047, "end": 1054, "token_start": 227, "token_end": 227, "label": "o", "text": "https:/"}
+{"start": 1055, "end": 1056, "token_start": 228, "token_end": 228, "label": "o", "text": "/"}
+{"start": 1056, "end": 1058, "token_start": 229, "token_end": 229, "label": "o", "text": "\n "}
+{"start": 1058, "end": 1071, "token_start": 230, "token_end": 230, "label": "o", "text": "www.alz.co.uk"}
+{"start": 1071, "end": 1072, "token_start": 231, "token_end": 231, "label": "o", "text": "/"}
+{"start": 1072, "end": 1076, "token_start": 232, "token_end": 232, "label": "o", "text": "how-"}
+{"start": 1076, "end": 1078, "token_start": 233, "token_end": 233, "label": "o", "text": "\n "}
+{"start": 1078, "end": 1080, "token_start": 234, "token_end": 234, "label": "o", "text": "to"}
+{"start": 1080, "end": 1081, "token_start": 235, "token_end": 235, "label": "o", "text": "-"}
+{"start": 1081, "end": 1088, "token_start": 236, "token_end": 236, "label": "o", "text": "develop"}
+{"start": 1088, "end": 1089, "token_start": 237, "token_end": 237, "label": "o", "text": "-"}
+{"start": 1089, "end": 1091, "token_start": 238, "token_end": 238, "label": "o", "text": "an"}
+{"start": 1091, "end": 1092, "token_start": 239, "token_end": 239, "label": "o", "text": "-"}
+{"start": 1092, "end": 1103, "token_start": 240, "token_end": 240, "label": "o", "text": "association"}
+{"start": 1103, "end": 1105, "token_start": 241, "token_end": 241, "label": "o", "text": "\n "}
+{"start": 1105, "end": 1106, "token_start": 242, "token_end": 242, "label": "o", "text": ","}
+{"start": 1107, "end": 1108, "token_start": 243, "token_end": 243, "label": "o", "text": " "}
+{"start": 1108, "end": 1116, "token_start": 244, "token_end": 244, "label": "o", "text": "accessed"}
+{"start": 1117, "end": 1119, "token_start": 245, "token_end": 245, "label": "o", "text": "15"}
+{"start": 1120, "end": 1128, "token_start": 246, "token_end": 246, "label": "o", "text": "February"}
+{"start": 1129, "end": 1133, "token_start": 247, "token_end": 247, "label": "o", "text": "2017"}
+{"start": 1133, "end": 1134, "token_start": 248, "token_end": 248, "label": "o", "text": ")"}
+{"start": 1134, "end": 1135, "token_start": 249, "token_end": 249, "label": "o", "text": "."}
+{"start": 1136, "end": 1138, "token_start": 250, "token_end": 250, "label": "o", "text": "\n "}
+{"start": 1138, "end": 1139, "token_start": 251, "token_end": 251, "label": "o", "text": "5"}
+{"start": 1139, "end": 1140, "token_start": 252, "token_end": 252, "label": "o", "text": "."}
+{"start": 1141, "end": 1143, "token_start": 253, "token_end": 253, "label": "o", "text": "\n "}
+{"start": 1143, "end": 1149, "token_start": 254, "token_end": 254, "label": "author", "text": "Normal"}
+{"start": 1150, "end": 1160, "token_start": 255, "token_end": 255, "label": "author", "text": "Difference"}
+{"start": 1161, "end": 1167, "token_start": 256, "token_end": 256, "label": "author", "text": "Mental"}
+{"start": 1168, "end": 1174, "token_start": 257, "token_end": 257, "label": "author", "text": "Health"}
+{"start": 1175, "end": 1180, "token_start": 258, "token_end": 258, "label": "author", "text": "Kenya"}
+{"start": 1181, "end": 1182, "token_start": 259, "token_end": 259, "label": "author", "text": "("}
+{"start": 1182, "end": 1187, "token_start": 260, "token_end": 260, "label": "author", "text": "NDMHK"}
+{"start": 1187, "end": 1188, "token_start": 261, "token_end": 261, "label": "author", "text": ")"}
+{"start": 1188, "end": 1189, "token_start": 262, "token_end": 262, "label": "o", "text": "."}
+{"start": 1190, "end": 1195, "token_start": 263, "token_end": 263, "label": "title", "text": "About"}
+{"start": 1196, "end": 1198, "token_start": 264, "token_end": 264, "label": "title", "text": "Us"}
+{"start": 1199, "end": 1200, "token_start": 265, "token_end": 265, "label": "o", "text": "["}
+{"start": 1200, "end": 1209, "token_start": 266, "token_end": 266, "label": "o", "text": "website]."}
+{"start": 1210, "end": 1215, "token_start": 267, "token_end": 267, "label": "o", "text": "Kenya"}
+{"start": 1215, "end": 1216, "token_start": 268, "token_end": 268, "label": "o", "text": ";"}
+{"start": 1217, "end": 1222, "token_start": 269, "token_end": 269, "label": "o", "text": "NDMHK"}
+{"start": 1222, "end": 1223, "token_start": 270, "token_end": 270, "label": "o", "text": ";"}
+{"start": 1224, "end": 1227, "token_start": 271, "token_end": 271, "label": "o", "text": "n.d"}
+{"start": 1227, "end": 1228, "token_start": 272, "token_end": 272, "label": "o", "text": "."}
+{"start": 1229, "end": 1231, "token_start": 273, "token_end": 273, "label": "o", "text": "\n "}
+{"start": 1231, "end": 1232, "token_start": 274, "token_end": 274, "label": "o", "text": "("}
+{"start": 1232, "end": 1241, "token_start": 275, "token_end": 275, "label": "o", "text": "Available"}
+{"start": 1242, "end": 1246, "token_start": 276, "token_end": 276, "label": "o", "text": "from"}
+{"start": 1247, "end": 1248, "token_start": 277, "token_end": 277, "label": "o", "text": ":"}
+{"start": 1249, "end": 1251, "token_start": 278, "token_end": 278, "label": "o", "text": "\n "}
+{"start": 1251, "end": 1295, "token_start": 279, "token_end": 279, "label": "o", "text": "http://www.normal-difference.org/?page_id=15"}
+{"start": 1295, "end": 1297, "token_start": 280, "token_end": 280, "label": "o", "text": "\n "}
+{"start": 1297, "end": 1298, "token_start": 281, "token_end": 281, "label": "o", "text": ","}
+{"start": 1299, "end": 1301, "token_start": 282, "token_end": 282, "label": "o", "text": "ac"}
+{"start": 1302, "end": 1308, "token_start": 283, "token_end": 283, "label": "o", "text": "cessed"}
+{"start": 1309, "end": 1311, "token_start": 284, "token_end": 284, "label": "o", "text": "15"}
+{"start": 1312, "end": 1320, "token_start": 285, "token_end": 285, "label": "o", "text": "February"}
+{"start": 1321, "end": 1323, "token_start": 286, "token_end": 286, "label": "o", "text": "\n "}
+{"start": 1323, "end": 1327, "token_start": 287, "token_end": 287, "label": "o", "text": "2017"}
+{"start": 1327, "end": 1328, "token_start": 288, "token_end": 288, "label": "o", "text": ")"}
+{"start": 1328, "end": 1329, "token_start": 289, "token_end": 289, "label": "o", "text": "."}
+{"start": 1330, "end": 1332, "token_start": 290, "token_end": 290, "label": "o", "text": "\n "}
+{"start": 1332, "end": 1333, "token_start": 291, "token_end": 291, "label": "o", "text": "6"}
+{"start": 1333, "end": 1334, "token_start": 292, "token_end": 292, "label": "o", "text": "."}
+{"start": 1335, "end": 1337, "token_start": 293, "token_end": 293, "label": "o", "text": "\n "}
+{"start": 1337, "end": 1344, "token_start": 294, "token_end": 294, "label": "author", "text": "TOPSIDE"}
+{"start": 1337, "end": 1344, "token_start": 294, "token_end": 294, "label": "author", "text": "TOPSIDE"}
+{"start": 1344, "end": 1345, "token_start": 295, "token_end": 295, "label": "o", "text": "."}
+{"start": 1346, "end": 1354, "token_start": 296, "token_end": 296, "label": "title", "text": "Training"}
+{"start": 1355, "end": 1368, "token_start": 297, "token_end": 297, "label": "title", "text": "Opportunities"}
+{"start": 1369, "end": 1372, "token_start": 298, "token_end": 298, "label": "title", "text": "for"}
+{"start": 1373, "end": 1377, "token_start": 299, "token_end": 299, "label": "title", "text": "Peer"}
+{"start": 1378, "end": 1388, "token_start": 300, "token_end": 300, "label": "title", "text": "Supporters"}
+{"start": 1389, "end": 1393, "token_start": 301, "token_end": 301, "label": "title", "text": "with"}
+{"start": 1394, "end": 1406, "token_start": 302, "token_end": 302, "label": "title", "text": "Intellectual"}
+{"start": 1407, "end": 1419, "token_start": 303, "token_end": 303, "label": "title", "text": "Disabilities"}
+{"start": 1420, "end": 1422, "token_start": 304, "token_end": 304, "label": "title", "text": "in"}
+{"start": 1423, "end": 1429, "token_start": 305, "token_end": 305, "label": "title", "text": "Europe"}
+{"start": 1430, "end": 1432, "token_start": 306, "token_end": 306, "label": "o", "text": "\n "}
+{"start": 1432, "end": 1433, "token_start": 307, "token_end": 307, "label": "o", "text": "["}
+{"start": 1433, "end": 1440, "token_start": 308, "token_end": 308, "label": "o", "text": "website"}
+{"start": 1440, "end": 1441, "token_start": 309, "token_end": 309, "label": "o", "text": "]"}
+{"start": 1441, "end": 1442, "token_start": 310, "token_end": 310, "label": "o", "text": ";"}
+{"start": 1443, "end": 1450, "token_start": 311, "token_end": 311, "label": "o", "text": "TOPSIDE"}
+{"start": 1450, "end": 1451, "token_start": 312, "token_end": 312, "label": "o", "text": ";"}
+{"start": 1452, "end": 1455, "token_start": 313, "token_end": 313, "label": "o", "text": "n.d"}
+{"start": 1455, "end": 1456, "token_start": 314, "token_end": 314, "label": "o", "text": "."}
+{"start": 1457, "end": 1458, "token_start": 315, "token_end": 315, "label": "o", "text": "("}
+{"start": 1458, "end": 1467, "token_start": 316, "token_end": 316, "label": "o", "text": "Available"}
+{"start": 1468, "end": 1472, "token_start": 317, "token_end": 317, "label": "o", "text": "from"}
+{"start": 1473, "end": 1474, "token_start": 318, "token_end": 318, "label": "o", "text": ":"}
+{"start": 1475, "end": 1477, "token_start": 319, "token_end": 319, "label": "o", "text": "\n "}
+{"start": 1477, "end": 1522, "token_start": 320, "token_end": 320, "label": "o", "text": "http://www.peer-support.eu/about-the-project/"}
+{"start": 1522, "end": 1524, "token_start": 321, "token_end": 321, "label": "o", "text": "\n "}
+{"start": 1524, "end": 1525, "token_start": 322, "token_end": 322, "label": "o", "text": ","}
+{"start": 1526, "end": 1528, "token_start": 323, "token_end": 323, "label": "o", "text": "\n "}
+{"start": 1528, "end": 1536, "token_start": 324, "token_end": 324, "label": "o", "text": "accessed"}
+{"start": 1537, "end": 1539, "token_start": 325, "token_end": 325, "label": "o", "text": "15"}
+{"start": 1540, "end": 1548, "token_start": 326, "token_end": 326, "label": "o", "text": "February"}
+{"start": 1549, "end": 1553, "token_start": 327, "token_end": 327, "label": "o", "text": "2017"}
+{"start": 1553, "end": 1554, "token_start": 328, "token_end": 328, "label": "o", "text": ")"}
+{"start": 1554, "end": 1555, "token_start": 329, "token_end": 329, "label": "o", "text": "."}
+{"start": 1556, "end": 1558, "token_start": 330, "token_end": 330, "label": "o", "text": "\n "}
+{"start": 1558, "end": 1559, "token_start": 331, "token_end": 331, "label": "o", "text": "7"}
+{"start": 1559, "end": 1560, "token_start": 332, "token_end": 332, "label": "o", "text": "."}
+{"start": 1561, "end": 1563, "token_start": 333, "token_end": 333, "label": "o", "text": "\n "}
+{"start": 1563, "end": 1570, "token_start": 334, "token_end": 334, "label": "author", "text": "KOSHISH"}
+{"start": 1571, "end": 1579, "token_start": 335, "token_end": 335, "label": "author", "text": "National"}
+{"start": 1580, "end": 1586, "token_start": 336, "token_end": 336, "label": "author", "text": "Mental"}
+{"start": 1587, "end": 1593, "token_start": 337, "token_end": 337, "label": "author", "text": "Health"}
+{"start": 1594, "end": 1598, "token_start": 338, "token_end": 338, "label": "author", "text": "Self"}
+{"start": 1598, "end": 1599, "token_start": 339, "token_end": 339, "label": "author", "text": "-"}
+{"start": 1599, "end": 1603, "token_start": 340, "token_end": 340, "label": "author", "text": "help"}
+{"start": 1604, "end": 1616, "token_start": 341, "token_end": 341, "label": "author", "text": "Organisation"}
+{"start": 1616, "end": 1617, "token_start": 342, "token_end": 342, "label": "o", "text": "."}
+{"start": 1618, "end": 1626, "token_start": 343, "token_end": 343, "label": "title", "text": "Advocacy"}
+{"start": 1627, "end": 1630, "token_start": 344, "token_end": 344, "label": "title", "text": "and"}
+{"start": 1631, "end": 1640, "token_start": 345, "token_end": 345, "label": "title", "text": "Awareness"}
+{"start": 1641, "end": 1642, "token_start": 346, "token_end": 346, "label": "o", "text": "["}
+{"start": 1642, "end": 1651, "token_start": 347, "token_end": 347, "label": "o", "text": "website]."}
+{"start": 1652, "end": 1654, "token_start": 348, "token_end": 348, "label": "o", "text": "\n "}
+{"start": 1654, "end": 1659, "token_start": 349, "token_end": 349, "label": "o", "text": "Nepal"}
+{"start": 1659, "end": 1660, "token_start": 350, "token_end": 350, "label": "o", "text": ";"}
+{"start": 1661, "end": 1668, "token_start": 351, "token_end": 351, "label": "o", "text": "KOSHISH"}
+{"start": 1668, "end": 1669, "token_start": 352, "token_end": 352, "label": "o", "text": ";"}
+{"start": 1670, "end": 1674, "token_start": 353, "token_end": 353, "label": "year", "text": "2015"}
+{"start": 1670, "end": 1674, "token_start": 353, "token_end": 353, "label": "year", "text": "2015"}
+{"start": 1674, "end": 1675, "token_start": 354, "token_end": 354, "label": "o", "text": "."}
+{"start": 1676, "end": 1677, "token_start": 355, "token_end": 355, "label": "o", "text": "("}
+{"start": 1677, "end": 1686, "token_start": 356, "token_end": 356, "label": "o", "text": "Available"}
+{"start": 1687, "end": 1691, "token_start": 357, "token_end": 357, "label": "o", "text": "from"}
+{"start": 1691, "end": 1692, "token_start": 358, "token_end": 358, "label": "o", "text": ":"}
+{"start": 1693, "end": 1696, "token_start": 359, "token_end": 359, "label": "o", "text": " \n "}
+{"start": 1696, "end": 1728, "token_start": 360, "token_end": 360, "label": "o", "text": "http://koshishnepal.org/advocacy"}
+{"start": 1728, "end": 1730, "token_start": 361, "token_end": 361, "label": "o", "text": "\n "}
+{"start": 1730, "end": 1731, "token_start": 362, "token_end": 362, "label": "o", "text": ","}
+{"start": 1732, "end": 1733, "token_start": 363, "token_end": 363, "label": "o", "text": " "}
+{"start": 1733, "end": 1741, "token_start": 364, "token_end": 364, "label": "o", "text": "accessed"}
+{"start": 1742, "end": 1744, "token_start": 365, "token_end": 365, "label": "o", "text": "15"}
+{"start": 1745, "end": 1747, "token_start": 366, "token_end": 366, "label": "o", "text": "\n "}
+{"start": 1747, "end": 1755, "token_start": 367, "token_end": 367, "label": "o", "text": "February"}
+{"start": 1756, "end": 1760, "token_start": 368, "token_end": 368, "label": "o", "text": "2017"}
+{"start": 1760, "end": 1761, "token_start": 369, "token_end": 369, "label": "o", "text": ")"}
+{"start": 1761, "end": 1762, "token_start": 370, "token_end": 370, "label": "o", "text": "."}
+{"start": 1763, "end": 1765, "token_start": 371, "token_end": 371, "label": "o", "text": "\n "}
+{"start": 1765, "end": 1766, "token_start": 372, "token_end": 372, "label": "o", "text": "8"}
+{"start": 1766, "end": 1767, "token_start": 373, "token_end": 373, "label": "o", "text": "."}
+{"start": 1768, "end": 1770, "token_start": 374, "token_end": 374, "label": "o", "text": "\n "}
+{"start": 1770, "end": 1778, "token_start": 375, "token_end": 375, "label": "author", "text": "Dementia"}
+{"start": 1779, "end": 1787, "token_start": 376, "token_end": 376, "label": "author", "text": "Alliance"}
+{"start": 1788, "end": 1801, "token_start": 377, "token_end": 377, "label": "author", "text": "International"}
+{"start": 1802, "end": 1803, "token_start": 378, "token_end": 378, "label": "author", "text": "("}
+{"start": 1803, "end": 1806, "token_start": 379, "token_end": 379, "label": "author", "text": "DAI"}
+{"start": 1806, "end": 1807, "token_start": 380, "token_end": 380, "label": "author", "text": ")"}
+{"start": 1807, "end": 1808, "token_start": 381, "token_end": 381, "label": "o", "text": "."}
+{"start": 1809, "end": 1817, "token_start": 382, "token_end": 382, "label": "title", "text": "Dementia"}
+{"start": 1818, "end": 1826, "token_start": 383, "token_end": 383, "label": "title", "text": "Alliance"}
+{"start": 1827, "end": 1840, "token_start": 384, "token_end": 384, "label": "title", "text": "International"}
+{"start": 1841, "end": 1842, "token_start": 385, "token_end": 385, "label": "o", "text": "["}
+{"start": 1842, "end": 1851, "token_start": 386, "token_end": 386, "label": "o", "text": "website]."}
+{"start": 1852, "end": 1858, "token_start": 387, "token_end": 387, "label": "o", "text": "Ankeny"}
+{"start": 1858, "end": 1859, "token_start": 388, "token_end": 388, "label": "o", "text": ","}
+{"start": 1860, "end": 1862, "token_start": 389, "token_end": 389, "label": "o", "text": "IA"}
+{"start": 1862, "end": 1863, "token_start": 390, "token_end": 390, "label": "o", "text": ";"}
+{"start": 1864, "end": 1866, "token_start": 391, "token_end": 391, "label": "o", "text": "\n "}
+{"start": 1866, "end": 1869, "token_start": 392, "token_end": 392, "label": "o", "text": "DAI"}
+{"start": 1869, "end": 1870, "token_start": 393, "token_end": 393, "label": "o", "text": ";"}
+{"start": 1871, "end": 1880, "token_start": 394, "token_end": 394, "label": "o", "text": "2014/2015"}
+{"start": 1880, "end": 1881, "token_start": 395, "token_end": 395, "label": "o", "text": "."}
+{"start": 1882, "end": 1883, "token_start": 396, "token_end": 396, "label": "o", "text": "("}
+{"start": 1883, "end": 1892, "token_start": 397, "token_end": 397, "label": "o", "text": "Available"}
+{"start": 1893, "end": 1897, "token_start": 398, "token_end": 398, "label": "o", "text": "from"}
+{"start": 1897, "end": 1898, "token_start": 399, "token_end": 399, "label": "o", "text": ":"}
+{"start": 1899, "end": 1902, "token_start": 400, "token_end": 400, "label": "o", "text": " \n "}
+{"start": 1902, "end": 1947, "token_start": 401, "token_end": 401, "label": "o", "text": "http://www.dementiaallianceinternational.org/"}
+{"start": 1947, "end": 1949, "token_start": 402, "token_end": 402, "label": "o", "text": "\n "}
+{"start": 1949, "end": 1950, "token_start": 403, "token_end": 403, "label": "o", "text": ","}
+{"start": 1951, "end": 1952, "token_start": 404, "token_end": 404, "label": "o", "text": " "}
+{"start": 1952, "end": 1960, "token_start": 405, "token_end": 405, "label": "o", "text": "accessed"}
+{"start": 1961, "end": 1963, "token_start": 406, "token_end": 406, "label": "o", "text": "\n "}
+{"start": 1963, "end": 1965, "token_start": 407, "token_end": 407, "label": "o", "text": "15"}
+{"start": 1966, "end": 1974, "token_start": 408, "token_end": 408, "label": "o", "text": "February"}
+{"start": 1975, "end": 1979, "token_start": 409, "token_end": 409, "label": "o", "text": "2017"}
+{"start": 1979, "end": 1980, "token_start": 410, "token_end": 410, "label": "o", "text": ")"}
+{"start": 1980, "end": 1981, "token_start": 411, "token_end": 411, "label": "o", "text": "."}
+{"start": 1982, "end": 1984, "token_start": 412, "token_end": 412, "label": "o", "text": "\n "}
+{"start": 1984, "end": 1985, "token_start": 413, "token_end": 413, "label": "o", "text": "9"}
+{"start": 1985, "end": 1986, "token_start": 414, "token_end": 414, "label": "o", "text": "."}
