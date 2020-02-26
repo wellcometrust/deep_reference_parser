@@ -189,13 +189,24 @@ class TokenTagger:
         """
         Split a multi-token span into `n` spans of lengh `1`, where `n=len(tokens)`
         """
-
         spans = []
-        spans.append(self.create_span(tokens, span["token_start"], start_label))
-        spans.append(self.create_span(tokens, span["token_end"], end_label))
+        start = span["token_start"]
+        end = span["token_end"]
 
-        for index in range(span["token_start"] + 1, span["token_end"]):
-            spans.append(self.create_span(tokens, index, inside_label))
+        span_size = end - start
+
+        # Case when there is only one token in the span
+        if span_size == 0:
+            spans.append(self.create_span(tokens, start, start_label))
+        # Case when there are two or more tokens in the span
+        else:
+            spans.append(self.create_span(tokens, start, start_label))
+            spans.append(self.create_span(tokens, end, end_label))
+
+            if span_size > 1:
+
+                for index in range(start + 1, end):
+                    spans.append(self.create_span(tokens, index, inside_label))
 
         spans = sorted(spans, key=lambda k: k["token_start"])
 
