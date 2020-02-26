@@ -83,7 +83,7 @@ def test_create_span(splitter):
     assert out == after
 
 
-def test_split_long_span(splitter):
+def test_split_long_span_three_token_span(splitter):
 
     tokens = [
         {"start": 0, "end": 0, "id": 0},
@@ -97,18 +97,66 @@ def test_split_long_span(splitter):
 
     span = {"start": 2, "end": 4, "token_start": 2, "token_end": 4, "label": "BE"}
 
-    after = [
+    expected = [
         {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "b-r"},
         {"start": 3, "end": 3, "token_start": 3, "token_end": 3, "label": "i-r"},
         {"start": 4, "end": 4, "token_start": 4, "token_end": 4, "label": "e-r"},
     ]
 
-    out = splitter.split_long_span(
+    actual = splitter.split_long_span(
         tokens, span, start_label="b-r", end_label="e-r", inside_label="i-r"
     )
 
-    assert out == after
+    assert expected == actual
 
+def test_split_long_span_two_token_span(splitter):
+
+    tokens = [
+        {"start": 0, "end": 0, "id": 0},
+        {"start": 1, "end": 1, "id": 1},
+        {"start": 2, "end": 2, "id": 2},
+        {"start": 3, "end": 3, "id": 3},
+        {"start": 4, "end": 4, "id": 4},
+        {"start": 5, "end": 5, "id": 5},
+        {"start": 6, "end": 6, "id": 6},
+    ]
+
+    span = {"start": 2, "end": 3, "token_start": 2, "token_end": 3, "label": "BE"}
+
+    expected = [
+        {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "b-r"},
+        {"start": 3, "end": 3, "token_start": 3, "token_end": 3, "label": "e-r"},
+    ]
+
+    actual = splitter.split_long_span(
+        tokens, span, start_label="b-r", end_label="e-r", inside_label="i-r"
+    )
+
+    assert expected == actual
+
+def test_split_long_span_one_token_span(splitter):
+
+    tokens = [
+        {"start": 0, "end": 0, "id": 0},
+        {"start": 1, "end": 1, "id": 1},
+        {"start": 2, "end": 2, "id": 2},
+        {"start": 3, "end": 3, "id": 3},
+        {"start": 4, "end": 4, "id": 4},
+        {"start": 5, "end": 5, "id": 5},
+        {"start": 6, "end": 6, "id": 6},
+    ]
+
+    span = {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "BE"}
+
+    expected = [
+        {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "b-r"},
+    ]
+
+    actual = splitter.split_long_span(
+        tokens, span, start_label="b-r", end_label="e-r", inside_label="i-r"
+    )
+
+    assert expected == actual
 
 def test_reference_spans_be(splitter):
 
