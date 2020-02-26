@@ -283,7 +283,7 @@ def reference_to_token_annotations(
     annotator = TokenTagger(task=task, lowercase=lowercase, text=text)
 
     token_annotated_docs = annotator.run(ref_annotated_docs)
-    all_docs = token_annotated_docs + token_annotated_docs
+    all_docs = token_annotated_docs + not_annotated_docs
 
     write_jsonl(all_docs, output_file=output_file)
 
