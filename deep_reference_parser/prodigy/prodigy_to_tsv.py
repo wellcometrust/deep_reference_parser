@@ -12,9 +12,12 @@ import re
 import numpy as np
 import plac
 
-from ..io import read_jsonl
+from wasabi import Printer
 
+from ..io import read_jsonl
 from ..logger import logger
+
+msg = Printer()
 
 
 class TokenLabelPairs:
@@ -211,11 +214,15 @@ class TokenLabelPairs:
         int
     )
 )
-def prodigy_to_tsv(input_file, output_file, respect_lines, respect_docs, line_limit):
+def prodigy_to_tsv(input_file, output_file, respect_lines, respect_docs, line_limit=250):
     """
     Convert token annotated jsonl to token annotated tsv ready for use in the
     Rodrigues model.
     """
+
+    msg.info(f"Respect line endings: {respect_lines}")
+    msg.info(f"Respect doc endings: {respect_docs}")
+    msg.info(f"Line limit: {line_limit}")
 
     annotated_data = read_jsonl(input_file)
 
@@ -236,4 +243,3 @@ def prodigy_to_tsv(input_file, output_file, respect_lines, respect_docs, line_li
 
     logger.info("Wrote %s token/label pairs to %s", len(token_label_pairs),
         output_file)
-
