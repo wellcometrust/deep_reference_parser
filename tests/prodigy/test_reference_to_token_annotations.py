@@ -210,7 +210,7 @@ def test_reference_spans_ii(splitter):
     assert out == after
 
 
-def test_reference_spans_author(splitter):
+def test_reference_spans_parsing(splitter):
 
     tokens = [
         {"start": 0, "end": 0, "id": 0},
@@ -235,6 +235,34 @@ def test_reference_spans_author(splitter):
     out = splitter.reference_spans(spans, tokens, task="parsing")
 
     assert out == after
+
+def test_reference_spans_parsing_single_token(splitter):
+
+    tokens = [
+        {"start": 0, "end": 0, "id": 0},
+        {"start": 1, "end": 1, "id": 1},
+        {"start": 2, "end": 2, "id": 2},
+        {"start": 3, "end": 3, "id": 3},
+        {"start": 4, "end": 4, "id": 4},
+        {"start": 5, "end": 5, "id": 5},
+        {"start": 6, "end": 6, "id": 6},
+    ]
+
+    spans = [
+        {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "author"},
+        {"start": 4, "end": 4, "token_start": 4, "token_end": 4, "label": "year"},
+    ]
+
+    expected = [
+        {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "author"},
+        {"start": 4, "end": 4, "token_start": 4, "token_end": 4, "label": "year"},
+    ]
+
+    actual = splitter.reference_spans(spans, tokens, task="parsing")
+
+    print(actual)
+
+    assert actual == expected
 
 
 def test_outside_spans(splitter):
