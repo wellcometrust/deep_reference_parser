@@ -3,7 +3,10 @@
 
 import pytest
 import spacy
-from deep_reference_parser.prodigy.numbered_reference_annotator import NumberedReferenceAnnotator
+from deep_reference_parser.prodigy.numbered_reference_annotator import (
+    NumberedReferenceAnnotator,
+)
+
 
 @pytest.fixture(scope="function")
 def nra():
@@ -111,20 +114,30 @@ def test_numbered_reference_splitter(nra):
             {"text": "\n", "start": 470, "end": 471, "id": 92},
             {"text": "3", "start": 471, "end": 472, "id": 92},
             {"text": ".", "start": 472, "end": 473, "id": 92},
-    ]
+        ],
     }
 
     docs = list(nra.run([numbered_reference]))
     text = docs[0]["text"]
     spans = docs[0]["spans"]
-    ref_1 = text[spans[0]["start"]:spans[0]["end"]]
-    ref_2 = text[spans[1]["start"]:spans[1]["end"]]
-    ref_3 = text[spans[2]["start"]:spans[2]["end"]]
+    ref_1 = text[spans[0]["start"] : spans[0]["end"]]
+    ref_2 = text[spans[1]["start"] : spans[1]["end"]]
+    ref_3 = text[spans[2]["start"] : spans[2]["end"]]
 
     assert len(spans) == 3
-    assert ref_1 == "Global update on the health sector response to HIV, 2014. Geneva: World Health Organization; \n 2014:168."
-    assert ref_2.strip() == "WHO, UNICEF, UNAIDS. Global update on HIV treatment 2013: results, impact and \n opportunities. Geneva: World Health Organization; 2013:126."
-    assert ref_3.strip() == "Consolidated guidelines on the use of antiretroviral drugs for treating and preventing HIV infection: \n recommendations for a public health approach. Geneva: World Health Organization; 2013:272."
+    assert (
+        ref_1
+        == "Global update on the health sector response to HIV, 2014. Geneva: World Health Organization; \n 2014:168."
+    )
+    assert (
+        ref_2.strip()
+        == "WHO, UNICEF, UNAIDS. Global update on HIV treatment 2013: results, impact and \n opportunities. Geneva: World Health Organization; 2013:126."
+    )
+    assert (
+        ref_3.strip()
+        == "Consolidated guidelines on the use of antiretroviral drugs for treating and preventing HIV infection: \n recommendations for a public health approach. Geneva: World Health Organization; 2013:272."
+    )
+
 
 def test_numbered_reference_splitter_line_endings(nra):
     """
@@ -196,15 +209,21 @@ def test_numbered_reference_splitter_line_endings(nra):
             {"text": "\n\n", "start": 261, "end": 263, "id": 58},
             {"text": "3", "start": 262, "end": 264, "id": 59},
             {"text": ".", "start": 263, "end": 265, "id": 60},
-    ]
+        ],
     }
 
     docs = list(nra.run([numbered_reference]))
     text = docs[0]["text"]
     spans = docs[0]["spans"]
-    ref_1 = text[spans[0]["start"]:spans[0]["end"]]
-    ref_2 = text[spans[1]["start"]:spans[1]["end"]]
+    ref_1 = text[spans[0]["start"] : spans[0]["end"]]
+    ref_2 = text[spans[1]["start"] : spans[1]["end"]]
 
     assert len(spans) == 2
-    assert ref_1.strip() == "Global update on the health sector response to HIV, 2014. Geneva: World Health Organization; \n 2014:168."
-    assert ref_2.strip() == "WHO, UNICEF, UNAIDS. Global update on HIV treatment 2013: results, impact and \n opportunities. Geneva: World Health Organization; 2013:126"
+    assert (
+        ref_1.strip()
+        == "Global update on the health sector response to HIV, 2014. Geneva: World Health Organization; \n 2014:168."
+    )
+    assert (
+        ref_2.strip()
+        == "WHO, UNICEF, UNAIDS. Global update on HIV treatment 2013: results, impact and \n opportunities. Geneva: World Health Organization; 2013:126"
+    )

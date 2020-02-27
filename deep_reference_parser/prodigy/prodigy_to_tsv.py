@@ -12,9 +12,12 @@ import re
 import numpy as np
 import plac
 
-from ..io import read_jsonl
+from wasabi import Printer
 
+from ..io import read_jsonl
 from ..logger import logger
+
+msg = Printer()
 
 
 class TokenLabelPairs:
@@ -22,7 +25,7 @@ class TokenLabelPairs:
     Convert prodigy format docs or list of lists into tuples of (token, label).
     """
 
-    def __init__(self, line_limit=73, respect_line_endings=True, respect_doc_endings=True):
+    def __init__(self, line_limit=250, respect_line_endings=False, respect_doc_endings=True):
         """
         Args:
             line_limit(int): Maximum number of tokens allowed per training
@@ -191,19 +194,45 @@ class TokenLabelPairs:
         "positional",
         None,
         str
+    ),
+    respect_lines=(
+        "Respect line endings? Or parse entire document in a single string?",
+        "flag",
+        "r",
+        bool
+    ),
+    respect_docs=(
+        "Respect doc endings or parse corpus in single string?",
+        "flag",
+        "d",
+        bool
+    ),
+    line_limit=(
+        "Number of characters to include on a line",
+        "option",
+        "l",
+        int
     )
 )
-def prodigy_to_tsv(input_file, output_file):
+def prodigy_to_tsv(input_file, output_file, respect_lines, respect_docs, line_limit=250):
     """
     Convert token annotated jsonl to token annotated tsv ready for use in the
     Rodrigues model.
     """
 
+    msg.info(f"Respect line endings: {respect_lines}")
+    msg.info(f"Respect doc endings: {respect_docs}")
+    msg.info(f"Line limit: {line_limit}")
+
     annotated_data = read_jsonl(input_file)
 
     logger.info("Loaded %s prodigy docs", len(annotated_data))
 
-    tlp = TokenLabelPairs()
+    tlp = TokenLabelPairs(
+        respect_doc_endings=respect_docs,
+        respect_line_endings=respect_lines,
+        line_limit=line_limit
+    )
     token_label_pairs = list(tlp.run(annotated_data))
 
     with open(output_file, 'w') as fb:
@@ -214,4 +243,3 @@ def prodigy_to_tsv(input_file, output_file):
 
     logger.info("Wrote %s token/label pairs to %s", len(token_label_pairs),
         output_file)
-
