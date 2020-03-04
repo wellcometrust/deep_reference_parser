@@ -281,28 +281,20 @@ def reference_to_token_annotations(
 
     # Only run the tagger on annotated examples.
 
-    not_annotated_docs = [doc for doc in ref_annotated_docs if not doc.get("spans")]
     ref_annotated_docs = [doc for doc in ref_annotated_docs if doc.get("spans")]
 
     logger.info(
         "Loaded %s documents with reference annotations", len(ref_annotated_docs)
     )
-    logger.info(
-        "Loaded %s documents with no reference annotations", len(not_annotated_docs)
-    )
 
     annotator = TokenTagger(task=task, lowercase=lowercase, text=text)
 
     token_annotated_docs = annotator.run(ref_annotated_docs)
-    all_docs = token_annotated_docs + not_annotated_docs
 
-    write_jsonl(all_docs, output_file=output_file)
+    write_jsonl(token_annotated_docs, output_file=output_file)
 
     logger.info(
         "Wrote %s docs with token annotations to %s",
         len(token_annotated_docs),
         output_file,
-    )
-    logger.info(
-        "Wrote %s docs with no annotations to %s", len(not_annotated_docs), output_file
     )
