@@ -7,24 +7,24 @@ Run predictions from a pre-trained model
 import itertools
 import os
 
-import plac
-
 import en_core_web_sm
+import plac
 import spacy
 import wasabi
+
 from deep_reference_parser import __file__
-from deep_reference_parser.__version__ import __splitter_model_version__
-from deep_reference_parser.common import SPLITTER_CFG, download_model_artefact
+from deep_reference_parser.common import download_model_artefact, PARSER_CFG
 from deep_reference_parser.deep_reference_parser import DeepReferenceParser
 from deep_reference_parser.logger import logger
 from deep_reference_parser.model_utils import get_config
 from deep_reference_parser.reference_utils import break_into_chunks
 from deep_reference_parser.tokens_to_references import tokens_to_references
+from deep_reference_parser.__version__ import __parser_model_version__
 
-msg = wasabi.Printer(icons={"check": "\u2023"})
+msg = wasabi.Printer(icons={"check":"\u2023"})
 
+class Parser:
 
-class Splitter:
     def __init__(self, config_file):
 
         msg.info(f"Using config file: {config_file}")
@@ -40,13 +40,9 @@ class Splitter:
         # not.
 
         artefacts = [
-            "char2ind.pickle",
-            "ind2label.pickle",
-            "ind2word.pickle",
-            "label2ind.pickle",
-            "maxes.pickle",
-            "weights.h5",
-            "word2ind.pickle",
+            "char2ind.pickle", "ind2label.pickle", "ind2word.pickle",
+            "label2ind.pickle", "maxes.pickle", "weights.h5",
+            "word2ind.pickle"
         ]
 
         for artefact in artefacts:
@@ -70,6 +66,7 @@ class Splitter:
             except:
                 msg.fail(f"Could not download {S3_SLUG}{WORD_EMBEDDINGS}")
                 logger.exception()
+
 
         OUTPUT = cfg["build"]["output"]
         PRETRAINED_EMBEDDING = cfg["build"]["pretrained_embedding"]
@@ -101,7 +98,7 @@ class Splitter:
             char_embedding_size=CHAR_EMBEDDING_SIZE,
         )
 
-    def split(self, text, return_tokens=False, verbose=False):
+    def parse(self, text, verbose=False):
 
         nlp = en_core_web_sm.load()
         doc = nlp(text)
@@ -110,63 +107,32 @@ class Splitter:
 
         preds = self.drp.predict(tokens, load_weights=True)
 
-        # If tokens argument passed, return the labelled tokens
+        flat_predictions = list(itertools.chain.from_iterable(preds))
+        flat_X = list(itertools.chain.from_iterable(tokens))
+        rows = [i for i in zip(flat_X, flat_predictions)]
 
-        if return_tokens:
+        if verbose:
 
-            flat_predictions = list(itertools.chain.from_iterable(preds))
-            flat_X = list(itertools.chain.from_iterable(tokens))
-            rows = [i for i in zip(flat_X, flat_predictions)]
+            msg.divider("Token Results")
 
-            if verbose:
+            header = ("token", "label")
+            aligns = ("r", "l")
+            formatted = wasabi.table(rows, header=header, divider=True,
+                aligns=aligns)
+            print(formatted)
 
-                msg.divider("Token Results")
-
-                header = ("token", "label")
-                aligns = ("r", "l")
-                formatted = wasabi.table(
-                    rows, header=header, divider=True, aligns=aligns
-                )
-                print(formatted)
-
-            out = rows
-
-        else:
-
-            # Otherwise convert the tokens into references and return
-
-            refs = tokens_to_references(tokens, preds)
-
-            if verbose:
-
-                msg.divider("Results")
-
-                if refs:
-
-                    msg.good(f"Found {len(refs)} references.")
-                    msg.info("Printing found references:")
-
-                    for ref in refs:
-                        msg.text(ref, icon="check", spaced=True)
-
-                else:
-
-                    msg.fail("Failed to find any references.")
-
-            out = refs
+        out = rows
 
         return out
-
 
 @plac.annotations(
     text=("Plaintext from which to extract references", "positional", None, str),
     config_file=("Path to config file", "option", "c", str),
-    tokens=("Output tokens instead of complete references", "flag", "t", str),
     verbose=("Output more verbose results", "flag", "v", str),
 )
-def split(text, config_file=SPLITTER_CFG, tokens=False, verbose=False):
-    splitter = Splitter(config_file)
-    out = splitter.split(text, return_tokens=tokens, verbose=verbose)
+def parse(text, config_file=PARSER_CFG, verbose=False):
+    parser = Parser(config_file)
+    out = parser.parse(text, verbose=verbose)
 
     if not verbose:
         print(out)
