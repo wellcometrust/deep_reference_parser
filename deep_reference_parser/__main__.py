@@ -10,10 +10,10 @@ if __name__ == "__main__":
     import sys
     from wasabi import msg
     from .train import train
-    from .predict import predict
+    from .predict import split
 
     commands = {
-        "predict": predict,
+        "split": split,
         "train": train,
     }
 

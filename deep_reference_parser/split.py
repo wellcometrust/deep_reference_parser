@@ -22,7 +22,7 @@ from deep_reference_parser.tokens_to_references import tokens_to_references
 
 msg = wasabi.Printer(icons={"check":"\u2023"})
 
-class Predictor:
+class Splitter:
 
     def __init__(self, config_file):
 
@@ -158,8 +158,8 @@ class Predictor:
     tokens=("Output tokens instead of complete references", "flag", "t", str),
     verbose=("Output more verbose results", "flag", "v", str),
 )
-def predict(text, config_file=LATEST_CFG, tokens=False, verbose=False):
-    predictor = Predictor(config_file)
+def split(text, config_file=LATEST_CFG, tokens=False, verbose=False):
+    predictor = Splitter(config_file)
     out = predictor.split(text, return_tokens=tokens, verbose=verbose)
 
     if not verbose:

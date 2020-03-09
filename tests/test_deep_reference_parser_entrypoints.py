@@ -4,14 +4,14 @@
 
 import pytest
 
-from deep_reference_parser.predict import Predictor
+from deep_reference_parser.split import Splitter
 
 from .common import TEST_CFG, TEST_REFERENCES
 
 
 @pytest.fixture
-def predictor():
-    return Predictor(TEST_CFG)
+def splitter():
+    return Splitter(TEST_CFG)
 
 @pytest.fixture
 def text():
@@ -22,35 +22,35 @@ def text():
 
 
 @pytest.mark.slow
-def test_predictor_list_output(text, predictor):
+def test_splitter_list_output(text, splitter):
     """
     Test that the predict entrypoint works as expected.
 
     If the model artefacts and embeddings are not present this test will
     downloaded them, which can be slow.
     """
-    out = predictor.split(text, return_tokens=False, verbose=False)
+    out = splitter.split(text, return_tokens=False, verbose=False)
 
     assert isinstance(out, list)
 
 
 # Allow to xfail as this depends on the model
 @pytest.mark.xfail
-def test_predictor_output_length(text, predictor):
+def test_splitter_output_length(text, splitter):
     """
     For now use a minimal set of weights which may fail to predict anything
     useful. Hence this test is xfailed.
     """
-    out = predictor.split(text, return_tokens=False, verbose=False)
+    out = splitter.split(text, return_tokens=False, verbose=False)
 
     assert isinstance(out[0], str)
     assert len(out) == 3
 
 
-def test_predictor_tokens_output(text, predictor):
+def test_splitter_tokens_output(text, splitter):
     """
     """
-    out = predictor.split(text, return_tokens=True, verbose=False)
+    out = splitter.split(text, return_tokens=True, verbose=False)
 
     assert isinstance(out, list)
     assert isinstance(out[0], tuple)
