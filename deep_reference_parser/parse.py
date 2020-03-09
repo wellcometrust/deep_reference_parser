@@ -21,10 +21,10 @@ from deep_reference_parser.reference_utils import break_into_chunks
 from deep_reference_parser.tokens_to_references import tokens_to_references
 from deep_reference_parser.__version__ import __parser_model_version__
 
-msg = wasabi.Printer(icons={"check":"\u2023"})
+msg = wasabi.Printer(icons={"check": "\u2023"})
+
 
 class Parser:
-
     def __init__(self, config_file):
 
         msg.info(f"Using config file: {config_file}")
@@ -40,9 +40,13 @@ class Parser:
         # not.
 
         artefacts = [
-            "char2ind.pickle", "ind2label.pickle", "ind2word.pickle",
-            "label2ind.pickle", "maxes.pickle", "weights.h5",
-            "word2ind.pickle"
+            "char2ind.pickle",
+            "ind2label.pickle",
+            "ind2word.pickle",
+            "label2ind.pickle",
+            "maxes.pickle",
+            "weights.h5",
+            "word2ind.pickle",
         ]
 
         for artefact in artefacts:
@@ -66,7 +70,6 @@ class Parser:
             except:
                 msg.fail(f"Could not download {S3_SLUG}{WORD_EMBEDDINGS}")
                 logger.exception()
-
 
         OUTPUT = cfg["build"]["output"]
         PRETRAINED_EMBEDDING = cfg["build"]["pretrained_embedding"]
@@ -117,13 +120,13 @@ class Parser:
 
             header = ("token", "label")
             aligns = ("r", "l")
-            formatted = wasabi.table(rows, header=header, divider=True,
-                aligns=aligns)
+            formatted = wasabi.table(rows, header=header, divider=True, aligns=aligns)
             print(formatted)
 
         out = rows
 
         return out
+
 
 @plac.annotations(
     text=("Plaintext from which to extract references", "positional", None, str),
