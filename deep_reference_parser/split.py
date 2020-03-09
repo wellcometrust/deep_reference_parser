@@ -5,21 +5,27 @@ Run predictions from a pre-trained model
 """
 
 import itertools
+import json
 import os
 
-import plac
-
 import en_core_web_sm
+import plac
 import spacy
 import wasabi
-from deep_reference_parser import __file__
-from deep_reference_parser.__version__ import __splitter_model_version__
-from deep_reference_parser.common import SPLITTER_CFG, download_model_artefact
-from deep_reference_parser.deep_reference_parser import DeepReferenceParser
-from deep_reference_parser.logger import logger
-from deep_reference_parser.model_utils import get_config
-from deep_reference_parser.reference_utils import break_into_chunks
-from deep_reference_parser.tokens_to_references import tokens_to_references
+
+import warnings
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore",category=DeprecationWarning)
+
+    from deep_reference_parser import __file__
+    from deep_reference_parser.__version__ import __splitter_model_version__
+    from deep_reference_parser.common import SPLITTER_CFG, download_model_artefact
+    from deep_reference_parser.deep_reference_parser import DeepReferenceParser
+    from deep_reference_parser.logger import logger
+    from deep_reference_parser.model_utils import get_config
+    from deep_reference_parser.reference_utils import break_into_chunks
+    from deep_reference_parser.tokens_to_references import tokens_to_references
 
 msg = wasabi.Printer(icons={"check": "\u2023"})
 
@@ -157,16 +163,34 @@ class Splitter:
 
         return out
 
-
 @plac.annotations(
     text=("Plaintext from which to extract references", "positional", None, str),
     config_file=("Path to config file", "option", "c", str),
     tokens=("Output tokens instead of complete references", "flag", "t", str),
-    verbose=("Output more verbose results", "flag", "v", str),
+    outfile=("Path to json file to which results will be written", "option", "o", str),
 )
-def split(text, config_file=SPLITTER_CFG, tokens=False, verbose=False):
-    splitter = Splitter(config_file)
-    out = splitter.split(text, return_tokens=tokens, verbose=verbose)
+def split(text, config_file=SPLITTER_CFG, tokens=False, outfile=None):
+    """
+    Runs the default splitting model and pretty prints results to console unless
+    --outfile is parsed with a path. Can output either tokens (with -t|--tokens)
+    or split naively into references based on the b-r tag (default).
 
-    if not verbose:
-        print(out)
+    NOTE: that this function is provided for examples only and should not be used
+    in production as the model is instantiated each time the command is run. To
+    use in a production setting, a more sensible approach would be to replicate
+    the split or parse functions within your own logic.
+    """
+    splitter = Splitter(config_file)
+    if outfile:
+        out = splitter.split(text, return_tokens=tokens, verbose=False)
+
+        try:
+            with open(outfile, "w") as fb:
+                json.dump(out, fb)
+            msg.good(f"Wrote model output to {outfile}")
+        except:
+            msg.fail(f"Failed to write output to {outfile}")
+
+    else:
+        out = splitter.split(text, return_tokens=tokens, verbose=True)
+

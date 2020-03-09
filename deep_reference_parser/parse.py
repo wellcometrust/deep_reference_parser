@@ -4,8 +4,10 @@
 Run predictions from a pre-trained model
 """
 
+
 import itertools
 import os
+import json
 
 import en_core_web_sm
 import plac
@@ -131,11 +133,29 @@ class Parser:
 @plac.annotations(
     text=("Plaintext from which to extract references", "positional", None, str),
     config_file=("Path to config file", "option", "c", str),
-    verbose=("Output more verbose results", "flag", "v", str),
+    outfile=("Path to json file to which results will be written", "option", "o", str),
 )
-def parse(text, config_file=PARSER_CFG, verbose=False):
-    parser = Parser(config_file)
-    out = parser.parse(text, verbose=verbose)
+def parse(text, config_file=PARSER_CFG, outfile=None):
+    """
+    Runs the default parsing model and pretty prints results to console unless
+    --outfile is parsed with a path.
 
-    if not verbose:
-        print(out)
+    NOTE: that this function is provided for examples only and should not be used
+    in production as the model is instantiated each time the command is run. To
+    use in a production setting, a more sensible approach would be to replicate
+    the split or parse functions within your own logic.
+    """
+    parser = Parser(config_file)
+    if outfile:
+        out = parser.parse(text, verbose=False)
+
+        try:
+            with open(outfile, "w") as fb:
+                json.dump(out, fb)
+            msg.good(f"Wrote model output to {outfile}")
+        except:
+            msg.fail(f"Failed to write output to {outfile}")
+
+    else:
+        out = parser.parse(text, verbose=True)
+
