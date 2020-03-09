@@ -5,12 +5,11 @@ import shutil
 import tempfile
 
 import pytest
+from wasabi import msg
+
 from deep_reference_parser import DeepReferenceParser, get_config, load_tsv
-from deep_reference_parser.__version__ import __model_version__
-from deep_reference_parser.common import LATEST_CFG
 
 from .common import TEST_CFG, TEST_TSV_PREDICT, TEST_TSV_TRAIN
-from wasabi import msg
 
 
 @pytest.fixture(scope="session")
