@@ -427,7 +427,7 @@ class DeepReferenceParser:
             x=self.X_training, y=[self.y_train_encoded],
             validation_data=[self.X_testing, [self.y_test_encoded]],
             epochs=epochs, batch_size=batch_size, callbacks=callbacks,
-            verbose=1
+            verbose=2
         )
 
         logger.info(
