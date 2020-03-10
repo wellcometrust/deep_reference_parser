@@ -81,11 +81,11 @@ EOF
 # embeddings are downloaded. The weights are about 300MB, and the embeddings 
 # 950MB.
 
-python -m deep_reference_parser split --verbose "$(cat references.txt)"
+python -m deep_reference_parser split "$(cat references.txt)"
 
 # For parsing:
 
-python -m deep_reference_parser parse --verbose "$(cat references.txt)"
+python -m deep_reference_parser parse "$(cat references.txt)"
 ```
 
 ## The longer guide
@@ -157,21 +157,31 @@ parse, split, train
 For additional help, you can pass a command with the `-h`/`--help` flag:
 
 ```
-$ python -m deep_reference_parser predict --help
-Using TensorFlow backend.
-usage: deep_reference_parser predict [-h]
-                                     [-c]
-                                     [-t] [-v]
-                                     text
+$ python -m deep_reference_parser split --help
+usage: deep_reference_parser split [-h]
+                                   [-c]
+                                   [-t] [-o None]
+                                   text
+
+    Runs the default splitting model and pretty prints results to console unless
+    --outfile is parsed with a path. Can output either tokens (with -t|--tokens)
+    or split naively into references based on the b-r tag (default).
+
+    NOTE: that this function is provided for examples only and should not be used
+    in production as the model is instantiated each time the command is run. To
+    use in a production setting, a more sensible approach would be to replicate
+    the split or parse functions within your own logic.
+    
 
 positional arguments:
   text                  Plaintext from which to extract references
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c  --config-file     Path to config file
+  -c, --config-file     Path to config file
   -t, --tokens          Output tokens instead of complete references
-  -v, --verbose         Output more verbose results
+  -o, --outfile         Path to json file to which results will be written
+
 
 ```
 
