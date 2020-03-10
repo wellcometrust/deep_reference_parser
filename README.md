@@ -210,13 +210,13 @@ February	i-r
 If you wish to use the latest model that we have trained, you can simply run:
 
 ```
-python -m deep_reference_parser predict <input text>
+python -m deep_reference_parser split <input text>
 ```
 
 If you wish to use a custom model that you have trained, you must specify the config file which defines the hyperparameters for that model using the `-c` flag:
 
 ```
-python -m deep_reference_parser predict -c new_model.ini <input text>
+python -m deep_reference_parser split -c new_model.ini <input text>
 ```
 
 Use the `-t` flag to return the raw token predictions, and the `-v` to return everything in a much more user friendly format.
