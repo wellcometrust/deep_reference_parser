@@ -81,9 +81,9 @@ models: $(artefacts)
 datasets = data/splitting/2019.12.0_splitting_train.tsv \
            data/splitting/2019.12.0_splitting_test.tsv \
            data/splitting/2019.12.0_splitting_valid.tsv \
-		   data/splitting/2020.2.0_parsing_train.tsv \
-           data/splitting/2020.2.0_parsing_test.tsv \
-           data/splitting/2020.2.0_parsing_valid.tsv
+		   data/parsing/2020.3.2_parsing_train.tsv \
+           data/parsing/2020.3.2_parsing_test.tsv \
+           data/parsing/2020.3.2_parsing_valid.tsv
 
 
 rodrigues_datasets = data/rodrigues/clean_train.txt \
