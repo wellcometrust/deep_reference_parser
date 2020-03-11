@@ -4,15 +4,15 @@
 
 Deep Reference Parser is a Bi-direction Long Short Term Memory (BiLSTM) Deep Neural Network with a stacked Conditional Random Field (CRF) for identifying references from text. It is designed to be used in the [Reach](https://github.com/wellcometrust/reach) tool to replace a number of existing machine learning models which find references, and extract the constituent parts (e.g. author, year, publication, volume, etc).
 
-The intention for this project, like Rodrigues et al. (2018) is to implement a MultiTask model which will complete three tasks simultaneously: reference span detection, reference component detection, and reference type classification.
+The BiLSTM model is based on Rodrigues et al. (2018), and like this project, the intention is to implement a MultiTask model which will complete three tasks simultaneously: reference span detection (splitting), reference component detection (parsing), and reference type classification (classification) in a single neural network and stacked CRF.
 
 ### Current status:
 
 |Component|Individual|MultiTask|
 |---|---|---|
-|Spans|✔️ Implemented|❌ Not Implemented|
-|Components|❌ Not Implemented|❌ Not Implemented|
-|Type|❌ Not Implemented|❌ Not Implemented|
+|Spans (splitting)|✔️ Implemented|❌ Not Implemented|
+|Components (parsing)|✔️ Implemented|❌ Not Implemented|
+|Type (classification)|❌ Not Implemented|❌ Not Implemented|
 
 ### The model
 
@@ -29,7 +29,9 @@ The model itself is based on the work of [Rodrigues et al. (2018)](https://githu
 
 ### Performance
 
-#### Span detection
+On the validation set.
+
+#### Span detection (splitting)
 
 |token|f1|support|
 |---|---|---|
@@ -39,6 +41,16 @@ The model itself is based on the work of [Rodrigues et al. (2018)](https://githu
 |o|0.9561|32666|
 |weighted avg|0.9746|129959|
 
+#### Components (parsing)
+
+|token|f1|support|
+|---|---|---|
+|author|0.9467|2818|
+|title|0.8994|4931|
+|year|0.8774|418|
+|o|0.9592|13685|
+|weighted avg|0.9425|21852|
+
 #### Computing requirements
 
 Models are trained on AWS instances using CPU only.
@@ -46,6 +58,7 @@ Models are trained on AWS instances using CPU only.
 |Model|Time Taken|Instance type|Instance cost (p/h)|Total cost|
 |---|---|---|---|---|
 |Span detection|16:02:00|m4.4xlarge|$0.88|$14.11|
+|Components|11:02:59|m4.4xlarge|$0.88|$9.72|
 
 ## tl;dr: Just get me to the references!
 
@@ -64,10 +77,15 @@ cat > references.txt <<EOF
 EOF
 
 
-# Run the model. This will take a little time while the weights and embeddings 
-# are downloaded. The weights are about 300MB, and the embeddings 950MB.
+# Run the splitter model. This will take a little time while the weights and 
+# embeddings are downloaded. The weights are about 300MB, and the embeddings 
+# 950MB.
 
-python -m deep_reference_parser predict --verbose "$(cat references.txt)"
+python -m deep_reference_parser split "$(cat references.txt)"
+
+# For parsing:
+
+python -m deep_reference_parser parse "$(cat references.txt)"
 ```
 
 ## The longer guide
@@ -133,27 +151,37 @@ $ python -m deep_reference_parser
 Using TensorFlow backend.
 
 ℹ Available commands
-train, predict
+parse, split, train 
 ```
 
 For additional help, you can pass a command with the `-h`/`--help` flag:
 
 ```
-$ python -m deep_reference_parser predict --help
-Using TensorFlow backend.
-usage: deep_reference_parser predict [-h]
-                                     [-c]
-                                     [-t] [-v]
-                                     text
+$ python -m deep_reference_parser split --help
+usage: deep_reference_parser split [-h]
+                                   [-c]
+                                   [-t] [-o None]
+                                   text
+
+    Runs the default splitting model and pretty prints results to console unless
+    --outfile is parsed with a path. Can output either tokens (with -t|--tokens)
+    or split naively into references based on the b-r tag (default).
+
+    NOTE: that this function is provided for examples only and should not be used
+    in production as the model is instantiated each time the command is run. To
+    use in a production setting, a more sensible approach would be to replicate
+    the split or parse functions within your own logic.
+    
 
 positional arguments:
   text                  Plaintext from which to extract references
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c  --config-file     Path to config file
+  -c, --config-file     Path to config file
   -t, --tokens          Output tokens instead of complete references
-  -v, --verbose         Output more verbose results
+  -o, --outfile         Path to json file to which results will be written
+
 
 ```
 
@@ -192,13 +220,13 @@ February	i-r
 If you wish to use the latest model that we have trained, you can simply run:
 
 ```
-python -m deep_reference_parser predict <input text>
+python -m deep_reference_parser split <input text>
 ```
 
 If you wish to use a custom model that you have trained, you must specify the config file which defines the hyperparameters for that model using the `-c` flag:
 
 ```
-python -m deep_reference_parser predict -c new_model.ini <input text>
+python -m deep_reference_parser split -c new_model.ini <input text>
 ```
 
 Use the `-t` flag to return the raw token predictions, and the `-v` to return everything in a much more user friendly format.

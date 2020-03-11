@@ -52,8 +52,9 @@ class ReachToProdigy:
     ```
     """
 
-    def __init__(self, ref_sections, lines=10, split_char="\n",
-                 add_linebreak=True, join_char=" "):
+    def __init__(
+        self, ref_sections, lines=10, split_char="\n", add_linebreak=True, join_char=" "
+    ):
         """
         Args:
             ref_sections(list): List of dicts extracted in scrape.
@@ -82,8 +83,14 @@ class ReachToProdigy:
 
         for i, refs in enumerate(self.ref_sections):
 
-            one_record = self.one_record_to_prodigy_format(refs, self.nlp,
-                self.lines, self.split_char, self.add_linebreak, self.join_char)
+            one_record = self.one_record_to_prodigy_format(
+                refs,
+                self.nlp,
+                self.lines,
+                self.split_char,
+                self.add_linebreak,
+                self.join_char,
+            )
 
             # If something is returned (i.e. there is a ref section)
             # then append to prodigy_format.
@@ -98,8 +105,15 @@ class ReachToProdigy:
 
         return out
 
-    def one_record_to_prodigy_format(self, input_dict, nlp, lines=10, split_char="\n",
-        add_linebreak=True, join_char=" "):
+    def one_record_to_prodigy_format(
+        self,
+        input_dict,
+        nlp,
+        lines=10,
+        split_char="\n",
+        add_linebreak=True,
+        join_char=" ",
+    ):
         """
         Convert one dict produced by the scrape to a list of prodigy dicts
 
@@ -138,8 +152,12 @@ class ReachToProdigy:
 
                         if refs:
 
-                            refs_lines = self.split_lines(ref, split_char=split_char, add_linebreak=add_linebreak)
-                            refs_grouped = self.combine_n_rows(refs_lines, n=lines, join_char=join_char)
+                            refs_lines = self.split_lines(
+                                ref, split_char=split_char, add_linebreak=add_linebreak
+                            )
+                            refs_grouped = self.combine_n_rows(
+                                refs_lines, n=lines, join_char=join_char
+                            )
 
                             _meta = {
                                 "doc_hash": input_dict.get("file_hash"),
@@ -153,9 +171,17 @@ class ReachToProdigy:
                                 meta["line_number"] = i
 
                                 tokens = nlp.tokenizer(lines)
-                                formatted_tokens = [self.format_token(i) for i in tokens]
+                                formatted_tokens = [
+                                    self.format_token(i) for i in tokens
+                                ]
 
-                                out.append({"text": lines, "meta": meta, "tokens": formatted_tokens})
+                                out.append(
+                                    {
+                                        "text": lines,
+                                        "meta": meta,
+                                        "tokens": formatted_tokens,
+                                    }
+                                )
 
                             return out
 
@@ -201,7 +227,7 @@ class ReachToProdigy:
 
         max_index = len(groups) * n
 
-        last_group = join_char.join([str(j) for j in doc[max_index:len(doc)]])
+        last_group = join_char.join([str(j) for j in doc[max_index : len(doc)]])
 
         out.append(last_group)
 
@@ -230,27 +256,42 @@ class ReachToProdigy:
         return lines
 
 
-
 @plac.annotations(
     input_file=(
         "Path to jsonl file containing produced by scraper and containing reference sections.",
-        "positional", None, str),
+        "positional",
+        None,
+        str,
+    ),
     output_file=(
         "Path to jsonl file into which prodigy format references will be saved.",
-        "positional", None, str),
-    lines=(
-        "How many lines to include in an annotation example.",
-        "option", "l", int),
+        "positional",
+        None,
+        str,
+    ),
+    lines=("How many lines to include in an annotation example.", "option", "l", int),
     split_char=("Which character to split lines on.", "option", "s", str),
     no_linebreak=(
         "Don't re-add linebreaks to the annotation examples after splitting.",
-        "flag", "n", str),
+        "flag",
+        "n",
+        str,
+    ),
     join_char=(
         "Which character should be used to join lines into an annotation example.",
-        "option", "j", str),
+        "option",
+        "j",
+        str,
+    ),
 )
-def reach_to_prodigy(input_file, output_file, lines=10, split_char="\\n",
-    no_linebreak=False, join_char=" "):
+def reach_to_prodigy(
+    input_file,
+    output_file,
+    lines=10,
+    split_char="\\n",
+    no_linebreak=False,
+    join_char=" ",
+):
 
     print(split_char)
 
@@ -264,8 +305,11 @@ def reach_to_prodigy(input_file, output_file, lines=10, split_char="\\n",
         add_linebreak = True
 
     prodigy_format_references = ReachToProdigy(
-        scraped_json, lines=lines, split_char=split_char,
-        add_linebreak=add_linebreak, join_char=join_char
+        scraped_json,
+        lines=lines,
+        split_char=split_char,
+        add_linebreak=add_linebreak,
+        join_char=join_char,
     )
 
     references = prodigy_format_references.run()

@@ -419,7 +419,7 @@ def read_pickle(input_file, path=None):
     with open(input_file, "rb") as fb:
         out = pickle.load(fb)
 
-    logger.info("Read data from %s", input_file)
+    logger.debug("Read data from %s", input_file)
 
     return out
 

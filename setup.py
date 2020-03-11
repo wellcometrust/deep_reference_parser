@@ -12,8 +12,6 @@ version_path = os.path.join(here, 'deep_reference_parser', '__version__.py')
 with open(version_path, 'r') as f:
     exec(f.read(), about)
 
-model_version = about["__model_version__"]
-
 with open("README.md", "r") as f:
     long_description = f.read()
 
@@ -33,7 +31,8 @@ setuptools.setup(
     ),
     package_dir={'deep_reference_parser': 'deep_reference_parser'},
     package_data={'deep_reference_parser': [
-        f"configs/{model_version}.ini",
+        f"configs/{about['__splitter_model_version__']}.ini",
+        f"configs/{about['__parser_model_version__']}.ini",
     ]},
     classifiers=[
         "Programming Language :: Python :: 3",

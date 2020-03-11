@@ -19,7 +19,8 @@ from sklearn_crfsuite import metrics
 
 from .logger import logger
 
-matplotlib.use('agg')
+matplotlib.use("agg")
+
 
 def get_config(path):
     """
@@ -53,7 +54,13 @@ def merge_digits(datasets, digits_word):
 
     logger.debug("Mapping digits to %s", digits_word)
 
-    return [[[digits_word if character.isdigit() else character for character in word] for word in data] for data in datasets]
+    return [
+        [
+            [digits_word if character.isdigit() else character for character in word]
+            for word in data
+        ]
+        for data in datasets
+    ]
 
 
 def encode_x(x, word2ind, max_len, ukn_words, padding_style):
@@ -76,13 +83,12 @@ def encode_x(x, word2ind, max_len, ukn_words, padding_style):
     Returns:
         Transformed data.
     """
-    logger.debug('Encoding %s training examples', len(x))
+    logger.debug("Encoding %s training examples", len(x))
 
     # Encode: Map each words to the corresponding integer
     # TODO: Make this easier to understand.
 
     encoded = []
-
 
     for sentence in x:
         encoded_sentence = []
@@ -144,7 +150,7 @@ def encode_y(y, label2ind, max_len, padding_style):
         The transformed data
     """
 
-    logger.debug('Encoding %s training examples', len(y))
+    logger.debug("Encoding %s training examples", len(y))
 
     # Encode y (with pad)
 
@@ -194,13 +200,13 @@ def character_index(X, digits_word):
 
     # To deal with out-of-vocabulary words
 
-    char2ind.update({digits_word:1})
-    ind2char.update({1:digits_word})
+    char2ind.update({digits_word: 1})
+    ind2char.update({1: digits_word})
 
     # For padding
 
     max_words = max([len(s) for s in X])
-    max_char  = max([len(w) for s in X for w in s])
+    max_char = max([len(w) for s in X for w in s])
 
     return char2ind, max_words, max_char
 
@@ -232,11 +238,23 @@ def character_data(X, char2ind, max_words, max_char, digits_word, padding_style)
 
     # Transform each word into an array of characters (discards those oov)
 
-    X_char = [[[char2ind[c] for c in w if c in char2ind.keys()] if w!=digits_word else [1] for w in s] for s in X]
+    X_char = [
+        [
+            [char2ind[c] for c in w if c in char2ind.keys()]
+            if w != digits_word
+            else [1]
+            for w in s
+        ]
+        for s in X
+    ]
 
     # Pad words - Each words has the same number of characters
 
-    X_char = pad_sequences([pad_sequences(s, max_char, padding=padding_style) for s in X_char], max_words, padding=padding_style)
+    X_char = pad_sequences(
+        [pad_sequences(s, max_char, padding=padding_style) for s in X_char],
+        max_words,
+        padding=padding_style,
+    )
 
     return X_char
 
@@ -273,8 +291,8 @@ def index_x(x, ukn_words):
 
     # To deal with out-of-vocabulary words
 
-    word2ind.update({ukn_words:1})
-    ind2word.update({1:ukn_words})
+    word2ind.update({ukn_words: 1})
+    ind2word.update({1: ukn_words})
 
     # The index '0' is kept free in both dictionaries
 
@@ -336,11 +354,11 @@ def word2vec_embeddings(embedding_path, word2ind, word_embedding_size):
     # Read the embeddings file
 
     embeddings_all = {}
-    with open (embedding_path, "r") as file:
+    with open(embedding_path, "r") as file:
         logger.debug("Reading embedding from %s", embedding_path)
 
         for line in file:
-            l = line.strip().split(' ')
+            l = line.strip().split(" ")
             embeddings_all[l[0]] = l[1:]
 
     # Compute the embedding for each word in the dataset
@@ -354,8 +372,8 @@ def word2vec_embeddings(embedding_path, word2ind, word_embedding_size):
     # NOTE: Not sure why this is commented out. This came from the original
     # code by Giovanni.
 
-#        else:
-#           embedding_matrix[i] = embeddings_all[ukn_index]
+    #        else:
+    #           embedding_matrix[i] = embeddings_all[ukn_index]
 
     # Delete the word2vec dictionary from memory
     del embeddings_all
@@ -389,7 +407,7 @@ class Classification_Scores(Callback):
         self.train_data = train_data
         self.ind2label = ind2label
         self.model_save_path = model_save_path
-        self.score_name = 'val_f1'
+        self.score_name = "val_f1"
 
     def on_train_begin(self, logs={}):
         self.test_report = []
@@ -403,14 +421,13 @@ class Classification_Scores(Callback):
         self.best_score = -1
 
         # Add F1-score as a metric to print at end of each epoch
-        self.params['metrics'].append("val_f1")
+        self.params["metrics"].append("val_f1")
 
         # In case of multiple outputs
 
         if len(self.model.layers) > 1:
             for output_layer in self.model.layers:
-                self.params['metrics'].append("val_"+output_layer.name+"_f1")
-
+                self.params["metrics"].append("val_" + output_layer.name + "_f1")
 
     def compute_scores(self, pred, targ):
         """
@@ -428,11 +445,11 @@ class Classification_Scores(Callback):
 
         labels = [x for x in np.unique(targ_flat) if x != 0]
 
-        out = precision_recall_fscore_support(targ_flat, predict_flat,
-            average='weighted', labels=labels)[:3]
+        out = precision_recall_fscore_support(
+            targ_flat, predict_flat, average="weighted", labels=labels
+        )[:3]
 
         return out
-
 
     def compute_epoch_training_F1(self):
         """
@@ -463,10 +480,9 @@ class Classification_Scores(Callback):
             vals_recall.append(_val_recall)
             vals_f1.append(_val_f1)
 
-        self.train_acc.append(sum(vals_acc)/len(vals_acc))
-        self.train_recall.append(sum(vals_recall)/len(vals_recall))
-        self.train_f1s.append(sum(vals_f1)/len(vals_f1))
-
+        self.train_acc.append(sum(vals_acc) / len(vals_acc))
+        self.train_recall.append(sum(vals_recall) / len(vals_recall))
+        self.train_f1s.append(sum(vals_f1) / len(vals_f1))
 
     def classification_report(self, i, pred, targ, printPadding=False):
         """
@@ -501,15 +517,23 @@ class Classification_Scores(Callback):
 
         if printPadding:
             reports.append("With padding into account")
-            reports.append(metrics.flat_classification_report(true_label, pred_label, digits=4))
+            reports.append(
+                metrics.flat_classification_report(true_label, pred_label, digits=4)
+            )
             reports.append("")
-            reports.append('----------------------------------------------')
+            reports.append("----------------------------------------------")
             reports.append("")
             reports.append("Without the padding:")
-        reports.append(metrics.flat_classification_report(true_label, pred_label, digits=4, labels=list(self.ind2label[i].values())))
+        reports.append(
+            metrics.flat_classification_report(
+                true_label,
+                pred_label,
+                digits=4,
+                labels=list(self.ind2label[i].values()),
+            )
+        )
 
-        return '\n'.join(reports)
-
+        return "\n".join(reports)
 
     def on_epoch_end(self, epoch, logs={}):
         """
@@ -545,15 +569,21 @@ class Classification_Scores(Callback):
         reports = ""
         # Iterate over all output predictions
 
-        for i,pred in enumerate(predictions):
+        for i, pred in enumerate(predictions):
             _val_acc, _val_recall, _val_f1 = self.compute_scores(
-                np.asarray(pred), self.validation_data[in_length+i])
+                np.asarray(pred), self.validation_data[in_length + i]
+            )
 
             # Classification report
 
-            reports += "For task "+str(i+1)+"\n"
+            reports += "For task " + str(i + 1) + "\n"
             reports += "===================================================================================="
-            reports += self.classification_report(i, np.asarray(pred), self.validation_data[in_length+i]) + "\n\n\n"
+            reports += (
+                self.classification_report(
+                    i, np.asarray(pred), self.validation_data[in_length + i]
+                )
+                + "\n\n\n"
+            )
 
             # Add scores internally
             vals_acc.append(_val_acc)
@@ -561,20 +591,19 @@ class Classification_Scores(Callback):
             vals_f1.append(_val_f1)
 
             # Add F1 score to be log
-            f1_name = "val_"+self.model.layers[i].name+"_f1"
+            f1_name = "val_" + self.model.layers[i].name + "_f1"
             logs[f1_name] = _val_f1
-
 
         # Add classification reports for all the predicitions/tasks
         self.test_report.append(reports)
 
         # Add internally
-        self.test_acc.append(sum(vals_acc)/len(vals_acc))
-        self.test_recall.append(sum(vals_recall)/len(vals_recall))
-        self.test_f1s.append(sum(vals_f1)/len(vals_f1))
+        self.test_acc.append(sum(vals_acc) / len(vals_acc))
+        self.test_recall.append(sum(vals_recall) / len(vals_recall))
+        self.test_f1s.append(sum(vals_f1) / len(vals_f1))
 
         # Add to log
-        f1_mean = sum(vals_f1)/len(vals_f1)
+        f1_mean = sum(vals_f1) / len(vals_f1)
         logs["val_f1"] = f1_mean
 
         # Save best model's weights
@@ -583,8 +612,8 @@ class Classification_Scores(Callback):
             self.best_score = f1_mean
             save_load_utils.save_all_weights(self.model, self.model_save_path)
 
-def save_confusion_matrix(target, preds, labels, figure_path,
-    figure_size=(20, 20)):
+
+def save_confusion_matrix(target, preds, labels, figure_path, figure_size=(20, 20)):
     """
     Generate two confusion matrices plots: with and without normalization.
 
@@ -603,8 +632,9 @@ def save_confusion_matrix(target, preds, labels, figure_path,
     # Confusion matrix
 
     plt.figure(figsize=figure_size)
-    plot_confusion_matrix(cnf_matrix, classes=labels,
-        title='Confusion matrix, without normalization')
+    plot_confusion_matrix(
+        cnf_matrix, classes=labels, title="Confusion matrix, without normalization"
+    )
 
     save_location = f"{figure_path}.png"
     logger.debug("Saving confusion matrix to %s", save_location)
@@ -613,16 +643,23 @@ def save_confusion_matrix(target, preds, labels, figure_path,
     # Confusion matrix  with normalization
 
     plt.figure(figsize=figure_size)
-    plot_confusion_matrix(cnf_matrix, classes=labels, normalize=True,
-        title='Normalized confusion matrix')
+    plot_confusion_matrix(
+        cnf_matrix, classes=labels, normalize=True, title="Normalized confusion matrix"
+    )
 
     save_location = f"{figure_path}_normalized.png"
     logger.debug("Saving confusion matrix to %s", save_location)
     plt.savefig(save_location)
 
 
-def plot_confusion_matrix(cm, classes, normalize=False,
-    title='Confusion matrix', cmap=plt.cm.Blues, printToFile=False):
+def plot_confusion_matrix(
+    cm,
+    classes,
+    normalize=False,
+    title="Confusion matrix",
+    cmap=plt.cm.Blues,
+    printToFile=False,
+):
     """
     FROM: http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
 
@@ -631,32 +668,40 @@ def plot_confusion_matrix(cm, classes, normalize=False,
     """
 
     if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
 
-        if printToFile: print("Normalized confusion matrix")
+        if printToFile:
+            print("Normalized confusion matrix")
     else:
-        if printToFile: print('Confusion matrix, without normalization')
+        if printToFile:
+            print("Confusion matrix, without normalization")
 
-    if printToFile: print(cm)
+    if printToFile:
+        print(cm)
 
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.imshow(cm, interpolation="nearest", cmap=cmap)
     plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=90)
     plt.yticks(tick_marks, classes)
 
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
+    fmt = ".2f" if normalize else "d"
+    thresh = cm.max() / 2.0
 
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
+        plt.text(
+            j,
+            i,
+            format(cm[i, j], fmt),
+            horizontalalignment="center",
+            color="white" if cm[i, j] > thresh else "black",
+        )
 
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+
 
 def remove_padding_from_predictions(X, predictions, padding_type):
     """

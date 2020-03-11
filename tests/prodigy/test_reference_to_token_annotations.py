@@ -109,6 +109,7 @@ def test_split_long_span_three_token_span(splitter):
 
     assert expected == actual
 
+
 def test_split_long_span_two_token_span(splitter):
 
     tokens = [
@@ -134,6 +135,7 @@ def test_split_long_span_two_token_span(splitter):
 
     assert expected == actual
 
+
 def test_split_long_span_one_token_span(splitter):
 
     tokens = [
@@ -157,6 +159,7 @@ def test_split_long_span_one_token_span(splitter):
     )
 
     assert expected == actual
+
 
 def test_reference_spans_be(splitter):
 
@@ -283,6 +286,7 @@ def test_reference_spans_parsing(splitter):
     out = splitter.reference_spans(spans, tokens, task="parsing")
 
     assert out == after
+
 
 def test_reference_spans_parsing_single_token(splitter):
 

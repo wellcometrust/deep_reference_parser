@@ -32,9 +32,7 @@ def tokens_to_references(tokens, labels):
         index for index, label in enumerate(flat_predictions) if label == "b-r"
     ]
 
-    ref_ends = [
-        index for index, label in enumerate(flat_predictions) if label == "e-r"
-    ]
+    ref_ends = [index for index, label in enumerate(flat_predictions) if label == "e-r"]
 
     logger.debug("Found %s b-r tokens", len(ref_starts))
     logger.debug("Found %s e-r tokens", len(ref_ends))
