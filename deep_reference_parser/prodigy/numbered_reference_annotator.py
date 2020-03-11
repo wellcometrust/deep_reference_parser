@@ -141,9 +141,9 @@ def annotate_numbered_references(input_file, output_file):
     logger.info("Loaded %s prodigy docs", len(numbered_reference_sections))
 
     nra = NumberedReferenceAnnotator()
-    docs = list(nra.run[numbered_reference_sections])
+    docs = list(nra.run(numbered_reference_sections))
 
-    write_jsonl(output_file)
+    write_jsonl(docs, output_file)
 
     logger.info("Wrote %s annotated references to %s", len(docs),
         output_file)
