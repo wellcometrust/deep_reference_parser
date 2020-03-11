@@ -37,6 +37,8 @@ class Splitter:
 
         cfg = get_config(config_file)
 
+        msg.info(f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time...")
+
         # Build config
 
         OUTPUT_PATH = cfg["build"]["output_path"]
@@ -172,7 +174,8 @@ class Splitter:
 def split(text, config_file=SPLITTER_CFG, tokens=False, outfile=None):
     """
     Runs the default splitting model and pretty prints results to console unless
-    --outfile is parsed with a path. Can output either tokens (with -t|--tokens)
+    --outfile is parsed with a path. Files output to the path specified in
+    --outfile will be a valid json. Can output either tokens (with -t|--tokens)
     or split naively into references based on the b-r tag (default).
 
     NOTE: that this function is provided for examples only and should not be used

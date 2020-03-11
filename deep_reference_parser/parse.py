@@ -33,6 +33,8 @@ class Parser:
 
         cfg = get_config(config_file)
 
+        msg.info(f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time...")
+
         # Build config
 
         OUTPUT_PATH = cfg["build"]["output_path"]
@@ -138,7 +140,8 @@ class Parser:
 def parse(text, config_file=PARSER_CFG, outfile=None):
     """
     Runs the default parsing model and pretty prints results to console unless
-    --outfile is parsed with a path.
+    --outfile is parsed with a path. Output written to the the path specified in
+    --outfile will be a valid json.
 
     NOTE: that this function is provided for examples only and should not be used
     in production as the model is instantiated each time the command is run. To
