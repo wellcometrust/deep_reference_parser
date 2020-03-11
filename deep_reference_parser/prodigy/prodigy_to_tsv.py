@@ -25,7 +25,9 @@ class TokenLabelPairs:
     Convert prodigy format docs or list of lists into tuples of (token, label).
     """
 
-    def __init__(self, line_limit=250, respect_line_endings=False, respect_doc_endings=True):
+    def __init__(
+        self, line_limit=250, respect_line_endings=False, respect_doc_endings=True
+    ):
         """
         Args:
             line_limit(int): Maximum number of tokens allowed per training
@@ -60,7 +62,6 @@ class TokenLabelPairs:
         self.stats(out)
 
         return out
-
 
     def stats(self, out):
 
@@ -183,38 +184,25 @@ class TokenLabelPairs:
 
 
 @plac.annotations(
-    input_file=(
-        "Path to jsonl file containing prodigy docs.",
-        "positional",
-        None,
-        str
-    ),
-    output_file=(
-        "Path to output tsv file.",
-        "positional",
-        None,
-        str
-    ),
+    input_file=("Path to jsonl file containing prodigy docs.", "positional", None, str),
+    output_file=("Path to output tsv file.", "positional", None, str),
     respect_lines=(
         "Respect line endings? Or parse entire document in a single string?",
         "flag",
         "r",
-        bool
+        bool,
     ),
     respect_docs=(
         "Respect doc endings or parse corpus in single string?",
         "flag",
         "d",
-        bool
+        bool,
     ),
-    line_limit=(
-        "Number of characters to include on a line",
-        "option",
-        "l",
-        int
-    )
+    line_limit=("Number of characters to include on a line", "option", "l", int),
 )
-def prodigy_to_tsv(input_file, output_file, respect_lines, respect_docs, line_limit=250):
+def prodigy_to_tsv(
+    input_file, output_file, respect_lines, respect_docs, line_limit=250
+):
     """
     Convert token annotated jsonl to token annotated tsv ready for use in the
     Rodrigues model.
@@ -231,15 +219,14 @@ def prodigy_to_tsv(input_file, output_file, respect_lines, respect_docs, line_li
     tlp = TokenLabelPairs(
         respect_doc_endings=respect_docs,
         respect_line_endings=respect_lines,
-        line_limit=line_limit
+        line_limit=line_limit,
     )
     token_label_pairs = list(tlp.run(annotated_data))
 
-    with open(output_file, 'w') as fb:
+    with open(output_file, "w") as fb:
         writer = csv.writer(fb, delimiter="\t")
         # Write DOCSTART and a blank line
         writer.writerows([("DOCSTART", None), (None, None)])
         writer.writerows(token_label_pairs)
 
-    logger.info("Wrote %s token/label pairs to %s", len(token_label_pairs),
-        output_file)
+    logger.info("Wrote %s token/label pairs to %s", len(token_label_pairs), output_file)

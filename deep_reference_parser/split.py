@@ -16,7 +16,7 @@ import wasabi
 import warnings
 
 with warnings.catch_warnings():
-    warnings.filterwarnings("ignore",category=DeprecationWarning)
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
 
     from deep_reference_parser import __file__
     from deep_reference_parser.__version__ import __splitter_model_version__
@@ -37,7 +37,9 @@ class Splitter:
 
         cfg = get_config(config_file)
 
-        msg.info(f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time...")
+        msg.info(
+            f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time..."
+        )
 
         # Build config
 
@@ -165,6 +167,7 @@ class Splitter:
 
         return out
 
+
 @plac.annotations(
     text=("Plaintext from which to extract references", "positional", None, str),
     config_file=("Path to config file", "option", "c", str),
@@ -196,4 +199,3 @@ def split(text, config_file=SPLITTER_CFG, tokens=False, outfile=None):
 
     else:
         out = splitter.split(text, return_tokens=tokens, verbose=True)
-

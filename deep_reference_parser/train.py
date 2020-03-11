@@ -17,10 +17,7 @@ from deep_reference_parser.model_utils import get_config
 msg = wasabi.Printer()
 
 
-@plac.annotations(
-    config_file=("Path to config file", "positional", None, str),
-)
-
+@plac.annotations(config_file=("Path to config file", "positional", None, str),)
 def train(config_file):
 
     # Load variables from config files. Config files are used instead of ENV

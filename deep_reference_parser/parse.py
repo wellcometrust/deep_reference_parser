@@ -33,7 +33,9 @@ class Parser:
 
         cfg = get_config(config_file)
 
-        msg.info(f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time...")
+        msg.info(
+            f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time..."
+        )
 
         # Build config
 
@@ -161,4 +163,3 @@ def parse(text, config_file=PARSER_CFG, outfile=None):
 
     else:
         out = parser.parse(text, verbose=True)
-

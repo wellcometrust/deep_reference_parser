@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # coding: utf-8
 
@@ -14,9 +13,11 @@ from .common import TEST_CFG, TEST_REFERENCES
 def splitter():
     return Splitter(TEST_CFG)
 
+
 @pytest.fixture
 def parser():
     return Parser(TEST_CFG)
+
 
 @pytest.fixture
 def text():
@@ -37,6 +38,7 @@ def test_splitter_list_output(text, splitter):
     out = splitter.split(text, return_tokens=False, verbose=False)
 
     assert isinstance(out, list)
+
 
 @pytest.mark.slow
 def test_parser_list_output(text, parser):
@@ -74,6 +76,7 @@ def test_splitter_tokens_output(text, splitter):
     assert len(out[0]) == 2
     assert isinstance(out[0][0], str)
     assert isinstance(out[0][1], str)
+
 
 def test_parser_tokens_output(text, parser):
     """

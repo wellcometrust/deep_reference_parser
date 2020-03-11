@@ -14,9 +14,19 @@ import os
 import numpy as np
 
 from keras.callbacks import EarlyStopping
-from keras.layers import (LSTM, Bidirectional, Convolution1D, Dense, Dropout,
-                          Embedding, Flatten, Input, MaxPooling1D,
-                          TimeDistributed, concatenate)
+from keras.layers import (
+    LSTM,
+    Bidirectional,
+    Convolution1D,
+    Dense,
+    Dropout,
+    Embedding,
+    Flatten,
+    Input,
+    MaxPooling1D,
+    TimeDistributed,
+    concatenate,
+)
 from keras.models import Model
 from keras.optimizers import Adam, RMSprop
 from keras_contrib.layers import CRF
@@ -24,11 +34,19 @@ from keras_contrib.utils import save_load_utils
 from sklearn_crfsuite import metrics
 
 from deep_reference_parser.logger import logger
-from deep_reference_parser.model_utils import (Classification_Scores, character_data,
-                          character_index, encode_x, encode_y, index_x,
-                          index_y, merge_digits,
-                          remove_padding_from_predictions,
-                          save_confusion_matrix, word2vec_embeddings)
+from deep_reference_parser.model_utils import (
+    Classification_Scores,
+    character_data,
+    character_index,
+    encode_x,
+    encode_y,
+    index_x,
+    index_y,
+    merge_digits,
+    remove_padding_from_predictions,
+    save_confusion_matrix,
+    word2vec_embeddings,
+)
 from .reference_utils import load_tsv, read_pickle, write_pickle, write_to_csv
 
 
@@ -46,10 +64,19 @@ class DeepReferenceParser:
     Rodridgues model, and wrap it in a more production friendly class.
     """
 
-    def __init__(self, X_train=None, X_test=None, X_valid=None,
-        y_train=None, y_test=None, y_valid=None, digits_word="$NUM$",
-        ukn_words="out-of-vocabulary", padding_style="pre",
-        output_path="data/model_output"):
+    def __init__(
+        self,
+        X_train=None,
+        X_test=None,
+        X_valid=None,
+        y_train=None,
+        y_test=None,
+        y_valid=None,
+        digits_word="$NUM$",
+        ukn_words="out-of-vocabulary",
+        padding_style="pre",
+        output_path="data/model_output",
+    ):
         """
         Note that in the terminology used by Rodrigues, the development set is
         referred to as the test set, and the true test (hold out) set is
@@ -121,7 +148,6 @@ class DeepReferenceParser:
         os.makedirs(self.output_path, exist_ok=True)
         self.weights_path = os.path.join(output_path, "weights.h5")
 
-
     def prepare_data(self, save=False):
         """
         Prepare data for training a model
@@ -133,8 +159,7 @@ class DeepReferenceParser:
         self.max_len = max([len(xx) for xx in self.X_train])
 
         self.X_train_merged, self.X_test_merged, self.X_valid_merged = merge_digits(
-            [self.X_train, self.X_test, self.X_valid],
-            self.digits_word
+            [self.X_train, self.X_test, self.X_valid], self.digits_word
         )
 
         # Compute indexes for words+labels in the training data
@@ -154,15 +179,29 @@ class DeepReferenceParser:
 
         # TODO: Save out the encoded data for loading in the train_model method
 
-        self.X_train_encoded = encode_x(self.X_train_merged, self.word2ind,
-            self.max_len, self.ukn_words, self.padding_style)
+        self.X_train_encoded = encode_x(
+            self.X_train_merged,
+            self.word2ind,
+            self.max_len,
+            self.ukn_words,
+            self.padding_style,
+        )
 
-        self.X_test_encoded = encode_x(self.X_test_merged, self.word2ind,
-            self.max_len, self.ukn_words, self.padding_style)
+        self.X_test_encoded = encode_x(
+            self.X_test_merged,
+            self.word2ind,
+            self.max_len,
+            self.ukn_words,
+            self.padding_style,
+        )
 
-        self.X_valid_encoded = encode_x(self.X_valid_merged, self.word2ind,
-            self.max_len, self.ukn_words, self.padding_style)
-
+        self.X_valid_encoded = encode_x(
+            self.X_valid_merged,
+            self.word2ind,
+            self.max_len,
+            self.ukn_words,
+            self.padding_style,
+        )
 
         logger.debug("Training set dimensions: %s", self.X_train_encoded.shape)
         logger.debug("Test set dimensions: %s", self.X_test_encoded.shape)
@@ -170,14 +209,17 @@ class DeepReferenceParser:
 
         # Encode y variables
 
-        self.y_train_encoded = encode_y(self.y_train, self.label2ind,
-            self.max_len, self.padding_style)
+        self.y_train_encoded = encode_y(
+            self.y_train, self.label2ind, self.max_len, self.padding_style
+        )
 
-        self.y_test_encoded = encode_y(self.y_test, self.label2ind,
-            self.max_len, self.padding_style)
+        self.y_test_encoded = encode_y(
+            self.y_test, self.label2ind, self.max_len, self.padding_style
+        )
 
-        self.y_valid_encoded = encode_y(self.y_valid, self.label2ind,
-            self.max_len, self.padding_style)
+        self.y_valid_encoded = encode_y(
+            self.y_valid, self.label2ind, self.max_len, self.padding_style
+        )
 
         logger.debug("Training target dimensions: %s", self.y_train_encoded.shape)
         logger.debug("Test target dimensions: %s", self.y_test_encoded.shape)
@@ -190,14 +232,32 @@ class DeepReferenceParser:
             self.X_train, self.digits_word
         )
 
-        self.X_train_char = character_data(self.X_train, self.char2ind,
-            self.max_words, self.max_char, self.digits_word, self.padding_style)
+        self.X_train_char = character_data(
+            self.X_train,
+            self.char2ind,
+            self.max_words,
+            self.max_char,
+            self.digits_word,
+            self.padding_style,
+        )
 
-        self.X_test_char = character_data(self.X_test, self.char2ind,
-            self.max_words, self.max_char, self.digits_word, self.padding_style)
+        self.X_test_char = character_data(
+            self.X_test,
+            self.char2ind,
+            self.max_words,
+            self.max_char,
+            self.digits_word,
+            self.padding_style,
+        )
 
-        self.X_valid_char = character_data(self.X_valid, self.char2ind,
-            self.max_words, self.max_char, self.digits_word, self.padding_style)
+        self.X_valid_char = character_data(
+            self.X_valid,
+            self.char2ind,
+            self.max_words,
+            self.max_char,
+            self.digits_word,
+            self.padding_style,
+        )
 
         self.X_training = [self.X_train_encoded, self.X_train_char]
         self.X_testing = [self.X_test_encoded, self.X_test_char]
@@ -216,7 +276,7 @@ class DeepReferenceParser:
             maxes = {
                 "max_words": self.max_words,
                 "max_char": self.max_char,
-                "max_len": self.max_len
+                "max_len": self.max_len,
             }
 
             write_pickle(maxes, "maxes.pickle", path=self.output_path)
@@ -245,11 +305,18 @@ class DeepReferenceParser:
         logger.debug("Setting max_char to %s", self.max_char)
         logger.debug("Setting max_words to %s", self.max_words)
 
-
-    def build_model(self, output="crf", word_embeddings=None,
-            pretrained_embedding="", word_embedding_size=100,
-            char_embedding_type="BILSTM", char_embedding_size=50, dropout=0,
-            lstm_hidden=32, optimizer="rmsprop"):
+    def build_model(
+        self,
+        output="crf",
+        word_embeddings=None,
+        pretrained_embedding="",
+        word_embedding_size=100,
+        char_embedding_type="BILSTM",
+        char_embedding_size=50,
+        dropout=0,
+        lstm_hidden=32,
+        optimizer="rmsprop",
+    ):
         """
         Build the bilstm for use in the training and predict methods.
 
@@ -302,13 +369,18 @@ class DeepReferenceParser:
             else:
 
                 embedding_matrix = word2vec_embeddings(
-                    embedding_path=word_embeddings, word2ind=self.word2ind,
-                    word_embedding_size=word_embedding_size
+                    embedding_path=word_embeddings,
+                    word2ind=self.word2ind,
+                    word_embedding_size=word_embedding_size,
                 )
 
                 word_embedding = Embedding(
-                    nbr_words, word_embedding_size, weights=[embedding_matrix],
-                    trainable=pretrained_embedding, mask_zero=False)(word_input)
+                    nbr_words,
+                    word_embedding_size,
+                    weights=[embedding_matrix],
+                    trainable=pretrained_embedding,
+                    mask_zero=False,
+                )(word_input)
 
             embeddings_list.append(word_embedding)
 
@@ -320,8 +392,9 @@ class DeepReferenceParser:
 
             char_embedding = self.character_embedding_layer(
                 char_embedding_type=char_embedding_type,
-                character_input=character_input, nbr_chars=nbr_chars,
-                char_embedding_size=char_embedding_size
+                character_input=character_input,
+                nbr_chars=nbr_chars,
+                char_embedding_size=char_embedding_size,
             )
 
             embeddings_list.append(char_embedding)
@@ -347,40 +420,47 @@ class DeepReferenceParser:
 
             # Output - CRF
 
-            crfs = [[CRF(out_size),out_size] for out_size in [len(x)+1 for x in self.ind2label]]
+            crfs = [
+                [CRF(out_size), out_size]
+                for out_size in [len(x) + 1 for x in self.ind2label]
+            ]
             outputs = [x[0](Dense(x[1])(model)) for x in crfs]
             model_loss = [x[0].loss_function for x in crfs]
             model_metrics = [x[0].viterbi_acc for x in crfs]
 
         if output == "softmax":
 
-            outputs = [Dense(out_size, activation='softmax')(model) for out_size in [len(x)+1 for x in self.ind2label]]
-            model_loss = ['categorical_crossentropy' for x in outputs]
+            outputs = [
+                Dense(out_size, activation="softmax")(model)
+                for out_size in [len(x) + 1 for x in self.ind2label]
+            ]
+            model_loss = ["categorical_crossentropy" for x in outputs]
             model_metrics = None
 
         # Model
 
         model = Model(inputs=inputs, outputs=outputs)
         model.compile(
-            loss=model_loss, metrics=model_metrics,
-            optimizer=self.get_optimizer(optimizer)
+            loss=model_loss,
+            metrics=model_metrics,
+            optimizer=self.get_optimizer(optimizer),
         )
 
         # NOTE: It's not necessary to save the model as it needs to be recreated
         # each time using build_model()
 
-        #model_json = model.to_json()
-        #save_path = os.path.join(self.output_path, "model.json")
-        #with open(save_path, "w") as json_file:
+        # model_json = model.to_json()
+        # save_path = os.path.join(self.output_path, "model.json")
+        # with open(save_path, "w") as json_file:
         #    json_file.write(model_json)
 
         self.model = model
 
         logger.debug(self.model.summary(line_length=150))
 
-
-    def train_model(self, epochs=25, batch_size=100, early_stopping_patience=5,
-            metric="val_f1"):
+    def train_model(
+        self, epochs=25, batch_size=100, early_stopping_patience=5, metric="val_f1"
+    ):
         """
         Train a model that has been built or loaded (loading is not currently
         supported).
@@ -404,8 +484,7 @@ class DeepReferenceParser:
         # NOTE: X lists are important for input here
 
         classification_scores = Classification_Scores(
-            [self.X_training, [self.y_train_encoded]], self.ind2label,
-            self.weights_path
+            [self.X_training, [self.y_train_encoded]], self.ind2label, self.weights_path
         )
 
         callbacks.append(classification_scores)
@@ -415,8 +494,7 @@ class DeepReferenceParser:
         if early_stopping_patience:
 
             early_stopping = EarlyStopping(
-                monitor=metric, patience=early_stopping_patience,
-                mode='max'
+                monitor=metric, patience=early_stopping_patience, mode="max"
             )
             callbacks.append(early_stopping)
 
@@ -424,16 +502,19 @@ class DeepReferenceParser:
         # referred as 'testing data' in this code.
 
         hist = self.model.fit(
-            x=self.X_training, y=[self.y_train_encoded],
+            x=self.X_training,
+            y=[self.y_train_encoded],
             validation_data=[self.X_testing, [self.y_test_encoded]],
-            epochs=epochs, batch_size=batch_size, callbacks=callbacks,
-            verbose=2
+            epochs=epochs,
+            batch_size=batch_size,
+            callbacks=callbacks,
+            verbose=2,
         )
 
         logger.info(
             "Best F1 score: %s (epoch number %s)",
             early_stopping.best,
-            1 + np.argmax(hist.history[metric])
+            1 + np.argmax(hist.history[metric]),
         )
 
         # Save Training scores
@@ -446,15 +527,22 @@ class DeepReferenceParser:
 
         best_epoch = np.argmax(hist.history[metric])
 
-        logger.info("Best model epoch:\n%s", classification_scores.test_report[best_epoch])
+        logger.info(
+            "Best model epoch:\n%s", classification_scores.test_report[best_epoch]
+        )
 
         # Best epoch results
 
         self.best_results = self.model_best_scores(classification_scores, best_epoch)
 
-
-    def evaluate(self, load_weights=False, test_set=False, validation_set=False,
-        print_padding=False, out_file=None):
+    def evaluate(
+        self,
+        load_weights=False,
+        test_set=False,
+        validation_set=False,
+        print_padding=False,
+        out_file=None,
+    ):
         """
         Evaluate model results
 
@@ -486,9 +574,7 @@ class DeepReferenceParser:
                 # Compute predictions, flatten
 
                 predictions, target = self.compute_predictions(
-                    X=self.X_testing,
-                    y=y_target,
-                    labels=self.ind2label[i],
+                    X=self.X_testing, y=y_target, labels=self.ind2label[i],
                 )
 
                 flat_predictions = np.ravel(predictions)
@@ -497,21 +583,22 @@ class DeepReferenceParser:
                 # Generate confusion matrices
 
                 labels = list(self.ind2label[i].values())
-                figure_path = os.path.join(self.output_path,
-                    f"confusion_matrix_test_{i + 1}")
+                figure_path = os.path.join(
+                    self.output_path, f"confusion_matrix_test_{i + 1}"
+                )
 
                 save_confusion_matrix(
                     target=flat_target,
                     preds=flat_predictions,
                     labels=labels,
-                    figure_path=figure_path
+                    figure_path=figure_path,
                 )
 
-       # Validation dataset
+        # Validation dataset
 
         if validation_set:
 
-       # Compute classification report
+            # Compute classification report
 
             # NOTE: self.y_valid_encoded goes in a list here, as it would
             # under a multi-task scenario. This will need adjusting when
@@ -519,7 +606,7 @@ class DeepReferenceParser:
 
             for i, y_target in enumerate([self.y_valid_encoded]):
 
-               # Compute predictions, flatten
+                # Compute predictions, flatten
 
                 predictions, target = self.compute_predictions(
                     X=self.X_validation,
@@ -539,29 +626,36 @@ class DeepReferenceParser:
                 if len(self.y_train_encoded) > 1:
 
                     logger.info("Metrics not taking padding into account:")
-                    logger.info("\n%s",
-                                metrics.flat_classification_report(
-                                    [flat_target], [flat_predictions], digits=4,
-                                    labels=list(self.ind2label[i].values()))
-                                )
+                    logger.info(
+                        "\n%s",
+                        metrics.flat_classification_report(
+                            [flat_target],
+                            [flat_predictions],
+                            digits=4,
+                            labels=list(self.ind2label[i].values()),
+                        ),
+                    )
 
                     if print_padding:
                         logger.info("Metrics taking padding into account:")
-                        logger.info("\n%s",
-                                    metrics.flat_classification_report(
-                                        [flat_target], [flat_predictions], digits=4)
-                                    )
+                        logger.info(
+                            "\n%s",
+                            metrics.flat_classification_report(
+                                [flat_target], [flat_predictions], digits=4
+                            ),
+                        )
 
                         # Generate confusion matrices
 
-                    figure_path = os.path.join(self.output_path,
-                        f"confusion_matrix_validation_{i + 1}")
+                    figure_path = os.path.join(
+                        self.output_path, f"confusion_matrix_validation_{i + 1}"
+                    )
 
                     save_confusion_matrix(
                         target=flat_target,
                         preds=flat_predictions,
                         labels=labels,
-                        figure_path=figure_path
+                        figure_path=figure_path,
                     )
 
                     if out_file:
@@ -584,21 +678,26 @@ class DeepReferenceParser:
                         # nulls in the target
 
                         clean_predictions = remove_padding_from_predictions(
-                            clean_target,
-                            predictions,
-                            self.padding_style
+                            clean_target, predictions, self.padding_style
                         )
 
                         # Record any token length mismatches.
 
-                        num_mismatches = len(clean_target) - np.sum([len(x) == len(y) for x, y in zip(clean_target, clean_predictions)])
+                        num_mismatches = len(clean_target) - np.sum(
+                            [
+                                len(x) == len(y)
+                                for x, y in zip(clean_target, clean_predictions)
+                            ]
+                        )
 
                         logger.info("Number of mismatches: %s", num_mismatches)
 
                         # Flatten the target and predicted into one list.
 
                         clean_target = list(itertools.chain.from_iterable(clean_target))
-                        clean_predictions = list(itertools.chain.from_iterable(clean_predictions))
+                        clean_predictions = list(
+                            itertools.chain.from_iterable(clean_predictions)
+                        )
                         # NOTE: this needs some attention. The current outputs
                         # seem to have different lengths and will therefore be
                         # offset unequally. - Don't trust them!
@@ -619,9 +718,16 @@ class DeepReferenceParser:
                             for i in out:
                                 writer.writerow(i)
 
-    def character_embedding_layer(self, char_embedding_type, character_input,
-        nbr_chars, char_embedding_size, cnn_kernel_size=2, cnn_filters=30,
-        lstm_units=50):
+    def character_embedding_layer(
+        self,
+        char_embedding_type,
+        character_input,
+        nbr_chars,
+        char_embedding_size,
+        cnn_kernel_size=2,
+        cnn_filters=30,
+        lstm_units=50,
+    ):
         """
         Return layer for computing the character-level representations of words.
 
@@ -656,27 +762,24 @@ class DeepReferenceParser:
             Character-level representation layers.
         """
         embed_char_out = TimeDistributed(
-            Embedding(nbr_chars, char_embedding_size),
-            name='char_embedding'
+            Embedding(nbr_chars, char_embedding_size), name="char_embedding"
         )(character_input)
 
         embed_char = TimeDistributed(Flatten())(embed_char_out)
 
         if char_embedding_type == "CNN":
             conv1d_out = TimeDistributed(
-                Convolution1D(kernel_size=cnn_kernel_size,
-                              filters=cnn_filters,
-                              padding='same')
+                Convolution1D(
+                    kernel_size=cnn_kernel_size, filters=cnn_filters, padding="same"
+                )
             )(embed_char)
 
-            char_emb = TimeDistributed(
-                MaxPooling1D(self.max_char)
-            )(conv1d_out)
+            char_emb = TimeDistributed(MaxPooling1D(self.max_char))(conv1d_out)
 
         if char_embedding_type == "BILSTM":
-            char_emb = Bidirectional(
-                LSTM(lstm_units, return_sequences=True)
-            )(embed_char)
+            char_emb = Bidirectional(LSTM(lstm_units, return_sequences=True))(
+                embed_char
+            )
 
         return char_emb
 
@@ -700,7 +803,6 @@ class DeepReferenceParser:
         if optimizer == "rmsprop":
             return RMSprop(lr=learning_rate, decay=decay)
 
-
     def save_model_training_scores(self, filename, hist, classification_scores):
         """
         Create a .csv file containg the model training metrics for each epoch
@@ -713,9 +815,15 @@ class DeepReferenceParser:
         """
         csv_values = []
 
-        csv_columns = ["Epoch", "Training Accuracy", "Training Recall",
-                       "Training F1", "Testing Accuracy", "Testing Recall",
-                       "Testing F1"]
+        csv_columns = [
+            "Epoch",
+            "Training Accuracy",
+            "Training Recall",
+            "Training F1",
+            "Testing Accuracy",
+            "Testing Recall",
+            "Testing F1",
+        ]
 
         # Epoch column
 
@@ -818,7 +926,6 @@ class DeepReferenceParser:
 
         return pred_label, true_label
 
-
     def prepare_X_data(self, X):
         """
         Convert data to encoded word and character indexes
@@ -851,13 +958,8 @@ class DeepReferenceParser:
         # Encode X variables
 
         X_encoded = encode_x(
-            X_merged,
-            self.word2ind,
-            self.max_len,
-            self.ukn_words,
-            self.padding_style,
+            X_merged, self.word2ind, self.max_len, self.ukn_words, self.padding_style,
         )
-
 
         X_char = character_data(
             X,
@@ -865,13 +967,12 @@ class DeepReferenceParser:
             self.max_words,
             self.max_char,
             self.digits_word,
-            self.padding_style
+            self.padding_style,
         )
 
         X = [X_encoded, X_char]
 
         return X_merged, [X_encoded, X_char]
-
 
     def load_weights(self):
         """
@@ -880,7 +981,7 @@ class DeepReferenceParser:
 
         if not self.model:
 
-        # Assumes that model has been buit with build_model!
+            # Assumes that model has been buit with build_model!
 
             logger.exception(
                 "No model. you must build the model first with build_model"
@@ -892,14 +993,14 @@ class DeepReferenceParser:
         # Run the model for one epoch to initialise network weights. Then load
         # full trained weights
 
-        #self.model.fit(x=self.X_testing, y=self.y_test_encoded,
+        # self.model.fit(x=self.X_testing, y=self.y_test_encoded,
         #    batch_size=2500, epochs=1)
 
         logger.debug("Loading weights from %s", self.weights_path)
 
-        save_load_utils.load_all_weights(self.model, self.weights_path,
-            include_optimizer=False)
-
+        save_load_utils.load_all_weights(
+            self.model, self.weights_path, include_optimizer=False
+        )
 
     def predict(self, X, load_weights=False):
         """

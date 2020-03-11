@@ -1,11 +1,12 @@
-# Tensorflow and Keras emikt a very large number of warnings that are very 
-# distracting on the command line. These lines here (while undesireable) 
+# Tensorflow and Keras emikt a very large number of warnings that are very
+# distracting on the command line. These lines here (while undesireable)
 # reduce the level of verbosity.
 
 import sys
 import warnings
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 if not sys.warnoptions:
     warnings.filterwarnings("ignore", category=FutureWarning)
@@ -13,6 +14,7 @@ if not sys.warnoptions:
     warnings.filterwarnings("ignore", category=UserWarning)
 
 import tensorflow as tf
+
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 from .common import download_model_artefact

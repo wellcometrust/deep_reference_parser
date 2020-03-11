@@ -28,7 +28,7 @@ def write_jsonl(input_data, output_file):
         output_file(str): Filename to which the jsonl will be saved.
     """
 
-    with open(output_file, 'w') as fb:
+    with open(output_file, "w") as fb:
 
         # Check if a dict (and convert to list if so)
 
@@ -37,10 +37,10 @@ def write_jsonl(input_data, output_file):
 
         # Write out to jsonl file
 
-        logger.debug('Writing %s lines to %s', len(input_data), output_file)
+        logger.debug("Writing %s lines to %s", len(input_data), output_file)
 
         for i in input_data:
-            json_ = json.dumps(i) + '\n'
+            json_ = json.dumps(i) + "\n"
             fb.write(json_)
 
 
@@ -58,6 +58,6 @@ def read_jsonl(input_file):
 
     out = list(_yield_jsonl(input_file))
 
-    logger.debug('Read %s lines from %s', len(out), input_file)
+    logger.debug("Read %s lines from %s", len(out), input_file)
 
     return out

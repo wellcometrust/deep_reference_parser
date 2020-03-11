@@ -37,14 +37,10 @@ def test_prodigy_to_tsv(tmpdir):
 
 
 def test_reach_to_prodigy(tmpdir):
-    reach_to_prodigy(
-        TEST_REACH,
-        os.path.join(tmpdir, "prodigy.jsonl")
-    )
+    reach_to_prodigy(TEST_REACH, os.path.join(tmpdir, "prodigy.jsonl"))
 
 
 def test_reference_to_token_annotations(tmpdir):
     reference_to_token_annotations(
-        TEST_NUMBERED_REFERENCES,
-        os.path.join(tmpdir, "tokens.jsonl")
+        TEST_NUMBERED_REFERENCES, os.path.join(tmpdir, "tokens.jsonl")
     )

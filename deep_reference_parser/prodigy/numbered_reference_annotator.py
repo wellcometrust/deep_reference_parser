@@ -10,6 +10,7 @@ from ..logger import logger
 
 REGEX = r"\n{1,2}(?:(?:\s)|(?:\(|\[))?(?:\d{1,2})(?:(?:\.\)|\.\]|\]\n|\.|\s)|(?:\]|\)))(\s+)?(?:\n)?(?:\s+)?(?!Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
 
+
 class NumberedReferenceAnnotator:
     """
     Takes reference sections with numeric labelling scraped by Reach in prodigy
@@ -69,13 +70,12 @@ class NumberedReferenceAnnotator:
                 "end": end,
                 "token_start": token_start,
                 "token_end": token_end,
-                "label": "BE"
+                "label": "BE",
             }
 
             spans.append(span)
 
         return spans
-
 
     def _find_closest_token(self, tokens, char_offset, pos_string):
         """
@@ -107,13 +107,13 @@ class NumberedReferenceAnnotator:
         a number
         """
 
-        return min(numbers, key=lambda x:abs(x - number))
+        return min(numbers, key=lambda x: abs(x - number))
 
     def _token_start_mapper(self, tokens, pos_string):
         """ Map token id by the token start/end position
         """
 
-        return {token[pos_string]:token["id"] for token in tokens}
+        return {token[pos_string]: token["id"] for token in tokens}
 
 
 @plac.annotations(
@@ -121,14 +121,14 @@ class NumberedReferenceAnnotator:
         "Path to jsonl file containing numbered reference sections as docs.",
         "positional",
         None,
-        str
+        str,
     ),
     output_file=(
         "Path to output jsonl file containing prodigy docs with numbered references labelled.",
         "positional",
         None,
-        str
-    )
+        str,
+    ),
 )
 def annotate_numbered_references(input_file, output_file):
     """
@@ -145,5 +145,4 @@ def annotate_numbered_references(input_file, output_file):
 
     write_jsonl(docs, output_file)
 
-    logger.info("Wrote %s annotated references to %s", len(docs),
-        output_file)
+    logger.info("Wrote %s annotated references to %s", len(docs), output_file)
