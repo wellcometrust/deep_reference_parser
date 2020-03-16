@@ -8,11 +8,12 @@ files to tab-separated-values files for use in the deep reference parser
 
 import csv
 import re
+import sys
+from functools import reduce
 
 import numpy as np
 import plac
-
-from wasabi import Printer
+from wasabi import Printer, table
 
 from ..io import read_jsonl
 from ..logger import logger
@@ -182,9 +183,81 @@ class TokenLabelPairs:
 
                 token_counter += 1
 
+def get_document_hashes(dataset):
+    """Get the hashes for every doc in a dataset and return as set
+    """
+    return set([doc["_input_hash"] for doc in dataset])
+
+def check_all_equal(lst):
+    """Check that all items in a list are equal and return True or False
+    """
+    return not lst or lst.count(lst[0]) == len(lst)
+
+def hash_matches(doc, hash):
+    """Check whether the hash of the passed doc matches the passed hash
+    """
+    return doc["_input_hash"] == hash
+
+def get_doc_by_hash(dataset, hash):
+    """Return a doc from a dataset where hash matches doc["_input_hash"]
+    Assumes there will only be one match!
+    """
+    return [doc for doc in dataset if doc["_input_hash"] == hash][0]
+
+def get_tokens(doc):
+    return [token["text"] for token in doc["tokens"]]
+
+def check_inputs(annotated_data):
+    """Checks whether two prodigy datasets contain the same docs (evaluated by
+    doc["_input_hash"] and whether those docs contain the same tokens. This is
+    essential to ensure that two independently labelled datasets are compatible.
+    If they are not, an error is raised with an informative errors message.
+
+    Args:
+        annotated_data (list): List of datasets in prodigy format that have
+        been labelled with token level spans. Hence len(tokens)==len(spans).
+    """
+
+    doc_hashes = list(map(get_document_hashes, annotated_data))
+
+    # Check whether there are the same docs between datasets, and if
+    # not return information on which ones are missing.
+
+    if not check_all_equal(doc_hashes):
+        msg.fail("Some documents missing from one of the input datasets")
+
+        for i in range(len(doc_hashes)):
+            for j in range(i + 1, len(doc_hashes)):
+                diff = set(doc_hashes[i]) ^ set(doc_hashes[j])
+
+                if diff:
+                    msg.fail(f"Docs {diff} unequal between dataset {i} and {j}", exits=1)
+
+    # Check that the tokens between the splitting and parsing docs match
+
+    for hash in doc_hashes[0]:
+
+        hash_matches = list(map(lambda x: get_doc_by_hash(x, hash), annotated_data))
+        tokens = list(map(get_tokens, hash_matches))
+
+        if not check_all_equal(tokens):
+            msg.fail(f"Token mismatch for document {hash}", exits=1)
+
+    return True
+
+def sort_docs_list(lst):
+    """Sort a list of prodigy docs by input hash
+    """
+    return sorted(lst, key=lambda k: k['_input_hash'])
+
+def combine_token_label_pairs(pairs):
+    """Combines a list of [(token, label), (token, label)] to give
+    (token,label,label).
+    """
+    return pairs[0][0:] + tuple(pair[1] for pair in pairs[1:])
 
 @plac.annotations(
-    input_file=("Path to jsonl file containing prodigy docs.", "positional", None, str),
+    input_files=("Comma separated list of paths to jsonl files containing prodigy docs.", "positional", None, str),
     output_file=("Path to output tsv file.", "positional", None, str),
     respect_lines=(
         "Respect line endings? Or parse entire document in a single string?",
@@ -201,32 +274,93 @@ class TokenLabelPairs:
     line_limit=("Number of characters to include on a line", "option", "l", int),
 )
 def prodigy_to_tsv(
-    input_file, output_file, respect_lines, respect_docs, line_limit=250
+    input_files, output_file, respect_lines, respect_docs, line_limit=250
 ):
     """
     Convert token annotated jsonl to token annotated tsv ready for use in the
-    Rodrigues model.
+    deep_reference_parser model.
+
+    Will combine annotations from two jsonl files containing the same docs and
+    the same tokens by comparing the "_input_hash" and token texts. If they are
+    compatible, the output file will contain both labels ready for use in a
+    multi-task model, for example:
+
+           token   label   label
+    ------------   -----   -----
+      References   o       o
+                   o       o
+               1   o       o
+               .   o       o
+                   o       o
+             WHO   title   b-r
+       treatment   title   i-r
+      guidelines   title   i-r
+             for   title   i-r
+            drug   title   i-r
+               -   title   i-r
+       resistant   title   i-r
+    tuberculosis   title   i-r
+               ,   title   i-r
+            2016   title   i-r
+
+    Multiple files must be passed as a comma separated list e.g.
+
+    python -m deep_reference_parser.prodigy prodigy_to_tsv file1.jsonl,file2.jsonl out.tsv
+
     """
 
+    input_files = input_files.split(",")
+
+    msg.info(f"Loading annotations from {len(input_files)} datasets")
     msg.info(f"Respect line endings: {respect_lines}")
     msg.info(f"Respect doc endings: {respect_docs}")
     msg.info(f"Line limit: {line_limit}")
 
-    annotated_data = read_jsonl(input_file)
+    # Read the input_files. Note the use of map here, because we don't know
+    # how many sets of annotations area being passed in the list. It could be 2
+    # but in future it may be more.
 
-    logger.info("Loaded %s prodigy docs", len(annotated_data))
+    annotated_data = list(map(read_jsonl, input_files))
+
+    # Check that the tokens match between sets of annotations. If not raise
+    # errors and stop.
+
+    check_inputs(annotated_data)
+
+    # Sort the docs so that they are in the same order before converting to
+    # token label pairs.
+
+    annotated_data = list(map(sort_docs_list, annotated_data))
 
     tlp = TokenLabelPairs(
         respect_doc_endings=respect_docs,
         respect_line_endings=respect_lines,
         line_limit=line_limit,
     )
-    token_label_pairs = list(tlp.run(annotated_data))
+
+    pairs_list = list(map(tlp.run, annotated_data))
+
+    # NOTE: Use of reduce to handle pairs_list of unknown length
+
+    if len(pairs_list) > 1:
+        merged_pairs = (combine_token_label_pairs(pairs) for pairs in reduce(zip, pairs_list))
+        example_pairs = [combine_token_label_pairs(pairs) for i, pairs in enumerate(reduce(zip, pairs_list)) if i < 15]
+    else:
+        merged_pairs = pairs_list[0]
+        example_pairs = merged_pairs[0:14]
 
     with open(output_file, "w") as fb:
         writer = csv.writer(fb, delimiter="\t")
         # Write DOCSTART and a blank line
-        writer.writerows([("DOCSTART", None), (None, None)])
-        writer.writerows(token_label_pairs)
+        #writer.writerows([("DOCSTART", None), (None, None)])
+        writer.writerows(merged_pairs)
 
-    logger.info("Wrote %s token/label pairs to %s", len(token_label_pairs), output_file)
+    # Print out the first ten rows as a sense check
+
+    msg.divider("Example output")
+    header = ["token"] + ["label"] * len(annotated_data)
+    aligns = ["r"] + ["l"] * len(annotated_data)
+    formatted = table(example_pairs, header=header, divider=True, aligns=aligns)
+    print(formatted)
+
+    msg.good(f"Wrote token/label pairs to {output_file}")
