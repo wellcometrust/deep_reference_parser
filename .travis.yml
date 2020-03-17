@@ -11,7 +11,12 @@ install:
 script:
   - make test
 
-cache: pip
+
+cache:
+  pip
+  directories:
+    - build
+    - $HOME/.cache/pip
 
 jobs:
   fast_finish: true
