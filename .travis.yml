@@ -13,7 +13,6 @@ script:
 
 
 cache:
-  pip
   directories:
     - build
     - $HOME/.cache/pip
