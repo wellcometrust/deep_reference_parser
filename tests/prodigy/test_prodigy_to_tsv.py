@@ -7,7 +7,11 @@ import sys
 import pytest
 
 from deep_reference_parser.io import read_jsonl
-from deep_reference_parser.prodigy.prodigy_to_tsv import TokenLabelPairs, prodigy_to_tsv, check_inputs
+from deep_reference_parser.prodigy.prodigy_to_tsv import (
+    TokenLabelPairs,
+    prodigy_to_tsv,
+    check_inputs,
+)
 
 from .common import TEST_SPANS, TEST_TOKENS
 
@@ -740,6 +744,7 @@ def test_reference_spans_real_example(doc):
 
     assert actual == expected
 
+
 def test_check_input_exist_on_doc_mismatch():
 
     dataset_a = [{"_input_hash": "a1"}, {"_input_hash": "a2"}]
@@ -748,31 +753,33 @@ def test_check_input_exist_on_doc_mismatch():
     with pytest.raises(SystemExit):
         check_inputs([dataset_a, dataset_b])
 
+
 def test_check_input_exist_on_tokens_mismatch():
 
     dataset_a = [
-        {"_input_hash": "a", "tokens": [{"text":"a"}]},
-        {"_input_hash": "a", "tokens": [{"text":"b"}]},
+        {"_input_hash": "a", "tokens": [{"text": "a"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
     ]
 
     dataset_b = [
-        {"_input_hash": "a", "tokens": [{"text":"b"}]},
-        {"_input_hash": "a", "tokens": [{"text":"b"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
     ]
 
     with pytest.raises(SystemExit):
         check_inputs([dataset_a, dataset_b])
 
+
 def test_check_input():
 
     dataset_a = [
-        {"_input_hash": "a", "tokens": [{"text":"a"}]},
-        {"_input_hash": "a", "tokens": [{"text":"b"}]},
+        {"_input_hash": "a", "tokens": [{"text": "a"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
     ]
 
     dataset_b = [
-        {"_input_hash": "a", "tokens": [{"text":"a"}]},
-        {"_input_hash": "a", "tokens": [{"text":"b"}]},
+        {"_input_hash": "a", "tokens": [{"text": "a"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
     ]
 
     assert check_inputs([dataset_a, dataset_b])

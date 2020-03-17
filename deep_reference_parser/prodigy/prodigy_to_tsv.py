@@ -183,20 +183,24 @@ class TokenLabelPairs:
 
                 token_counter += 1
 
+
 def get_document_hashes(dataset):
     """Get the hashes for every doc in a dataset and return as set
     """
     return set([doc["_input_hash"] for doc in dataset])
+
 
 def check_all_equal(lst):
     """Check that all items in a list are equal and return True or False
     """
     return not lst or lst.count(lst[0]) == len(lst)
 
+
 def hash_matches(doc, hash):
     """Check whether the hash of the passed doc matches the passed hash
     """
     return doc["_input_hash"] == hash
+
 
 def get_doc_by_hash(dataset, hash):
     """Return a doc from a dataset where hash matches doc["_input_hash"]
@@ -204,8 +208,10 @@ def get_doc_by_hash(dataset, hash):
     """
     return [doc for doc in dataset if doc["_input_hash"] == hash][0]
 
+
 def get_tokens(doc):
     return [token["text"] for token in doc["tokens"]]
+
 
 def check_inputs(annotated_data):
     """Checks whether two prodigy datasets contain the same docs (evaluated by
@@ -231,7 +237,9 @@ def check_inputs(annotated_data):
                 diff = set(doc_hashes[i]) ^ set(doc_hashes[j])
 
                 if diff:
-                    msg.fail(f"Docs {diff} unequal between dataset {i} and {j}", exits=1)
+                    msg.fail(
+                        f"Docs {diff} unequal between dataset {i} and {j}", exits=1
+                    )
 
     # Check that the tokens between the splitting and parsing docs match
 
@@ -245,10 +253,12 @@ def check_inputs(annotated_data):
 
     return True
 
+
 def sort_docs_list(lst):
     """Sort a list of prodigy docs by input hash
     """
-    return sorted(lst, key=lambda k: k['_input_hash'])
+    return sorted(lst, key=lambda k: k["_input_hash"])
+
 
 def combine_token_label_pairs(pairs):
     """Combines a list of [(token, label), (token, label)] to give
@@ -256,8 +266,14 @@ def combine_token_label_pairs(pairs):
     """
     return pairs[0][0:] + tuple(pair[1] for pair in pairs[1:])
 
+
 @plac.annotations(
-    input_files=("Comma separated list of paths to jsonl files containing prodigy docs.", "positional", None, str),
+    input_files=(
+        "Comma separated list of paths to jsonl files containing prodigy docs.",
+        "positional",
+        None,
+        str,
+    ),
     output_file=("Path to output tsv file.", "positional", None, str),
     respect_lines=(
         "Respect line endings? Or parse entire document in a single string?",
@@ -343,8 +359,14 @@ def prodigy_to_tsv(
     # NOTE: Use of reduce to handle pairs_list of unknown length
 
     if len(pairs_list) > 1:
-        merged_pairs = (combine_token_label_pairs(pairs) for pairs in reduce(zip, pairs_list))
-        example_pairs = [combine_token_label_pairs(pairs) for i, pairs in enumerate(reduce(zip, pairs_list)) if i < 15]
+        merged_pairs = (
+            combine_token_label_pairs(pairs) for pairs in reduce(zip, pairs_list)
+        )
+        example_pairs = [
+            combine_token_label_pairs(pairs)
+            for i, pairs in enumerate(reduce(zip, pairs_list))
+            if i < 15
+        ]
     else:
         merged_pairs = pairs_list[0]
         example_pairs = merged_pairs[0:14]
@@ -352,7 +374,7 @@ def prodigy_to_tsv(
     with open(output_file, "w") as fb:
         writer = csv.writer(fb, delimiter="\t")
         # Write DOCSTART and a blank line
-        #writer.writerows([("DOCSTART", None), (None, None)])
+        # writer.writerows([("DOCSTART", None), (None, None)])
         writer.writerows(merged_pairs)
 
     # Print out the first ten rows as a sense check
