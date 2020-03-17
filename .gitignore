@@ -11,3 +11,4 @@ embeddings/
 models/
 .tox/
 *__pycache__/
+.coverage
