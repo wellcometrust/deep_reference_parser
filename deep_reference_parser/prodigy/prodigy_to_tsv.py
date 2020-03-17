@@ -20,6 +20,8 @@ from ..logger import logger
 
 msg = Printer()
 
+ROWS_TO_PRINT=15
+
 
 class TokenLabelPairs:
     """
@@ -365,11 +367,11 @@ def prodigy_to_tsv(
         example_pairs = [
             combine_token_label_pairs(pairs)
             for i, pairs in enumerate(reduce(zip, pairs_list))
-            if i < 15
+            if i < ROWS_TO_PRINT
         ]
     else:
         merged_pairs = pairs_list[0]
-        example_pairs = merged_pairs[0:14]
+        example_pairs = merged_pairs[0:ROWS_TO_PRINT]
 
     with open(output_file, "w") as fb:
         writer = csv.writer(fb, delimiter="\t")
