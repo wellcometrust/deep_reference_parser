@@ -8,112 +8,56 @@ import csv
 import json
 import os
 import pickle
+import pandas as pd
 
 import spacy
 
 from .logger import logger
 
 
-def load_data(filepath):
+def split_list_by_linebreaks(tokens):
+    """Cycle through a list of tokens (or labels) and split them into lists
+    based on the presence of Nones or more likely math.nan caused by converting
+    pd.DataFrame columns to lists.
     """
-    Load and return the data stored in the given path.
-
-    Adapted from: https://github.com/dhlab-epfl/LinkedBooksDeepReferenceParsing
-
-    The data is structured as follows:
-     * Each line contains four columns separated by a single space.
-     * Each word has been put on a separate line and there is an empty line
-        after each sentence.
-     * The first item on each line is a word, the second, third and fourth are
-        tags related to the word.
-
-    Example:
-
-    The sentence "L. Antonielli, Iprefetti dell' Italia napoleonica, Bologna
-        1983." is represented in the dataset as:
-
-    ```
-    L author b-secondary b-r
-    . author i-secondary i-r
-    Antonielli author i-secondary i-r
-    , author i-secondary i-r
-    Iprefetti title i-secondary i-r
-    dell title i-secondary i-r
-    ’ title i-secondary i-r
-    Italia title i-secondary i-r
-    napoleonica title i-secondary i-r
-    , title i-secondary i-r
-    Bologna publicationplace i-secondary i-r
-    1983 year e-secondary i-r
-    . year e-secondary e-r
-    ```
-
-    Args:
-        filepath (str): Path to the data.
-
-    Returns:
-        four lists: The first contains tokens, the next three contain
-            corresponding labels.
-
-    """
-
-    # Arrays to return
-    words = []
-    tags_1 = []
-    tags_2 = []
-    tags_3 = []
-
-    word = tags1 = tags2 = tags3 = []
-    with open(filepath, "r") as file:
-        for line in file:
-            # Do not take the first line into consideration
-
-            if "DOCSTART" not in line:
-                # Check if empty line
-
-                if line in ["\n", "\r\n"]:
-                    # Append line
-
-                    words.append(word)
-                    tags_1.append(tags1)
-                    tags_2.append(tags2)
-                    tags_3.append(tags3)
-
-                    # Reset
-                    word = []
-                    tags1 = []
-                    tags2 = []
-                    tags3 = []
-
-                else:
-                    # Split the line into words, tag #1
-                    w = line[:-1].split(" ")
-
-                    word.append(w[0])
-                    tags1.append(w[1])
-                    tags2.append(w[2])
-                    tags3.append(w[3])
-
-    logger.info("Loaded %s training examples", len(words))
-
-    return words, tags_1, tags_2, tags_3
-
+    out = []
+    tokens_gen = iter(tokens)
+    while True:
+        try:
+            token = next(tokens_gen)
+            if isinstance(token, str) and token:
+                out.append(token)
+            else:
+                yield out
+                out = []
+        except StopIteration:
+            if out:
+                yield out
+            break
 
 def load_tsv(filepath, split_char="\t"):
     """
     Load and return the data stored in the given path.
 
-    Adapted from: https://github.com/dhlab-epfl/LinkedBooksDeepReferenceParsing
+    Expects data in the following format (tab separations).
 
-    NOTE: In the current implementation in deep_reference_parser, only one set
-    of tags is used. The others will be used in a later PR.
+      References   o       o
+                   o       o
+               1   o       o
+               .   o       o
+                   o       o
+             WHO   title   b-r
+       treatment   title   i-r
+      guidelines   title   i-r
+             for   title   i-r
+            drug   title   i-r
+               -   title   i-r
+       resistant   title   i-r
+    tuberculosis   title   i-r
+               ,   title   i-r
+            2016   title   i-r
 
-    The data is structured as follows:
-     * Each line contains four columns separated by a single space.
-     * Each word has been put on a separate line and there is an empty line
-        after each sentence.
-     * The first item on each line is a word, the second, third and fourth are
-        tags related to the word.
+
 
     Args:
         filepath (str): Path to the data.
@@ -121,48 +65,17 @@ def load_tsv(filepath, split_char="\t"):
             document.
 
     Returns:
-        two lists: The first contains tokens, the second contains corresponding
-        labels.
+        a series of lists depending on the number of label columns provided in 
+        filepath.
 
     """
 
-    # Arrays to return
-    words = []
-    tags_1 = []
+    df = pd.read_csv(filepath, delimiter=split_char, header=None, skip_blank_lines=False)
+    out = [list(split_list_by_linebreaks(column)) for _, column in df.iteritems()]
 
-    word = []
-    tags1 = []
+    logger.info("Loaded %s training examples", len(out[0]))
 
-    with open(filepath, "r") as file:
-        for line in file:
-            # Check if empty line
-
-            if line in ["\n", "\r\n", "\t\n"]:
-                # Append line
-
-                words.append(word)
-                tags_1.append(tags1)
-
-                # Reset
-                word = []
-                tags1 = []
-
-            else:
-
-                # Split the line into words, tag #1
-
-                w = line[:-1].split(split_char)
-                word.append(w[0])
-
-                # If tags are passed, (for training) then also add
-
-                if len(w) == 2:
-
-                    tags1.append(w[1])
-
-    logger.info("Loaded %s training examples", len(words))
-
-    return words, tags_1
+    return tuple(out)
 
 
 def prodigy_to_conll(docs):

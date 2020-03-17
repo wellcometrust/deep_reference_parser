@@ -24,7 +24,6 @@ from .model_utils import get_config
 from .reference_utils import (
     break_into_chunks,
     labels_to_prodigy,
-    load_data,
     load_tsv,
     prodigy_to_conll,
     prodigy_to_lists,
