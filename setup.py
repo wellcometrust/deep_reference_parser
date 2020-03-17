@@ -50,6 +50,7 @@ setuptools.setup(
         "matplotlib",
     ],
     tests_require=[
-        "pytest"
+        "pytest",
+        "pytest-cov"
     ],
 )

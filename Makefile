@@ -144,6 +144,6 @@ $(test_artefacts):
 
 .PHONY: test
 test: $(test_artefacts) test_embedding
-	$(VIRTUALENV)/bin/pytest --disable-warnings --tb=line
+	$(VIRTUALENV)/bin/pytest --disable-warnings --tb=line --cov=deep_reference_parser
 
 all: virtualenv model embedding test
