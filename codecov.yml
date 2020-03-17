@@ -1,2 +1,3 @@
 ignore:
   - "**/__*__.py"
+  - "**/common.py"
