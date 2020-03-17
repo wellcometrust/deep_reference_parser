@@ -10,7 +10,6 @@ install:
 script:
   - make test
 
-
 cache:
   directories:
     - build
