@@ -35,6 +35,13 @@ def test_prodigy_to_tsv(tmpdir):
         respect_docs=True,
     )
 
+def test_prodigy_to_tsv_multiple_inputs(tmpdir):
+    prodigy_to_tsv(
+        TEST_TOKEN_LABELLED + "," + TEST_TOKEN_LABELLED,
+        os.path.join(tmpdir, "tokens.tsv"),
+        respect_lines=False,
+        respect_docs=True,
+    )
 
 def test_reach_to_prodigy(tmpdir):
     reach_to_prodigy(TEST_REACH, os.path.join(tmpdir, "prodigy.jsonl"))
