@@ -10,3 +10,6 @@ script:
   - make test
 
 cache: pip
+
+after_success:
+  - codecov
