@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wellcometrust/deep_reference_parser.svg?branch=master)](https://travis-ci.org/wellcometrust/deep_reference_parser)
+[![Build Status](https://travis-ci.org/wellcometrust/deep_reference_parser.svg?branch=master)](https://travis-ci.org/wellcometrust/deep_reference_parser)[![codecov](https://codecov.io/gh/wellcometrust/deep_reference_parser/branch/master/graph/badge.svg)](https://codecov.io/gh/wellcometrust/deep_reference_parser)
 
 # Deep Reference Parser
 
