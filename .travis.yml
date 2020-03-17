@@ -2,14 +2,23 @@ language: python
 
 python:
   - 3.7
+  - 3.8
 
 install:
   - make virtualenv
+  - pip install -r requirements_test.txt
 
 script:
   - make test
 
 cache: pip
 
+jobs:
+  fast_finish: true
+
+branches:
+  only:
+  - master
+
 after_success:
-  - codecov
+  - python -m codecov
