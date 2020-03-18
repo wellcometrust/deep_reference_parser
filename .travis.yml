@@ -2,7 +2,6 @@ language: python
 
 python:
   - 3.7
-  - 3.8
 
 install:
   - make virtualenv
@@ -11,12 +10,10 @@ install:
 script:
   - make test
 
-cache: pip
-
-jobs:
-  fast_finish: true
-  allow_failures:
-    - python: 3.8
+cache:
+  directories:
+    - build
+    - $HOME/.cache/pip
 
 branches:
   only:
