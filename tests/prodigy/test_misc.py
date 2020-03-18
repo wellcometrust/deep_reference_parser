@@ -1,5 +1,6 @@
 from deep_reference_parser.prodigy import prodigy_to_conll
 
+
 def test_prodigy_to_conll():
 
     before = [

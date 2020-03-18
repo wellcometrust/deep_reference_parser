@@ -1,10 +1,12 @@
 import spacy
 
+
 def _join_prodigy_tokens(text):
     """Return all prodigy tokens in a single string
     """
 
     return "\n".join([str(i) for i in text])
+
 
 def prodigy_to_conll(docs):
     """

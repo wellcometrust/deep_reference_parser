@@ -19,12 +19,16 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 from .common import download_model_artefact
 from .deep_reference_parser import DeepReferenceParser
-from .io import (load_tsv, read_jsonl, read_pickle, write_jsonl, write_pickle,
-                 write_to_csv, write_tsv)
+from .io import (
+    load_tsv,
+    read_jsonl,
+    read_pickle,
+    write_jsonl,
+    write_pickle,
+    write_to_csv,
+    write_tsv,
+)
 from .logger import logger
 from .model_utils import get_config
 from .reference_utils import break_into_chunks
 from .tokens_to_references import tokens_to_references
-
-
-

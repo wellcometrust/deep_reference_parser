@@ -6,6 +6,7 @@
 
 from .logger import logger
 
+
 def yield_token_label_pairs(tokens, labels):
     """
     Convert matching lists of tokens and labels to tuples of (token, label) but
@@ -23,6 +24,7 @@ def yield_token_label_pairs(tokens, labels):
             yield (None, None)
         else:
             yield (None, None)
+
 
 def break_into_chunks(doc, max_words=250):
     """

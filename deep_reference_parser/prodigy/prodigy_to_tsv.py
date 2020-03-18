@@ -20,7 +20,7 @@ from ..logger import logger
 
 msg = Printer()
 
-ROWS_TO_PRINT=15
+ROWS_TO_PRINT = 15
 
 
 class TokenLabelPairs:

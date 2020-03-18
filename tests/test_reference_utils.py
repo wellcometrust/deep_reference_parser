@@ -3,9 +3,8 @@
 
 import pytest
 
-from deep_reference_parser.reference_utils import (
-    break_into_chunks
-)
+from deep_reference_parser.reference_utils import break_into_chunks
+
 
 def test_break_into_chunks():
 
@@ -15,4 +14,3 @@ def test_break_into_chunks():
     actual = break_into_chunks(before, max_words=2)
 
     assert expected == actual
-

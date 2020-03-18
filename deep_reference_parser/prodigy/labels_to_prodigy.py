@@ -1,4 +1,3 @@
-
 def labels_to_prodigy(tokens, labels):
     """
     Converts a list of tokens and labels like those used by Rodrigues et al,

@@ -5,7 +5,13 @@ import os
 
 import pytest
 
-from deep_reference_parser.io.io import read_jsonl, write_jsonl, load_tsv, write_tsv, _split_list_by_linebreaks
+from deep_reference_parser.io.io import (
+    read_jsonl,
+    write_jsonl,
+    load_tsv,
+    write_tsv,
+    _split_list_by_linebreaks,
+)
 from deep_reference_parser.reference_utils import yield_token_label_pairs
 
 from .common import TEST_JSONL, TEST_TSV_TRAIN, TEST_TSV_PREDICT, TEST_LOAD_TSV
@@ -40,6 +46,7 @@ def test_write_tsv(tmpdir):
     actual = load_tsv(os.path.join(PATH))
 
     assert expected == actual
+
 
 def test_load_tsv_train():
     """
@@ -128,6 +135,7 @@ def test_load_tsv_predict():
     actual = load_tsv(TEST_TSV_PREDICT)
 
     assert actual == expected
+
 
 def test_load_tsv_train_multiple_labels():
     """
@@ -219,6 +227,7 @@ def test_yield_toke_label_pairs():
 
     assert expected == actual
 
+
 def test_read_jsonl():
 
     expected = [
@@ -280,6 +289,7 @@ def test_write_jsonl(tmpdir):
 
     assert expected == actual
 
+
 def test_split_list_by_linebreaks():
 
     lst = ["a", "b", "c", None, "d"]
@@ -287,12 +297,14 @@ def test_split_list_by_linebreaks():
 
     actual = _split_list_by_linebreaks(lst)
 
+
 def test_list_by_linebreaks_ending_in_None():
 
     lst = ["a", "b", "c", float("nan"), "d", None]
     expected = [["a", "b", "c"], ["d"]]
 
     actual = _split_list_by_linebreaks(lst)
+
 
 def test_list_by_linebreaks_starting_in_None():
 
