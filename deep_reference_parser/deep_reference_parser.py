@@ -47,7 +47,7 @@ from deep_reference_parser.model_utils import (
     save_confusion_matrix,
     word2vec_embeddings,
 )
-from .reference_utils import load_tsv, read_pickle, write_pickle, write_to_csv
+from .io import load_tsv, read_pickle, write_pickle, write_to_csv
 
 
 class DeepReferenceParser:
@@ -456,7 +456,7 @@ class DeepReferenceParser:
 
         self.model = model
 
-        logger.debug(self.model.summary(line_length=150))
+#        logger.debug(self.model.summary(line_length=150))
 
     def train_model(
         self, epochs=25, batch_size=100, early_stopping_patience=5, metric="val_f1"

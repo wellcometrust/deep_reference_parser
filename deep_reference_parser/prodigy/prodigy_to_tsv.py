@@ -20,7 +20,7 @@ from ..logger import logger
 
 msg = Printer()
 
-ROWS_TO_PRINT=15
+ROWS_TO_PRINT = 15
 
 
 class TokenLabelPairs:
@@ -375,8 +375,6 @@ def prodigy_to_tsv(
 
     with open(output_file, "w") as fb:
         writer = csv.writer(fb, delimiter="\t")
-        # Write DOCSTART and a blank line
-        # writer.writerows([("DOCSTART", None), (None, None)])
         writer.writerows(merged_pairs)
 
     # Print out the first ten rows as a sense check
