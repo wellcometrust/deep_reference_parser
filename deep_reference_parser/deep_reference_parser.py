@@ -47,7 +47,7 @@ from deep_reference_parser.model_utils import (
     save_confusion_matrix,
     word2vec_embeddings,
 )
-from .reference_utils import load_tsv, read_pickle, write_pickle, write_to_csv
+from .io import load_tsv, read_pickle, write_pickle, write_to_csv
 
 
 class DeepReferenceParser:
