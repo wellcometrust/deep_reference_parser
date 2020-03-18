@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from deep_reference_parser.reference_utils import labels_to_prodigy
+from deep_reference_parser.prodigy import labels_to_prodigy
 
 
 def test_labels_to_prodigy():
