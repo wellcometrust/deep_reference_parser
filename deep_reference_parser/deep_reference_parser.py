@@ -456,7 +456,7 @@ class DeepReferenceParser:
 
         self.model = model
 
-        logger.debug(self.model.summary(line_length=150))
+#        logger.debug(self.model.summary(line_length=150))
 
     def train_model(
         self, epochs=25, batch_size=100, early_stopping_patience=5, metric="val_f1"
