@@ -8,7 +8,7 @@ install:
   - pip install tox-travis
 
 script:
-  - make test
+  - tox
 
 cache:
   directories:
