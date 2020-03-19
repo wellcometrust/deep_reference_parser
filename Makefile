@@ -122,6 +122,7 @@ sync_model_to_s3:
 dist:
 	-rm build/bin build/bdist.linux-x86_64 -r
 	-rm deep_reference_parser-20* -r
+	-rm deep_reference_parser.egg-info -r
 	-rm dist/*
 	$(VIRTUALENV)/bin/python3 setup.py sdist bdist_wheel
 	aws s3 cp --recursive --exclude "*" --include "*.whl" --acl public-read dist/ $(S3_BUCKET) 
