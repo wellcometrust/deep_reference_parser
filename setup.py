@@ -7,9 +7,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 # Load data from the__versions__.py module. Change version, etc in
 # that module, and it will be automatically populated here.
 
-about = {} # type: dict
-version_path = os.path.join(here, 'deep_reference_parser', '__version__.py')
-with open(version_path, 'r') as f:
+about = {}  # type: dict
+version_path = os.path.join(here, "deep_reference_parser", "__version__.py")
+with open(version_path, "r") as f:
     exec(f.read(), about)
 
 with open("README.md", "r") as f:
@@ -25,15 +25,18 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url=about["__url__"],
     license=["__license__"],
-    packages=setuptools.find_packages(
-        include=["deep_reference_parser"],
-        exclude=["tests", "data", "build"]
-    ),
-    package_dir={'deep_reference_parser': 'deep_reference_parser'},
-    package_data={'deep_reference_parser': [
-        f"configs/{about['__splitter_model_version__']}.ini",
-        f"configs/{about['__parser_model_version__']}.ini",
-    ]},
+    packages=[
+        "deep_reference_parser",
+        "deep_reference_parser/prodigy",
+        "deep_reference_parser/io",
+    ],
+    package_dir={"deep_reference_parser": "deep_reference_parser"},
+    package_data={
+        "deep_reference_parser": [
+            f"configs/{about['__splitter_model_version__']}.ini",
+            f"configs/{about['__parser_model_version__']}.ini",
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
@@ -49,8 +52,5 @@ setuptools.setup(
         "sklearn_crfsuite",
         "matplotlib",
     ],
-    tests_require=[
-        "pytest",
-        "pytest-cov"
-    ],
+    tests_require=["pytest", "pytest-cov"],
 )
