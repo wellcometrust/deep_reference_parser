@@ -59,6 +59,7 @@ def cfg():
     return cfg
 
 @pytest.mark.slow
+@pytest.mark.integration
 def test_DeepReferenceParser_train(tmpdir, cfg):
     """
     This test creates the artefacts that will be used in the next test
@@ -114,6 +115,7 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
 
 
 @pytest.mark.slow
+@pytest.mark.integration
 def test_DeepReferenceParser_predict(tmpdir, cfg):
     """
     You must run this test after the previous one, or it will fail
