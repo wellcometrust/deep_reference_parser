@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+import os
 import shutil
 import tempfile
 
 import pytest
-from wasabi import msg
-
 from deep_reference_parser import DeepReferenceParser, get_config, load_tsv
+from deep_reference_parser.common import download_model_artefact
+from wasabi import msg
 
 from .common import TEST_CFG, TEST_TSV_PREDICT, TEST_TSV_TRAIN
 
@@ -17,12 +18,48 @@ def tmpdir(tmpdir_factory):
     return tmpdir_factory.mktemp("data")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def cfg():
-    return get_config(TEST_CFG)
+    cfg = get_config(TEST_CFG)
 
+    artefacts = [
+        "char2ind.pickle",
+        "ind2label.pickle",
+        "ind2word.pickle",
+        "label2ind.pickle",
+        "maxes.pickle",
+        "weights.h5",
+        "word2ind.pickle",
+    ]
+
+    S3_SLUG = cfg["data"]["s3_slug"]
+    OUTPUT_PATH = cfg["build"]["output_path"]
+    WORD_EMBEDDINGS = cfg["build"]["word_embeddings"]
+
+    for artefact in artefacts:
+        with msg.loading(f"Could not find {artefact} locally, downloading..."):
+            try:
+                artefact = os.path.join(OUTPUT_PATH, artefact)
+                download_model_artefact(artefact, S3_SLUG)
+                msg.good(f"Found {artefact}")
+            except:
+                msg.fail(f"Could not download {S3_SLUG}{artefact}")
+
+    # Check on word embedding and download if not exists
+
+    WORD_EMBEDDINGS = cfg["build"]["word_embeddings"]
+
+    with msg.loading(f"Could not find {WORD_EMBEDDINGS} locally, downloading..."):
+        try:
+            download_model_artefact(WORD_EMBEDDINGS, S3_SLUG)
+            msg.good(f"Found {WORD_EMBEDDINGS}")
+        except:
+            msg.fail(f"Could not download {S3_SLUG}{WORD_EMBEDDINGS}")
+
+    return cfg
 
 @pytest.mark.slow
+@pytest.mark.integration
 def test_DeepReferenceParser_train(tmpdir, cfg):
     """
     This test creates the artefacts that will be used in the next test
@@ -78,6 +115,7 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
 
 
 @pytest.mark.slow
+@pytest.mark.integration
 def test_DeepReferenceParser_predict(tmpdir, cfg):
     """
     You must run this test after the previous one, or it will fail

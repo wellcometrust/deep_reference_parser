@@ -4,15 +4,14 @@ python:
   - 3.7
 
 install:
-  - make virtualenv
   - pip install -r requirements_test.txt
+  - pip install tox-travis
 
 script:
-  - make test
+  - tox
 
 cache:
   directories:
-    - build
     - $HOME/.cache/pip
 
 branches:
