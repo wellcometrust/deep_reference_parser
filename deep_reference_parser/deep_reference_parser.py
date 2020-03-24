@@ -585,7 +585,7 @@ class DeepReferenceParser:
             # under a multi-task scenario. This will need adjusting when
             # using this syntax for a multi-task model.
 
-            for i, y_target in enumerate([self.y_test_encoded]):
+            for i, y_target in enumerate(self.y_test_encoded):
 
                 # Compute predictions, flatten
 
@@ -620,7 +620,7 @@ class DeepReferenceParser:
             # under a multi-task scenario. This will need adjusting when
             # using this syntax for a multi-task model.
 
-            for i, y_target in enumerate([self.y_valid_encoded]):
+            for i, y_target in enumerate(self.y_valid_encoded):
 
                 # Compute predictions, flatten
 

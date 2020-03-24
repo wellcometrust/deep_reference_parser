@@ -68,7 +68,7 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
     X_test, y_test = load_tsv(TEST_TSV_TRAIN)
 
     X_test = X_test[0:100]
-    y_test = y_test[0:100]
+    y_test = [y_test[0:100]]
 
     drp = DeepReferenceParser(
         X_train=X_test,
