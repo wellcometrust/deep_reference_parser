@@ -22,10 +22,6 @@ TEST_NUMBERED_REFERENCES = get_path("test_data/test_numbered_references.jsonl")
 
 TEST_TOKEN_LABELLED = get_path("test_data/test_token_labelled_references.jsonl")
 
-# tsv data created from the above file
-
-TEST_TOKEN_LABELLED_TSV = get_path("test_data/test_token_labelled_references.tsv")
-
 # Reference section in Reach format
 
 TEST_REACH = get_path("test_data/test_reach.jsonl")

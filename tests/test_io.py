@@ -11,7 +11,6 @@ from deep_reference_parser.io.io import (
     load_tsv,
     write_tsv,
     _split_list_by_linebreaks,
-    _unpack,
 )
 from deep_reference_parser.reference_utils import yield_token_label_pairs
 
@@ -22,47 +21,22 @@ from .common import TEST_JSONL, TEST_TSV_TRAIN, TEST_TSV_PREDICT, TEST_LOAD_TSV
 def tmpdir(tmpdir_factory):
     return tmpdir_factory.mktemp("data")
 
-def test_unpack():
-
-    before = [
-            (
-                ("token0", "token1", "token2", "token3"),
-                ("label0", "label1", "label2", "label3")
-            ),
-            (
-                ("token0", "token1", "token2"),
-                ("label0", "label1", "label2")
-            ),
-        ]
-
-    expected = [
-            (
-                ("token0", "token1", "token2", "token3"),
-                ("token0", "token1", "token2"),
-            ),
-            (
-                ("label0", "label1", "label2", "label3"),
-                ("label0", "label1", "label2")
-            ),
-        ]
-
-    actual = _unpack(before)
-
-    assert expected == actual
 
 def test_write_tsv(tmpdir):
 
     expected = (
-        (
-            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
-            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
-            ("Exotique", "et"),
-        ),
-        (
-            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
-            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
-            ("i-r", "i-r"),
-        ),
+        [
+            [],
+            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+            ["Exotique", "et"],
+        ],
+        [
+            [],
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r"],
+        ],
     )
 
     token_label_tuples = list(yield_token_label_pairs(expected[0], expected[1]))
@@ -100,16 +74,16 @@ def test_load_tsv_train():
     """
 
     expected = (
-        (
-            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
-            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
-            ("Exotique", "et"),
-        ),
-        (
-            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
-            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
-            ("i-r", "i-r"),
-        ),
+        [
+            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+            ["Exotique", "et"],
+        ],
+        [
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r"],
+        ],
     )
 
     actual = load_tsv(TEST_TSV_TRAIN)
@@ -151,11 +125,11 @@ def test_load_tsv_predict():
     """
 
     expected = (
-        (
-            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
-            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
-            ("Exotique", "et"),
-        ),
+        [
+            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+            ["Exotique", "et"],
+        ],
     )
 
     actual = load_tsv(TEST_TSV_PREDICT)
@@ -189,21 +163,21 @@ def test_load_tsv_train_multiple_labels():
     """
 
     expected = (
-        (
-            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
-            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
-            ("Exotique", "et"),
-        ),
-        (
-            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
-            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
-            ("i-r", "i-r"),
-        ),
-        (
-            ("a", "a", "a", "a", "a", "a", "a"),
-            ("a", "a", "a", "a", "a", "a"),
-            ("a", "a"),
-        ),
+        [
+            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
+            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
+            ["Exotique", "et"],
+        ],
+        [
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
+            ["i-r", "i-r"],
+        ],
+        [
+            ["a", "a", "a", "a", "a", "a", "a"],
+            ["a", "a", "a", "a", "a", "a"],
+            ["a", "a"],
+        ],
     )
 
     actual = load_tsv(TEST_LOAD_TSV)

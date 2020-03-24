@@ -3,33 +3,33 @@
 
 import os
 import sys
-from copy import deepcopy
 
 import pytest
-from deep_reference_parser.io import load_tsv, read_jsonl
-from deep_reference_parser.prodigy.prodigy_to_tsv import (TokenLabelPairs,
-                                                          prodigy_to_tsv)
 
-from .common import (TEST_SPANS, TEST_TOKEN_LABELLED, TEST_TOKEN_LABELLED_TSV,
-                     TEST_TOKENS)
+from deep_reference_parser.io import read_jsonl
+from deep_reference_parser.prodigy.prodigy_to_tsv import (
+    TokenLabelPairs,
+    prodigy_to_tsv,
+    check_inputs,
+)
 
+from .common import TEST_SPANS, TEST_TOKENS
 
-@pytest.fixture(scope="session")
-def tmpdir(tmpdir_factory):
-    return tmpdir_factory.mktemp("data")
 
 @pytest.fixture(scope="module")
 def doc():
     doc = {}
-    doc["_input_hash"] = 1337
     doc["tokens"] = read_jsonl(TEST_TOKENS)[0]
     doc["spans"] = read_jsonl(TEST_SPANS)[0]
 
     return doc
 
-@pytest.fixture(scope="module")
-def spans():
-    spans = [
+
+def test_yield_token_label_pair():
+
+    doc = dict()
+
+    doc["spans"] = [
         {"start": 0, "end": 0, "token_start": 0, "token_end": 0, "label": "a"},
         {"start": 1, "end": 1, "token_start": 1, "token_end": 1, "label": "b"},
         {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "c"},
@@ -39,11 +39,7 @@ def spans():
         {"start": 6, "end": 6, "token_start": 6, "token_end": 6, "label": "g"},
     ]
 
-    return spans
-
-@pytest.fixture(scope="module")
-def tokens():
-    tokens = [
+    doc["tokens"] = [
         {"text": "A", "start": 0, "end": 0, "id": 0},
         {"text": "B", "start": 1, "end": 1, "id": 1},
         {"text": "C", "start": 2, "end": 2, "id": 2},
@@ -53,29 +49,7 @@ def tokens():
         {"text": "G", "start": 6, "end": 6, "id": 6},
     ]
 
-    return tokens
-
-@pytest.fixture(scope="module")
-def dataset(tokens, spans):
-
-    doc0 = dict()
-
-    doc0["spans"] = spans
-    doc0["tokens"] = tokens
-
-    doc1 = deepcopy(doc0)
-    doc2 = deepcopy(doc0)
-
-    doc0["_input_hash"] = 76786
-    doc1["_input_hash"] = 65876
-    doc2["_input_hash"] = 68457
-    dataset = [doc0, doc1, doc2]
-
-    return dataset
-
-def test_yield_token_label_pair(tokens, spans):
-
-    expected = [
+    out = [
         ("A", "a"),
         ("B", "b"),
         ("C", "c"),
@@ -87,20 +61,38 @@ def test_yield_token_label_pair(tokens, spans):
     ]
 
     tlp = TokenLabelPairs(line_limit=73, respect_line_endings=True)
+    after = list(tlp.yield_token_label_pair(doc))
 
-    tokens = [token["text"] for token in tokens]
-    spans = [span["label"] for span in spans]
+    assert out == after
 
-    tokens_and_labels = list(zip(*[tokens, spans]))
-    actual = list(tlp.yield_token_label_pair(tokens_and_labels))
 
-    assert expected == actual
+def test_TokenLabelPairs():
 
-def test_TokenLabelPairs_single_dataset(dataset):
+    doc = dict()
 
-    datasets = [dataset]
+    doc["spans"] = [
+        {"start": 0, "end": 0, "token_start": 0, "token_end": 0, "label": "a"},
+        {"start": 1, "end": 1, "token_start": 1, "token_end": 1, "label": "b"},
+        {"start": 2, "end": 2, "token_start": 2, "token_end": 2, "label": "c"},
+        {"start": 3, "end": 3, "token_start": 3, "token_end": 3, "label": "d"},
+        {"start": 4, "end": 4, "token_start": 4, "token_end": 4, "label": "e"},
+        {"start": 5, "end": 5, "token_start": 5, "token_end": 5, "label": "f"},
+        {"start": 6, "end": 6, "token_start": 6, "token_end": 6, "label": "g"},
+    ]
 
-    expected = [
+    doc["tokens"] = [
+        {"text": "A", "start": 0, "end": 0, "id": 0},
+        {"text": "B", "start": 1, "end": 1, "id": 1},
+        {"text": "C", "start": 2, "end": 2, "id": 2},
+        {"text": "D", "start": 3, "end": 3, "id": 3},
+        {"text": "E", "start": 4, "end": 4, "id": 4},
+        {"text": "F", "start": 5, "end": 5, "id": 5},
+        {"text": "G", "start": 6, "end": 6, "id": 6},
+    ]
+
+    docs = [doc, doc, doc]
+
+    out = [
         ("A", "a"),
         ("B", "b"),
         ("C", "c"),
@@ -127,91 +119,64 @@ def test_TokenLabelPairs_single_dataset(dataset):
     tlp = TokenLabelPairs(
         line_limit=73, respect_line_endings=True, respect_doc_endings=False
     )
-    actual = tlp.run(datasets)
+    after = tlp.run(docs)
 
-    assert actual == expected
+    assert after == out
 
 
-def test_TokenLabelPairs_two_datasets(dataset):
+def test_TokenLabelPairs_works_on_unlabelled():
 
-    datasets = [dataset, dataset]
+    doc = dict()
 
-    expected = [
-        ("A", "a", "a"),
-        ("B", "b", "b"),
-        ("C", "c", "c"),
-        ("D", "d", "d"),
-        ("E", "e", "e"),
-        ("F", "f", "f"),
-        ("G", "g", "g"),
-        ("A", "a", "a"),
-        ("B", "b", "b"),
-        ("C", "c", "c"),
-        ("D", "d", "d"),
-        ("E", "e", "e"),
-        ("F", "f", "f"),
-        ("G", "g", "g"),
-        ("A", "a", "a"),
-        ("B", "b", "b"),
-        ("C", "c", "c"),
-        ("D", "d", "d"),
-        ("E", "e", "e"),
-        ("F", "f", "f"),
-        ("G", "g", "g"),
+    doc["tokens"] = [
+        {"text": "A", "start": 0, "end": 0, "id": 0},
+        {"text": "B", "start": 1, "end": 1, "id": 1},
+        {"text": "C", "start": 2, "end": 2, "id": 2},
+        {"text": "D", "start": 3, "end": 3, "id": 3},
+        {"text": "E", "start": 4, "end": 4, "id": 4},
+        {"text": "F", "start": 5, "end": 5, "id": 5},
+        {"text": "G", "start": 6, "end": 6, "id": 6},
     ]
 
-    tlp = TokenLabelPairs(
-        line_limit=73, respect_line_endings=True, respect_doc_endings=False
-    )
-    actual = tlp.run(datasets)
+    docs = [doc, doc, doc]
 
-    assert actual == expected
-
-
-def test_TokenLabelPairs_works_on_unlabelled(dataset):
-
-    [doc.pop("spans") for doc in dataset]
-
-    datasets = [dataset]
-
-    expected = [
-        ("A",),
-        ("B",),
-        ("C",),
-        ("D",),
-        ("E",),
-        ("F",),
-        ("G",),
-        (None,),
-        ("A",),
-        ("B",),
-        ("C",),
-        ("D",),
-        ("E",),
-        ("F",),
-        ("G",),
-        (None,),
-        ("A",),
-        ("B",),
-        ("C",),
-        ("D",),
-        ("E",),
-        ("F",),
-        ("G",),
-        (None,),
+    out = [
+        ("A", None),
+        ("B", None),
+        ("C", None),
+        ("D", None),
+        ("E", None),
+        ("F", None),
+        ("G", None),
+        (None, None),
+        ("A", None),
+        ("B", None),
+        ("C", None),
+        ("D", None),
+        ("E", None),
+        ("F", None),
+        ("G", None),
+        (None, None),
+        ("A", None),
+        ("B", None),
+        ("C", None),
+        ("D", None),
+        ("E", None),
+        ("F", None),
+        ("G", None),
+        (None, None),
     ]
 
     tlp = TokenLabelPairs(line_limit=73, respect_line_endings=True)
-    actual = tlp.run(datasets)
+    after = tlp.run(docs)
 
-    assert actual == expected
+    assert after == out
 
 
 def test_TokenLabelPairs_cleans_whitespace():
 
     doc = dict()
 
-    doc["_input_hash"] = 1337
     doc["tokens"] = [
         {"text": "A ", "start": 0, "end": 0, "id": 0},
         {"text": "B  ", "start": 1, "end": 1, "id": 1},
@@ -225,26 +190,26 @@ def test_TokenLabelPairs_cleans_whitespace():
         {"text": "\n\t \t \t \t", "start": 9, "end": 6, "id": 9},
     ]
 
-    dataset = [doc]
-    datasets = [dataset]
+    docs = [doc]
 
-    expected = [
-        ("A",),
-        ("B",),
-        ("C",),
-        ("D",),
-        ("E",),
-        ("F",),
-        ("G",),
-        (None,),
-        (None,),
-        (None,),
+    out = [
+        ("A", None),
+        ("B", None),
+        ("C", None),
+        ("D", None),
+        ("E", None),
+        ("F", None),
+        ("G", None),
+        (None, None),
+        (None, None),
+        (None, None),
     ]
 
     tlp = TokenLabelPairs(line_limit=73, respect_line_endings=True)
-    actual = tlp.run(datasets)
+    after = tlp.run(docs)
 
-    assert expected == actual
+    assert after == out
+
 
 def test_TokenLabelPairs_retains_line_endings():
     """
@@ -254,7 +219,6 @@ def test_TokenLabelPairs_retains_line_endings():
 
     doc = dict()
 
-    doc["_input_hash"] = 1337
     doc["tokens"] = [
         {"text": "\n", "start": 0, "end": 0, "id": 0},
         {"text": "\n", "start": 1, "end": 1, "id": 1},
@@ -262,27 +226,25 @@ def test_TokenLabelPairs_retains_line_endings():
         {"text": "\n", "start": 3, "end": 3, "id": 3},
     ]
 
-    dataset = [doc]
-    datasets = [dataset, dataset]
+    docs = [doc]
 
-    expected = [
-        (None,),
-        (None,),
-        (None,),
-        (None,),
+    out = [
+        (None, None),
+        (None, None),
+        (None, None),
+        (None, None),
     ]
 
     tlp = TokenLabelPairs(respect_line_endings=True)
-    actual = tlp.run(datasets)
+    after = tlp.run(docs)
 
-    assert actual == expected
+    assert after == out
 
 
 def test_TokenLabelPairs_ignores_line_endings():
 
     doc = dict()
 
-    doc["_input_hash"] = 1337
     doc["tokens"] = [
         {"text": "a", "start": 0, "end": 0, "id": 0},
         {"text": "b", "start": 1, "end": 1, "id": 1},
@@ -290,66 +252,79 @@ def test_TokenLabelPairs_ignores_line_endings():
         {"text": "d", "start": 3, "end": 3, "id": 3},
     ]
 
-    dataset = [doc]
-    datasets = [dataset]
+    docs = [doc]
 
-    expected = [
-        ("a",),
-        ("b",),
-        (None,),
-        ("c",),
-        ("d",),
-        (None,),
+    out = [
+        ("a", None),
+        ("b", None),
+        (None, None),
+        ("c", None),
+        ("d", None),
+        (None, None),
     ]
 
     tlp = TokenLabelPairs(line_limit=2, respect_line_endings=False)
-    actual = tlp.run(datasets)
+    after = tlp.run(docs)
 
-    assert actual == expected
+    assert after == out
 
 
-def test_TokenLabelPairs_respects_ignores_doc_endings(dataset):
+def test_TokenLabelPairs_respects_ignores_doc_endings():
 
-    datasets = [dataset, dataset, dataset]
+    doc = dict()
 
-    expected = [
-        ("A",),
-        ("B",),
-        ("C",),
-        ("D",),
-        ("E",),
-        ("F",),
-        ("G",),
-        ("A",),
-        ("B",),
-        ("C",),
-        ("D",),
-        ("E",),
-        ("F",),
-        ("G",),
-        ("A",),
-        ("B",),
-        ("C",),
-        ("D",),
-        ("E",),
-        ("F",),
-        ("G",),
+    doc["tokens"] = [
+        {"text": "A", "start": 0, "end": 0, "id": 0},
+        {"text": "B", "start": 1, "end": 1, "id": 1},
+        {"text": "C", "start": 2, "end": 2, "id": 2},
+        {"text": "D", "start": 3, "end": 3, "id": 3},
+        {"text": "E", "start": 4, "end": 4, "id": 4},
+        {"text": "F", "start": 5, "end": 5, "id": 5},
+        {"text": "G", "start": 6, "end": 6, "id": 6},
+    ]
+
+    docs = [doc, doc, doc]
+
+    out = [
+        ("A", None),
+        ("B", None),
+        ("C", None),
+        ("D", None),
+        ("E", None),
+        ("F", None),
+        ("G", None),
+        ("A", None),
+        ("B", None),
+        ("C", None),
+        ("D", None),
+        ("E", None),
+        ("F", None),
+        ("G", None),
+        ("A", None),
+        ("B", None),
+        ("C", None),
+        ("D", None),
+        ("E", None),
+        ("F", None),
+        ("G", None),
     ]
 
     tlp = TokenLabelPairs(
         line_limit=73, respect_line_endings=False, respect_doc_endings=False
     )
-    actual = tlp.run(datasets)
+    after = tlp.run(docs)
 
-    assert actual == expected
+    assert after == out
 
 
 def test_reference_spans_real_example(doc):
 
     expected = [
         ("References", "o"),
+        ("", "o"),
         ("1", "o"),
         (".", "o"),
+        ("", "o"),
         ("United", "author"),
         ("Nations", "author"),
         ("Development", "author"),
@@ -364,6 +339,7 @@ def test_reference_spans_real_example(doc):
         ("Civil", "title"),
         ("Society", "title"),
         ("Organizations", "title"),
+        ("", "title"),
         ("working", "title"),
         ("on", "title"),
         ("Democratic", "title"),
@@ -380,10 +356,12 @@ def test_reference_spans_real_example(doc):
         (";", "o"),
         ("2005", "year"),
         (".", "year"),
+        ("", "o"),
         ("(", "o"),
         ("Available", "o"),
         ("from", "o"),
         (":", "o"),
+        ("", "o"),
         ("http://www.undp.org", "o"),
         ("/", "o"),
         ("content", "o"),
@@ -399,6 +377,7 @@ def test_reference_spans_real_example(doc):
         ("publications", "o"),
         ("/", "o"),
         ("democratic-", "o"),
+        ("", "o"),
         ("governance", "o"),
         ("/", "o"),
         ("oslo", "o"),
@@ -420,6 +399,7 @@ def test_reference_spans_real_example(doc):
         ("civil", "o"),
         ("-", "o"),
         ("society-", "o"),
+        ("", "o"),
         ("organizations", "o"),
         ("-", "o"),
         ("working", "o"),
@@ -429,15 +409,19 @@ def test_reference_spans_real_example(doc):
         ("democratic", "o"),
         ("-", "o"),
         ("governance-/3665%20Booklet_heleWEB_.pdf", "o"),
+        ("", "o"),
         (",", "o"),
+        ("", "o"),
         ("accessed", "o"),
         ("15", "o"),
         ("February", "o"),
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        ("", "o"),
         ("2", "o"),
         (".", "o"),
+        ("", "o"),
         ("Mental", "o"),
         ("Health", "author"),
         ("Peer", "author"),
@@ -454,6 +438,7 @@ def test_reference_spans_real_example(doc):
         ("website].", "o"),
         ("Buffalo", "o"),
         (",", "o"),
+        ("", "o"),
         ("NY", "o"),
         (";", "o"),
         ("MHPC", "o"),
@@ -464,7 +449,9 @@ def test_reference_spans_real_example(doc):
         ("Available", "o"),
         ("from", "o"),
         (":", "o"),
+        ("", "o"),
         ("http://wnyil.org/mhpc.html", "o"),
+        ("", "o"),
         (",", "o"),
         ("a", "o"),
         ("ccessed", "o"),
@@ -473,8 +460,10 @@ def test_reference_spans_real_example(doc):
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        ("", "o"),
         ("3", "o"),
         (".", "o"),
+        ("", "o"),
         ("Avery", "o"),
         ("S", "author"),
         (",", "author"),
@@ -496,6 +485,7 @@ def test_reference_spans_real_example(doc):
         ("”", "title"),
         ("[", "title"),
         ("video].", "o"),
+        ("", "o"),
         ("Western", "o"),
         ("New", "o"),
         ("York", "o"),
@@ -512,6 +502,7 @@ def test_reference_spans_real_example(doc):
         ("Available", "o"),
         ("from", "o"),
         (":", "o"),
+        ("", "o"),
         ("https://vimeo.com/62705552", "o"),
         (",", "o"),
         ("accessed", "o"),
@@ -520,8 +511,10 @@ def test_reference_spans_real_example(doc):
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        ("", "o"),
         ("4", "o"),
         (".", "o"),
+        ("", "o"),
         ("Alzheimer", "o"),
         ("'s", "o"),
         ("Disease", "author"),
@@ -539,6 +532,7 @@ def test_reference_spans_real_example(doc):
         ("association", "title"),
         ("and", "title"),
         ("get", "title"),
+        ("", "title"),
         ("results", "title"),
         ("[", "title"),
         ("website].", "title"),
@@ -555,9 +549,11 @@ def test_reference_spans_real_example(doc):
         (":", "o"),
         ("https:/", "o"),
         ("/", "o"),
+        ("", "o"),
         ("www.alz.co.uk", "o"),
         ("/", "o"),
         ("how-", "o"),
+        ("", "o"),
         ("to", "o"),
         ("-", "o"),
         ("develop", "o"),
@@ -565,15 +561,20 @@ def test_reference_spans_real_example(doc):
         ("an", "o"),
         ("-", "o"),
         ("association", "o"),
+        ("", "o"),
         (",", "o"),
+        ("", "o"),
         ("accessed", "o"),
         ("15", "o"),
         ("February", "o"),
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        (None, None),
+        ("", "o"),
         ("5", "o"),
         (".", "o"),
+        ("", "o"),
         ("Normal", "o"),
         ("Difference", "o"),
         ("Mental", "o"),
@@ -593,22 +594,27 @@ def test_reference_spans_real_example(doc):
         (";", "o"),
         ("n.d", "o"),
         (".", "o"),
+        ("", "o"),
         ("(", "o"),
         ("Available", "o"),
         ("from", "o"),
         (":", "o"),
-        (None, None),
+        ("", "o"),
         ("http://www.normal-difference.org/?page_id=15", "o"),
+        ("", "o"),
         (",", "o"),
         ("ac", "o"),
         ("cessed", "o"),
         ("15", "o"),
         ("February", "o"),
+        ("", "o"),
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        ("", "o"),
         ("6", "o"),
         (".", "o"),
+        ("", "o"),
         ("TOPSIDE", "o"),
         (".", "o"),
         ("Training", "o"),
@@ -621,6 +627,7 @@ def test_reference_spans_real_example(doc):
         ("Disabilities", "title"),
         ("in", "title"),
         ("Europe", "title"),
+        ("", "title"),
         ("[", "title"),
         ("website", "title"),
         ("]", "title"),
@@ -633,16 +640,21 @@ def test_reference_spans_real_example(doc):
         ("Available", "o"),
         ("from", "o"),
         (":", "o"),
+        ("", "o"),
         ("http://www.peer-support.eu/about-the-project/", "o"),
+        ("", "o"),
         (",", "o"),
+        ("", "o"),
         ("accessed", "o"),
         ("15", "o"),
         ("February", "o"),
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        ("", "o"),
         ("7", "o"),
         (".", "o"),
+        ("", "o"),
         ("KOSHISH", "o"),
         ("National", "o"),
         ("Mental", "o"),
@@ -657,6 +669,7 @@ def test_reference_spans_real_example(doc):
         ("Awareness", "author"),
         ("[", "o"),
         ("website].", "title"),
+        ("", "title"),
         ("Nepal", "title"),
         (";", "o"),
         ("KOSHISH", "o"),
@@ -667,16 +680,22 @@ def test_reference_spans_real_example(doc):
         ("Available", "o"),
         ("from", "year"),
         (":", "year"),
+        ("", "o"),
         ("http://koshishnepal.org/advocacy", "o"),
+        ("", "o"),
         (",", "o"),
+        ("", "o"),
         ("accessed", "o"),
         ("15", "o"),
+        ("", "o"),
         ("February", "o"),
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        ("", "o"),
         ("8", "o"),
         (".", "o"),
+        ("", "o"),
         ("Dementia", "o"),
         ("Alliance", "o"),
         ("International", "o"),
@@ -693,6 +712,7 @@ def test_reference_spans_real_example(doc):
         (",", "title"),
         ("IA", "title"),
         (";", "o"),
+        ("", "o"),
         ("DAI", "o"),
         (";", "o"),
         ("2014/2015", "o"),
@@ -701,35 +721,65 @@ def test_reference_spans_real_example(doc):
         ("Available", "o"),
         ("from", "o"),
         (":", "o"),
+        ("", "o"),
         ("http://www.dementiaallianceinternational.org/", "o"),
+        ("", "o"),
         (",", "o"),
+        ("", "o"),
         ("accessed", "o"),
+        ("", "o"),
         ("15", "o"),
         ("February", "o"),
         ("2017", "o"),
         (")", "o"),
         (".", "o"),
+        ("", "o"),
         ("9", "o"),
         (".", "o"),
         (None, None),
     ]
 
-    dataset = [doc]
-    datasets = [dataset]
-
     tlp = TokenLabelPairs(respect_line_endings=False)
-    actual = tlp.run(datasets)
+    actual = tlp.run([doc])
 
     assert actual == expected
 
 
-def test_prodigy_to_tsv(tmpdir):
+def test_check_input_exist_on_doc_mismatch():
 
-    output_file = os.path.join(tmpdir, "prodigy_to_tsv.tsv")
+    dataset_a = [{"_input_hash": "a1"}, {"_input_hash": "a2"}]
+    dataset_b = [{"_input_hash": "b1"}, {"_input_hash": "b2"}]
 
-    prodigy_to_tsv(TEST_TOKEN_LABELLED, output_file, respect_lines=False, respect_docs=True)
+    with pytest.raises(SystemExit):
+        check_inputs([dataset_a, dataset_b])
 
-    expected = load_tsv(TEST_TOKEN_LABELLED_TSV)
-    actual = load_tsv(output_file)
 
-    assert expected == actual
+def test_check_input_exist_on_tokens_mismatch():
+
+    dataset_a = [
+        {"_input_hash": "a", "tokens": [{"text": "a"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
+    ]
+
+    dataset_b = [
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
+    ]
+
+    with pytest.raises(SystemExit):
+        check_inputs([dataset_a, dataset_b])
+
+
+def test_check_input():
+
+    dataset_a = [
+        {"_input_hash": "a", "tokens": [{"text": "a"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
+    ]
+
+    dataset_b = [
+        {"_input_hash": "a", "tokens": [{"text": "a"}]},
+        {"_input_hash": "a", "tokens": [{"text": "b"}]},
+    ]
+
+    assert check_inputs([dataset_a, dataset_b])

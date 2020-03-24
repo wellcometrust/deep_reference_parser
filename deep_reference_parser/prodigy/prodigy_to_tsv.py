@@ -15,7 +15,7 @@ import numpy as np
 import plac
 from wasabi import Printer, table
 
-from ..io import read_jsonl, write_tsv
+from ..io import read_jsonl
 from ..logger import logger
 
 msg = Printer()
@@ -53,113 +53,34 @@ class TokenLabelPairs:
         self.respect_doc_endings = respect_doc_endings
         self.respect_line_endings = respect_line_endings
 
-    def run(self, datasets):
+    def run(self, docs):
         """
-
-        Args:
-            datasets (list): An arbitrary number of lists containing an
-                arbitrary number of prodigy docs (dicts) which will be combined
-                in to a single list of tokens based on the arguments provided
-                when instantiating the TokenLabelPairs class, e.g.:
-
-                [
-                    (token0, label0_0, label0_1, label0_2),
-                    (token1, label1_0, label1_1, label1_2),
-                    (token2, label2_0, label2_1, label2_2),
-                    (None,) # blank line
-                    (token3, label3_0, label3_1, label3_2),
-                    (token4, label4_0, label4_1, label4_2),
-                    (token5, label5_0, label5_1, label5_2),
-
-                ]
-
         """
 
         out = []
 
-        input_hashes = list(map(get_input_hashes, datasets))
+        for doc in docs:
+            out.extend(self.yield_token_label_pair(doc))
 
-        # Check that datasets are compatible by comparing the _input_hash of
-        # each document across the list of datasets.
-
-        if not check_all_equal(input_hashes):
-            msg.fail("Some documents missing from one of the input datasets")
-
-            # If this is the case, also output some useful information for
-            # determining which dataset is at fault.
-
-            for i in range(len(input_hashes)):
-                for j in range(i + 1, len(input_hashes)):
-                    diff = set(input_hashes[i]) ^ set(input_hashes[j])
-
-                    if diff:
-                        msg.fail(
-                            f"Docs {diff} unequal between dataset {i} and {j}", exits=1
-                        )
-
-        # Now that we know the input_hashes are equal, cycle through the first
-        # one, and compare the tokens across the documents in each dataset from
-        # datasets.
-
-        for input_hash in input_hashes[0]:
-
-            # Create list of docs whose _input_hash matches _input_hash. 
-            # len(matched_docs) == len(datasets)
-
-            matched_docs = list(map(lambda x: get_doc_by_input_hash(x, input_hash), datasets))
-
-            # Create a list of tokens from input_hash_matches
-
-            tokens = list(map(get_sorted_tokens, matched_docs))
-
-            # All the tokens should match because they have the same _input_hash
-            # but lets check just be sure...
-
-            if check_all_equal(tokens):
-                tokens_and_labels = [tokens[0]]
-            else:
-                msg.fail(f"Token mismatch for document {input_hash}", exits=1)
-
-            # Create a list of spans from input_hash_matches
-
-            spans = list(map(get_sorted_labels, matched_docs))
-
-            # Create a list of lists like:
-            # [[token0, token1, token2],[label0, label1, label2],...]. Sometimes
-            # this will just be [None] if there were no spans in the documents,
-            # so check for this.
-
-            def all_nones(spans):
-                return all(i is None for i in spans)
-
-            if not all_nones(spans):
-                tokens_and_labels.extend(spans)
-
-            # Flatten the list of lists to give:
-            # [(token0, label0, ...), (token1, label1, ...), (token2, label2, ...)]
-
-            flattened_tokens_and_labels = list(zip(*tokens_and_labels))
-
-            out.extend(list(self.yield_token_label_pair(flattened_tokens_and_labels)))
-
-        # Print some statistics about the data.
-
-        self.stats()
+        self.stats(out)
 
         return out
 
-    def stats(self):
+    def stats(self, out):
 
         avg_line_len = np.round(np.mean(self.line_lengths), 2)
 
-        msg.info(f"Returning {self.line_count} examples")
-        msg.info(f"Average line length: {avg_line_len}")
+        logger.debug("Returning %s examples", self.line_count)
+        logger.debug("Average line length: %s", avg_line_len)
 
-    def yield_token_label_pair(self, flattened_tokens_and_labels):
+    def yield_token_label_pair(self, doc, lists=False):
         """
+        Expect list of jsons loaded from a jsonl
+
         Args:
-            flattened_tokens_and_labels (list): List of tuples relating to the
-                tokens and labels of a given document.
+            doc (dict): Document in prodigy format or list of lists
+            lists (bool): Expect a list of lists rather than a prodigy format
+                dict?
 
         NOTE: Makes the assumption that every token has been labelled in spans. This
         assumption will be true if the data has been labelled with prodigy, then
@@ -168,64 +89,73 @@ class TokenLabelPairs:
         prediction.
         """
 
+        # Ensure that spans and tokens are sorted (they should be)
+
+        if lists:
+            tokens = doc
+        else:
+            tokens = sorted(doc["tokens"], key=lambda k: k["id"])
+
+        # For prediction, documents may not yet have spans. If they do, sort
+        # them too based on token_start which is equivalent to id in
+        # doc["tokens"].
+
+        spans = doc.get("spans")
+
+        if spans:
+            spans = sorted(doc["spans"], key=lambda k: k["token_start"])
+
         # Set a token counter that is used to limit the number of tokens to
         # line_limit.
 
         token_counter = int(0)
 
-        doc_len = len(flattened_tokens_and_labels)
+        doc_len = len(tokens)
 
-        for i, token_and_labels in enumerate(flattened_tokens_and_labels, 1):
+        for i, token in enumerate(tokens, 1):
 
-            token = token_and_labels[0]
-            labels = token_and_labels[1:]
-            blank = tuple([None] * (len(labels) + 1))
+            label = None
 
-            # If the token is just spaces even if it has been labelled, pass it.
+            # For case when tokens have been labelled with spans (for training
+            # data).
 
-            if re.search(r"^[ ]+$", token):
+            if spans:
+                # Need to remove one from index as it starts at 1!
+                label = spans[i - 1].get("label")
+
+            text = token["text"]
+
+            # If the token is empty even if it has been labelled, pass it
+
+            if text == "":
 
                 pass
 
-            # If the token is a newline and we want to respect line endings in
-            # the text, then yield None which will be converted to a blank line
-            # when the resulting tsv file is read.
+            # If the token is a newline (and possibly other characters) and we want
+            # to respect line endings in the text, then yield a (None, None) tuple
+            # which will be converted to a blank line when the resulting tsv file
+            # is read.
 
-            elif re.search(r"\n", token) and self.respect_line_endings and i != doc_len:
+            elif re.search(r"\n", text) and self.respect_line_endings:
 
                 # Is it blank after whitespace is removed?
 
-                if token.strip() == "":
-                    yield blank
+                if text.strip() == "":
 
-                    self.line_lengths.append(token_counter)
-                    self.line_count += 1
-                    token_counter = 0
+                    yield (None, None)
 
-                # Was it a \n combined with another token? if so return the
-                # stripped token.
+                self.line_lengths.append(token_counter)
+                self.line_count += 1
 
-                else:
-                    yield (token.strip(), *labels)
-                    self.line_lengths.append(token_counter)
-                    self.line_count += 1
-                    token_counter = 1
-
-
-            # Skip new lines if respect_line_endings not set and not the end
-            # of a doc.
-
-            elif re.search(r"\n", token) and i != doc_len:
-
-                pass
+                token_counter = 0
 
             elif token_counter == self.line_limit:
 
-                # Yield blank to signify a line ending, then yield the next
+                # Yield None, None to signify a line ending, then yield the next
                 # token.
 
-                yield blank
-                yield (token.strip(), *labels)
+                yield (None, None)
+                yield (text.strip(), label)
 
                 # Set to one to account for the first token being added.
 
@@ -241,22 +171,22 @@ class TokenLabelPairs:
                 # a line ending which denotes the end of a document, and the
                 # start of new one.
 
-                if token.strip():
-                    yield (token.strip(), *labels)
-                yield blank
+                yield (text.strip(), label)
+                yield (None, None)
 
                 self.line_lengths.append(token_counter)
                 self.line_count += 1
 
             else:
+
                 # Returned the stripped label.
 
-                yield (token.strip(), *labels)
+                yield (text.strip(), label)
 
                 token_counter += 1
 
 
-def get_input_hashes(dataset):
+def get_document_hashes(dataset):
     """Get the hashes for every doc in a dataset and return as set
     """
     return set([doc["_input_hash"] for doc in dataset])
@@ -274,21 +204,57 @@ def hash_matches(doc, hash):
     return doc["_input_hash"] == hash
 
 
-def get_doc_by_input_hash(dataset, hash):
+def get_doc_by_hash(dataset, hash):
     """Return a doc from a dataset where hash matches doc["_input_hash"]
     Assumes there will only be one match!
     """
     return [doc for doc in dataset if doc["_input_hash"] == hash][0]
 
 
-def get_sorted_tokens(doc):
-    tokens = sorted(doc["tokens"], key=lambda k: k["id"])
+def get_tokens(doc):
     return [token["text"] for token in doc["tokens"]]
 
-def get_sorted_labels(doc):
-    if doc.get("spans"):
-        spans = sorted(doc["spans"], key=lambda k: k["token_start"])
-        return [span["label"] for span in doc["spans"]]
+
+def check_inputs(annotated_data):
+    """Checks whether two prodigy datasets contain the same docs (evaluated by
+    doc["_input_hash"] and whether those docs contain the same tokens. This is
+    essential to ensure that two independently labelled datasets are compatible.
+    If they are not, an error is raised with an informative errors message.
+
+    Args:
+        annotated_data (list): List of datasets in prodigy format that have
+        been labelled with token level spans. Hence len(tokens)==len(spans).
+    """
+
+    doc_hashes = list(map(get_document_hashes, annotated_data))
+
+    # Check whether there are the same docs between datasets, and if
+    # not return information on which ones are missing.
+
+    if not check_all_equal(doc_hashes):
+        msg.fail("Some documents missing from one of the input datasets")
+
+        for i in range(len(doc_hashes)):
+            for j in range(i + 1, len(doc_hashes)):
+                diff = set(doc_hashes[i]) ^ set(doc_hashes[j])
+
+                if diff:
+                    msg.fail(
+                        f"Docs {diff} unequal between dataset {i} and {j}", exits=1
+                    )
+
+    # Check that the tokens between the splitting and parsing docs match
+
+    for hash in doc_hashes[0]:
+
+        hash_matches = list(map(lambda x: get_doc_by_hash(x, hash), annotated_data))
+        tokens = list(map(get_tokens, hash_matches))
+
+        if not check_all_equal(tokens):
+            msg.fail(f"Token mismatch for document {hash}", exits=1)
+
+    return True
+
 
 def sort_docs_list(lst):
     """Sort a list of prodigy docs by input hash
@@ -340,8 +306,10 @@ def prodigy_to_tsv(
            token   label   label
     ------------   -----   -----
       References   o       o
+                   o       o
                1   o       o
                .   o       o
+                   o       o
              WHO   title   b-r
        treatment   title   i-r
       guidelines   title   i-r
@@ -364,7 +332,7 @@ def prodigy_to_tsv(
     msg.info(f"Loading annotations from {len(input_files)} datasets")
     msg.info(f"Respect line endings: {respect_lines}")
     msg.info(f"Respect doc endings: {respect_docs}")
-    msg.info(f"Target example length (n tokens): {line_limit}")
+    msg.info(f"Line limit: {line_limit}")
 
     # Read the input_files. Note the use of map here, because we don't know
     # how many sets of annotations area being passed in the list. It could be 2
@@ -372,8 +340,15 @@ def prodigy_to_tsv(
 
     annotated_data = list(map(read_jsonl, input_files))
 
+    # Check that the tokens match between sets of annotations. If not raise
+    # errors and stop.
+
+    check_inputs(annotated_data)
+
     # Sort the docs so that they are in the same order before converting to
     # token label pairs.
+
+    annotated_data = list(map(sort_docs_list, annotated_data))
 
     tlp = TokenLabelPairs(
         respect_doc_endings=respect_docs,
@@ -381,16 +356,33 @@ def prodigy_to_tsv(
         line_limit=line_limit,
     )
 
-    pairs_list = tlp.run(annotated_data)
+    pairs_list = list(map(tlp.run, annotated_data))
 
-    write_tsv(pairs_list, output_file)
+    # NOTE: Use of reduce to handle pairs_list of unknown length
+
+    if len(pairs_list) > 1:
+        merged_pairs = (
+            combine_token_label_pairs(pairs) for pairs in reduce(zip, pairs_list)
+        )
+        example_pairs = [
+            combine_token_label_pairs(pairs)
+            for i, pairs in enumerate(reduce(zip, pairs_list))
+            if i < ROWS_TO_PRINT
+        ]
+    else:
+        merged_pairs = pairs_list[0]
+        example_pairs = merged_pairs[0:ROWS_TO_PRINT]
+
+    with open(output_file, "w") as fb:
+        writer = csv.writer(fb, delimiter="\t")
+        writer.writerows(merged_pairs)
 
     # Print out the first ten rows as a sense check
 
     msg.divider("Example output")
     header = ["token"] + ["label"] * len(annotated_data)
     aligns = ["r"] + ["l"] * len(annotated_data)
-    formatted = table(pairs_list[0:ROWS_TO_PRINT], header=header, divider=True, aligns=aligns)
+    formatted = table(example_pairs, header=header, divider=True, aligns=aligns)
     print(formatted)
 
     msg.good(f"Wrote token/label pairs to {output_file}")
