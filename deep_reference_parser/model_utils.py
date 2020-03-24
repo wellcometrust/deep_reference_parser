@@ -154,9 +154,9 @@ def encode_y(y, label2ind, max_len, padding_style):
 
     # Encode y (with pad)
 
-    # Transform each label into its index in the data
+    # Transform each label into its index and adding "pre" padding
 
-    y_pad = [[0] * (max_len - len(ey)) + [label2ind[c] for c in ey] for ey in y]
+    y_pad = [[0] * (max_len - len(yi)) + [label2ind[label] for label in yi] for yi in y]
 
     # One-hot-encode label
 

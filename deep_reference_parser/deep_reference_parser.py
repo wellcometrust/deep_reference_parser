@@ -72,8 +72,8 @@ class DeepReferenceParser:
         y_train=None,
         y_test=None,
         y_valid=None,
-        digits_word="$NUM$",
-        ukn_words="out-of-vocabulary",
+        digits_word="<NUM>",
+        ukn_words="<OOV>",
         padding_style="pre",
         output_path="data/model_output",
     ):
@@ -165,13 +165,11 @@ class DeepReferenceParser:
         # Compute indexes for words+labels in the training data
 
         self.word2ind, self.ind2word = index_x(self.X_train_merged, self.ukn_words)
-        self.label2ind, ind2label = index_y(self.y_train)
 
-        # NOTE: The original code expected self.ind2label to be a list,
-        # in case you are training a multi-task model. For this reason,
-        # self.index2label is wrapped in a list.
+        y_labels = list(map(index_y, self.y_train))
 
-        self.ind2label.append(ind2label)
+        self.ind2label = [ind2label for _, ind2label in y_labels]
+        self.label2ind = [label2ind for label2ind, _ in y_labels]
 
         # Convert data into indexes data
 
@@ -209,21 +207,41 @@ class DeepReferenceParser:
 
         # Encode y variables
 
-        self.y_train_encoded = encode_y(
-            self.y_train, self.label2ind, self.max_len, self.padding_style
-        )
+        for i, labels in enumerate(self.y_train):
+            self.y_train_encoded.append(
+                encode_y(
+                    labels,
+                    self.label2ind[i],
+                    self.max_len,
+                    self.padding_style
+                )
+            )
 
-        self.y_test_encoded = encode_y(
-            self.y_test, self.label2ind, self.max_len, self.padding_style
-        )
+        for i, labels in enumerate(self.y_test):
+            self.y_test_encoded.append(
+                encode_y(
+                    labels,
+                    self.label2ind[i],
+                    self.max_len,
+                    self.padding_style
+                )
+            )
 
-        self.y_valid_encoded = encode_y(
-            self.y_valid, self.label2ind, self.max_len, self.padding_style
-        )
+        for i, labels in enumerate(self.y_valid):
+            self.y_valid_encoded.append(
+                encode_y(
+                    labels,
+                    self.label2ind[i],
+                    self.max_len,
+                    self.padding_style
+                )
+            )
 
-        logger.debug("Training target dimensions: %s", self.y_train_encoded.shape)
-        logger.debug("Test target dimensions: %s", self.y_test_encoded.shape)
-        logger.debug("Validation target dimensions: %s", self.y_valid_encoded.shape)
+
+        logger.debug("Training target dimensions: %s", self.y_train_encoded[0].shape)
+        logger.debug("Test target dimensions: %s", self.y_test_encoded[0].shape)
+        logger.debug("Validation target dimensions: %s", self.y_valid_encoded[0].shape)
+
 
         # Create character level data
 
@@ -456,7 +474,7 @@ class DeepReferenceParser:
 
         self.model = model
 
-#        logger.debug(self.model.summary(line_length=150))
+        logger.debug(self.model.summary(line_length=150))
 
     def train_model(
         self, epochs=25, batch_size=100, early_stopping_patience=5, metric="val_f1"
@@ -481,10 +499,8 @@ class DeepReferenceParser:
 
         # Use custom classification scores callback
 
-        # NOTE: X lists are important for input here
-
         classification_scores = Classification_Scores(
-            [self.X_training, [self.y_train_encoded]], self.ind2label, self.weights_path
+            [self.X_training, self.y_train_encoded], self.ind2label, self.weights_path
         )
 
         callbacks.append(classification_scores)
@@ -503,12 +519,12 @@ class DeepReferenceParser:
 
         hist = self.model.fit(
             x=self.X_training,
-            y=[self.y_train_encoded],
-            validation_data=[self.X_testing, [self.y_test_encoded]],
+            y=self.y_train_encoded,
+            validation_data=[self.X_testing, self.y_test_encoded],
             epochs=epochs,
             batch_size=batch_size,
             callbacks=callbacks,
-            verbose=2,
+            verbose=1,
         )
 
         logger.info(
