@@ -11,6 +11,7 @@ from deep_reference_parser.io.io import (
     load_tsv,
     write_tsv,
     _split_list_by_linebreaks,
+    _unpack,
 )
 from deep_reference_parser.reference_utils import yield_token_label_pairs
 
@@ -21,22 +22,47 @@ from .common import TEST_JSONL, TEST_TSV_TRAIN, TEST_TSV_PREDICT, TEST_LOAD_TSV
 def tmpdir(tmpdir_factory):
     return tmpdir_factory.mktemp("data")
 
+def test_unpack():
+
+    before = [
+            (
+                ("token0", "token1", "token2", "token3"),
+                ("label0", "label1", "label2", "label3")
+            ),
+            (
+                ("token0", "token1", "token2"),
+                ("label0", "label1", "label2")
+            ),
+        ]
+
+    expected = [
+            (
+                ("token0", "token1", "token2", "token3"),
+                ("token0", "token1", "token2"),
+            ),
+            (
+                ("label0", "label1", "label2", "label3"),
+                ("label0", "label1", "label2")
+            ),
+        ]
+
+    actual = _unpack(before)
+
+    assert expected == actual
 
 def test_write_tsv(tmpdir):
 
     expected = (
-        [
-            [],
-            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
-            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
-            ["Exotique", "et"],
-        ],
-        [
-            [],
-            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
-            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
-            ["i-r", "i-r"],
-        ],
+        (
+            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
+            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
+            ("Exotique", "et"),
+        ),
+        (
+            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
+            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
+            ("i-r", "i-r"),
+        ),
     )
 
     token_label_tuples = list(yield_token_label_pairs(expected[0], expected[1]))
@@ -74,16 +100,16 @@ def test_load_tsv_train():
     """
 
     expected = (
-        [
-            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
-            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
-            ["Exotique", "et"],
-        ],
-        [
-            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
-            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
-            ["i-r", "i-r"],
-        ],
+        (
+            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
+            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
+            ("Exotique", "et"),
+        ),
+        (
+            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
+            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
+            ("i-r", "i-r"),
+        ),
     )
 
     actual = load_tsv(TEST_TSV_TRAIN)
@@ -125,11 +151,11 @@ def test_load_tsv_predict():
     """
 
     expected = (
-        [
-            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
-            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
-            ["Exotique", "et"],
-        ],
+        (
+            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
+            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
+            ("Exotique", "et"),
+        ),
     )
 
     actual = load_tsv(TEST_TSV_PREDICT)
@@ -142,42 +168,44 @@ def test_load_tsv_train_multiple_labels():
     Text of TEST_TSV_TRAIN:
 
     ```
-        the	i-r
-        focus	i-r
-        in	i-r
-        Daloa	i-r
-        ,	i-r
-        Côte	i-r
-        d’Ivoire].	i-r
-
-        Bulletin	i-r
-        de	i-r
-        la	i-r
-        Société	i-r
-        de-r
-        Pathologie	i-r
-
-        Exotique	i-r
-        et	i-r
+        the	i-r	a
+        focus	i-r	a
+        in	i-r	a
+        Daloa	i-r	a
+        ,	i-r	a
+        Côte	i-r	a
+        d’Ivoire].	i-r	a
+        	
+        Bulletin	i-r	a
+        de	i-r	a
+        la	i-r	a
+        Société	i-r	a
+        de	i-r	a
+        Pathologie	i-r	a
+        	
+        Exotique	i-r	a
+        et	i-r	a
+        token		
+        		
     ```
     """
 
     expected = (
-        [
-            ["the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."],
-            ["Bulletin", "de", "la", "Société", "de", "Pathologie"],
-            ["Exotique", "et"],
-        ],
-        [
-            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
-            ["i-r", "i-r", "i-r", "i-r", "i-r", "i-r"],
-            ["i-r", "i-r"],
-        ],
-        [
-            ["a", "a", "a", "a", "a", "a", "a"],
-            ["a", "a", "a", "a", "a", "a"],
-            ["a", "a"],
-        ],
+        (
+            ("the", "focus", "in", "Daloa", ",", "Côte", "d’Ivoire]."),
+            ("Bulletin", "de", "la", "Société", "de", "Pathologie"),
+            ("Exotique", "et"),
+        ),
+        (
+            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
+            ("i-r", "i-r", "i-r", "i-r", "i-r", "i-r"),
+            ("i-r", "i-r"),
+        ),
+        (
+            ("a", "a", "a", "a", "a", "a", "a"),
+            ("a", "a", "a", "a", "a", "a"),
+            ("a", "a"),
+        ),
     )
 
     actual = load_tsv(TEST_LOAD_TSV)

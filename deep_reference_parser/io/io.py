@@ -13,18 +13,53 @@ import pandas as pd
 
 from ..logger import logger
 
-def _split_list_by_linebreaks(tokens):
+def _unpack(tuples):
+    """Convert list of tuples into the correct format:
+
+    From:
+
+        [
+            (
+                (token0, token1, token2, token3),
+                (label0, label1, label2, label3),
+            ),
+            (
+                (token0, token1, token2),
+                (label0, label1, label2),
+            ),
+        )
+
+    to:
+        ]
+            (
+                (token0, token1, token2, token3),
+                (token0, token1, token2),
+            ),
+            (
+                (label0, label1, label2, label3),
+                (label0, label1, label2),
+            ),
+        ]
+    """
+    return list(zip(*list(tuples)))
+
+def _split_list_by_linebreaks(rows):
     """Cycle through a list of tokens (or labels) and split them into lists
     based on the presence of Nones or more likely math.nan caused by converting
     pd.DataFrame columns to lists.
     """
     out = []
-    tokens_gen = iter(tokens)
+    rows_gen = iter(rows)
     while True:
         try:
-            token = next(tokens_gen)
-            if isinstance(token, str) and token:
-                out.append(token)
+            row = next(rows_gen)
+            token = row[0]
+            # Check whether there are missing labels that have been converted
+            # to float('nan') 
+            if isinstance(token, str) and any([not isinstance(label, str) for label in row]):
+                pass
+            elif isinstance(token, str) and token:
+                out.append(row)
             else:
                 yield out
                 out = []
@@ -40,10 +75,8 @@ def load_tsv(filepath, split_char="\t"):
     Expects data in the following format (tab separations).
 
       References   o       o
-                   o       o
                1   o       o
                .   o       o
-                   o       o
              WHO   title   b-r
        treatment   title   i-r
       guidelines   title   i-r
@@ -55,21 +88,27 @@ def load_tsv(filepath, split_char="\t"):
                ,   title   i-r
             2016   title   i-r
 
-
-
     Args:
         filepath (str): Path to the data.
         split_char(str): Character to be used to split each line of the
             document.
 
     Returns:
-        a series of lists depending on the number of label columns provided in 
+        a series of lists depending on the number of label columns provided in
         filepath.
 
     """
-
     df = pd.read_csv(filepath, delimiter=split_char, header=None, skip_blank_lines=False)
-    out = [list(_split_list_by_linebreaks(column)) for _, column in df.iteritems()]
+
+    tuples = _split_list_by_linebreaks(df.to_records(index=False))
+
+    # Remove leading empty lists if found
+
+    tuples = list(filter(None, tuples))
+
+    unpacked_tuples = list(map(_unpack, tuples))
+
+    out = _unpack(unpacked_tuples)
 
     logger.info("Loaded %s training examples", len(out[0]))
 
