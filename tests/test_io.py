@@ -168,23 +168,25 @@ def test_load_tsv_train_multiple_labels():
     Text of TEST_TSV_TRAIN:
 
     ```
-        the	i-r
-        focus	i-r
-        in	i-r
-        Daloa	i-r
-        ,	i-r
-        Côte	i-r
-        d’Ivoire].	i-r
-
-        Bulletin	i-r
-        de	i-r
-        la	i-r
-        Société	i-r
-        de-r
-        Pathologie	i-r
-
-        Exotique	i-r
-        et	i-r
+        the	i-r	a
+        focus	i-r	a
+        in	i-r	a
+        Daloa	i-r	a
+        ,	i-r	a
+        Côte	i-r	a
+        d’Ivoire].	i-r	a
+        	
+        Bulletin	i-r	a
+        de	i-r	a
+        la	i-r	a
+        Société	i-r	a
+        de	i-r	a
+        Pathologie	i-r	a
+        	
+        Exotique	i-r	a
+        et	i-r	a
+        token		
+        		
     ```
     """
 

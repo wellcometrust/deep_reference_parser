@@ -54,7 +54,11 @@ def _split_list_by_linebreaks(rows):
         try:
             row = next(rows_gen)
             token = row[0]
-            if isinstance(token, str) and token:
+            # Check whether there are missing labels that have been converted
+            # to float('nan') 
+            if isinstance(token, str) and any([not isinstance(label, str) for label in row]):
+                pass
+            elif isinstance(token, str) and token:
                 out.append(row)
             else:
                 yield out
@@ -90,11 +94,12 @@ def load_tsv(filepath, split_char="\t"):
             document.
 
     Returns:
-        a series of lists depending on the number of label columns provided in 
+        a series of lists depending on the number of label columns provided in
         filepath.
 
     """
     df = pd.read_csv(filepath, delimiter=split_char, header=None, skip_blank_lines=False)
+
     tuples = _split_list_by_linebreaks(df.to_records(index=False))
 
     # Remove leading empty lists if found
