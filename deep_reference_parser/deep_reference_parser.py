@@ -72,8 +72,8 @@ class DeepReferenceParser:
         y_train=None,
         y_test=None,
         y_valid=None,
-        digits_word="<NUM>",
-        ukn_words="<OOV>",
+        digits_word="$NUM$",
+        ukn_words="out-of-vocabulary",
         padding_style="pre",
         output_path="data/model_output",
     ):
