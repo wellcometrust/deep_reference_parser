@@ -295,7 +295,7 @@ class DeepReferenceParser:
 
             # Save intermediate objects to data
 
-            write_pickle(self.word2ind, "indices.pickle", path=self.output_path)
+            write_pickle(indices, "indices.pickle", path=self.output_path)
 
     def load_data(self, out_path):
         """
@@ -303,13 +303,13 @@ class DeepReferenceParser:
         out by prepare_data. But not the data used to train the model.
         """
 
-        indices = read_pickle("word2ind.pickle", path=out_path)
+        indices = read_pickle("indices.pickle", path=out_path)
 
         self.word2ind = indices["word2ind"]
         self.ind2word = indices["ind2word"]
         self.label2ind = indices["label2ind"]
         self.ind2label = indices["ind2label"]
-        self.char2ind = indices["char2ind.pickle"]
+        self.char2ind = indices["char2ind"]
         self.max_len = indices["max_len"]
         self.max_char = indices["max_char"]
 
