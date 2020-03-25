@@ -77,7 +77,9 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
         y_train=y_test,
         y_test=y_test,
         y_valid=y_test,
+        max_len=250,
         output_path=tmpdir,
+
     )
 
     # Prepare the data

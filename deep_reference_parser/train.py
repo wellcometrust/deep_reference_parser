@@ -56,6 +56,7 @@ def train(config_file):
     LSTM_HIDDEN = int(cfg["build"]["lstm_hidden"])
     WORD_EMBEDDING_SIZE = int(cfg["build"]["word_embedding_size"])
     CHAR_EMBEDDING_SIZE = int(cfg["build"]["char_embedding_size"])
+    MAX_LEN = int(cfg["data"]["line_limit"])
 
     # Train config
 
@@ -74,6 +75,20 @@ def train(config_file):
     X_test, y_test = test_data[0], test_data[1:]
     X_valid, y_valid = valid_data[0], valid_data[1:]
 
+    import statistics
+
+    logger.info("Max token length %s", max([len(i) for i in X_train]))
+    logger.info("Min token length %s", min([len(i) for i in X_train]))
+    logger.info("Mean token length %s", statistics.median([len(i) for i in X_train]))
+
+    logger.info("Max token length %s", max([len(i) for i in X_test]))
+    logger.info("Min token length %s", min([len(i) for i in X_test]))
+    logger.info("Mean token length %s", statistics.median([len(i) for i in X_test]))
+
+    logger.info("Max token length %s", max([len(i) for i in X_valid]))
+    logger.info("Min token length %s", min([len(i) for i in X_valid]))
+    logger.info("Mean token length %s", statistics.median([len(i) for i in X_valid]))
+
     logger.info("X_train, y_train examples: %s, %s", len(X_train), list(map(len, y_train)))
     logger.info("X_test, y_test examples: %s, %s", len(X_test), list(map(len, y_test)))
     logger.info("X_valid, y_valid examples: %s, %s", len(X_valid), list(map(len, y_valid)))
@@ -85,6 +100,7 @@ def train(config_file):
         y_train=y_train,
         y_test=y_test,
         y_valid=y_valid,
+        max_len=MAX_LEN,
         output_path=OUTPUT_PATH,
     )
 

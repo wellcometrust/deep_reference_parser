@@ -72,6 +72,7 @@ class DeepReferenceParser:
         y_train=None,
         y_test=None,
         y_valid=None,
+        max_len=250,
         digits_word="$NUM$",
         ukn_words="out-of-vocabulary",
         padding_style="pre",
@@ -126,9 +127,8 @@ class DeepReferenceParser:
         self.X_validation = list()
         self.X_testing = list()
 
-        self.max_len = int()
+        self.max_len = max_len
         self.max_char = int()
-        self.max_words = int()
 
         # Defined in prepare_data
 
@@ -156,7 +156,7 @@ class DeepReferenceParser:
             Save(bool): If True, then data objects will be saved to
                 `self.output_path`.
         """
-        self.max_len = max([len(xx) for xx in self.X_train])
+        #self.max_len = max([len(xx) for xx in self.X_train])
 
         self.X_train_merged, self.X_test_merged, self.X_valid_merged = merge_digits(
             [self.X_train, self.X_test, self.X_valid], self.digits_word
@@ -246,14 +246,14 @@ class DeepReferenceParser:
         # Create character level data
 
         # Create the character level data
-        self.char2ind, self.max_words, self.max_char = character_index(
+        self.char2ind, self.max_char = character_index(
             self.X_train, self.digits_word
         )
 
         self.X_train_char = character_data(
             self.X_train,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,
@@ -262,7 +262,7 @@ class DeepReferenceParser:
         self.X_test_char = character_data(
             self.X_test,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,
@@ -271,7 +271,7 @@ class DeepReferenceParser:
         self.X_valid_char = character_data(
             self.X_valid,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,
@@ -292,7 +292,6 @@ class DeepReferenceParser:
             write_pickle(self.char2ind, "char2ind.pickle", path=self.output_path)
 
             maxes = {
-                "max_words": self.max_words,
                 "max_char": self.max_char,
                 "max_len": self.max_len,
             }
@@ -317,11 +316,9 @@ class DeepReferenceParser:
 
         self.max_len = maxes["max_len"]
         self.max_char = maxes["max_char"]
-        self.max_words = maxes["max_words"]
 
         logger.debug("Setting max_len to %s", self.max_len)
         logger.debug("Setting max_char to %s", self.max_char)
-        logger.debug("Setting max_words to %s", self.max_words)
 
     def build_model(
         self,
@@ -370,7 +367,7 @@ class DeepReferenceParser:
 
         if word_embeddings:
 
-            word_input = Input((self.max_words,))
+            word_input = Input((self.max_len,))
             inputs.append(word_input)
 
             # TODO: More sensible handling of options for pretrained embedding.
@@ -406,7 +403,7 @@ class DeepReferenceParser:
 
         if self.max_char != 0:
 
-            character_input = Input((self.max_words, self.max_char,))
+            character_input = Input((self.max_len, self.max_char,))
 
             char_embedding = self.character_embedding_layer(
                 char_embedding_type=char_embedding_type,
@@ -474,7 +471,7 @@ class DeepReferenceParser:
 
         self.model = model
 
-        logger.debug(self.model.summary(line_length=150))
+        #logger.debug(self.model.summary(line_length=150))
 
     def train_model(
         self, epochs=25, batch_size=100, early_stopping_patience=5, metric="val_f1"
@@ -612,10 +609,6 @@ class DeepReferenceParser:
         if validation_set:
 
             # Compute classification report
-
-            # Initialise list for storing predictions which will be written
-            # to tsv file.
-
 
             for i, y_target in enumerate(self.y_valid_encoded):
 
@@ -970,7 +963,7 @@ class DeepReferenceParser:
         X_char = character_data(
             X,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,

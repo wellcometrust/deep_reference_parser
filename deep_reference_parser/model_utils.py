@@ -205,10 +205,9 @@ def character_index(X, digits_word):
 
     # For padding
 
-    max_words = max([len(s) for s in X])
     max_char = max([len(w) for s in X for w in s])
 
-    return char2ind, max_words, max_char
+    return char2ind, max_char
 
 
 def character_data(X, char2ind, max_words, max_char, digits_word, padding_style):
