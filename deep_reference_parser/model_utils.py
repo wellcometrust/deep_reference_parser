@@ -457,7 +457,7 @@ class Classification_Scores(Callback):
         """
 
         in_length = len(self.model._input_layers)
-        out_length = len(self.model.layers)
+        out_length = len(self.model._output_layers)
         predictions = self.model.predict(self.train_data[0])
 
         if len(predictions) != out_length:
@@ -552,7 +552,7 @@ class Classification_Scores(Callback):
 
         # Number of tasks
 
-        out_length = len(self.model.layers)
+        out_length = len(self.model._output_layers)
 
         # Compute the model predictions
 
