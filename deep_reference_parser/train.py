@@ -64,10 +64,6 @@ def train(config_file):
     EARLY_STOPPING_PATIENCE = int(cfg["train"]["early_stopping_patience"])
     METRIC = cfg["train"]["metric"]
 
-    # Evaluate config
-
-    OUT_FILE = cfg["evaluate"]["out_file"]
-
     # Load policy data
 
     train_data = load_tsv(POLICY_TRAIN)
@@ -125,5 +121,4 @@ def train(config_file):
         test_set=True,
         validation_set=True,
         print_padding=False,
-        out_file=cfg["evaluate"]["out_file"],
     )

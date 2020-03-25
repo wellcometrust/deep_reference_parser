@@ -47,7 +47,7 @@ from deep_reference_parser.model_utils import (
     save_confusion_matrix,
     word2vec_embeddings,
 )
-from .io import load_tsv, read_pickle, write_pickle, write_to_csv
+from .io import read_pickle, write_pickle, write_to_csv, write_tsv
 
 
 class DeepReferenceParser:
@@ -557,7 +557,6 @@ class DeepReferenceParser:
         test_set=False,
         validation_set=False,
         print_padding=False,
-        out_file=None,
     ):
         """
         Evaluate model results
@@ -569,8 +568,6 @@ class DeepReferenceParser:
                 validation set.
             print_padding(bool): Should the confusion matrix include the
                 the prediction of padding characters?
-            out_file(str): File into which the predictions and targets will be
-                saved. Defaults to `None` which saves nothing if not set.
         """
 
         if load_weights:
@@ -616,9 +613,9 @@ class DeepReferenceParser:
 
             # Compute classification report
 
-            # NOTE: self.y_valid_encoded goes in a list here, as it would
-            # under a multi-task scenario. This will need adjusting when
-            # using this syntax for a multi-task model.
+            # Initialise list for storing predictions which will be written
+            # to tsv file.
+
 
             for i, y_target in enumerate(self.y_valid_encoded):
 
@@ -674,65 +671,58 @@ class DeepReferenceParser:
                         figure_path=figure_path,
                     )
 
-                    if out_file:
+                    # Save out the predictions
 
-                        tokens = list(itertools.chain.from_iterable(self.X_valid))
+                    tokens = list(itertools.chain.from_iterable(self.X_valid))
 
-                        # Strip out the padding
+                    # Strip out the padding
 
-                        target_len = np.mean([len(line) for line in target])
-                        prediction_len = np.mean([len(line) for line in predictions])
+                    target_len = np.mean([len(line) for line in target])
+                    prediction_len = np.mean([len(line) for line in predictions])
 
-                        # Strip out the nulls from the target
+                    # Strip out the nulls from the target
 
-                        clean_target = [
-                            [label for label in line if label != "null"]
-                            for line in target
+                    clean_target = [
+                        [label for label in line if label != "null"]
+                        for line in target
+                    ]
+
+                    # Strip out the nulls in the predictions that match the
+                    # nulls in the target
+
+                    clean_predictions = remove_padding_from_predictions(
+                        clean_target, predictions, self.padding_style
+                    )
+
+                    # Record any token length mismatches.
+
+                    num_mismatches = len(clean_target) - np.sum(
+                        [
+                            len(x) == len(y)
+                            for x, y in zip(clean_target, clean_predictions)
                         ]
+                    )
 
-                        # Strip out the nulls in the predictions that match the
-                        # nulls in the target
+                    logger.debug("Number of mismatches: %s", num_mismatches)
 
-                        clean_predictions = remove_padding_from_predictions(
-                            clean_target, predictions, self.padding_style
-                        )
+                    # Flatten the target and predicted into one list.
 
-                        # Record any token length mismatches.
+                    clean_target = list(itertools.chain.from_iterable(clean_target))
+                    clean_predictions = list(
+                        itertools.chain.from_iterable(clean_predictions)
+                    )
 
-                        num_mismatches = len(clean_target) - np.sum(
-                            [
-                                len(x) == len(y)
-                                for x, y in zip(clean_target, clean_predictions)
-                            ]
-                        )
+                    logger.debug("tokens: %s", len(tokens))
+                    logger.debug("target: %s", len(clean_target))
+                    logger.debug("predictions: %s", len(clean_predictions))
 
-                        logger.info("Number of mismatches: %s", num_mismatches)
-
-                        # Flatten the target and predicted into one list.
-
-                        clean_target = list(itertools.chain.from_iterable(clean_target))
-                        clean_predictions = list(
-                            itertools.chain.from_iterable(clean_predictions)
-                        )
-                        # NOTE: this needs some attention. The current outputs
-                        # seem to have different lengths and will therefore be
-                        # offset unequally. - Don't trust them!
-
-                        logger.info("tokens: %s", len(tokens))
-                        logger.info("target: %s", len(clean_target))
-                        logger.info("predictions: %s", len(clean_predictions))
-
-                        out = list(zip(tokens, clean_target, clean_predictions))
-
-                        out_file_path = os.path.join(self.output_path, out_file)
-
-                        logger.info("Writing results to %s", out_file_path)
-
-                        with open(out_file_path, "w") as fb:
-                            writer = csv.writer(fb, delimiter="\t")
-
-                            for i in out:
-                                writer.writerow(i)
+                    out = list(zip(tokens, clean_target, clean_predictions))
+                    out_file_path = os.path.join(
+                        self.output_path, 
+                        f"validation_predictions_{i}.tsv"
+                    )
+                    
+                    write_tsv(out, out_file_path)
 
     def character_embedding_layer(
         self,
