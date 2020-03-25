@@ -46,13 +46,8 @@ class Parser:
         # not.
 
         artefacts = [
-            "char2ind.pickle",
-            "ind2label.pickle",
-            "ind2word.pickle",
-            "label2ind.pickle",
-            "maxes.pickle",
+            "indices.pickle",
             "weights.h5",
-            "word2ind.pickle",
         ]
 
         for artefact in artefacts:

@@ -47,7 +47,7 @@ def train(config_file):
             msg.good(f"Found {WORD_EMBEDDINGS}")
         except:
             msg.fail(f"Could not download {WORD_EMBEDDINGS}")
-            logger.exception()
+            logger.exception("Could not download %s", WORD_EMBEDDINGS)
 
     OUTPUT = cfg["build"]["output"]
     WORD_EMBEDDINGS = cfg["build"]["word_embeddings"]
@@ -77,17 +77,17 @@ def train(config_file):
 
     import statistics
 
-    logger.info("Max token length %s", max([len(i) for i in X_train]))
-    logger.info("Min token length %s", min([len(i) for i in X_train]))
-    logger.info("Mean token length %s", statistics.median([len(i) for i in X_train]))
+    logger.debug("Max token length %s", max([len(i) for i in X_train]))
+    logger.debug("Min token length %s", min([len(i) for i in X_train]))
+    logger.debug("Mean token length %s", statistics.median([len(i) for i in X_train]))
 
-    logger.info("Max token length %s", max([len(i) for i in X_test]))
-    logger.info("Min token length %s", min([len(i) for i in X_test]))
-    logger.info("Mean token length %s", statistics.median([len(i) for i in X_test]))
+    logger.debug("Max token length %s", max([len(i) for i in X_test]))
+    logger.debug("Min token length %s", min([len(i) for i in X_test]))
+    logger.debug("Mean token length %s", statistics.median([len(i) for i in X_test]))
 
-    logger.info("Max token length %s", max([len(i) for i in X_valid]))
-    logger.info("Min token length %s", min([len(i) for i in X_valid]))
-    logger.info("Mean token length %s", statistics.median([len(i) for i in X_valid]))
+    logger.debug("Max token length %s", max([len(i) for i in X_valid]))
+    logger.debug("Min token length %s", min([len(i) for i in X_valid]))
+    logger.debug("Mean token length %s", statistics.median([len(i) for i in X_valid]))
 
     logger.info("X_train, y_train examples: %s, %s", len(X_train), list(map(len, y_train)))
     logger.info("X_test, y_test examples: %s, %s", len(X_test), list(map(len, y_test)))

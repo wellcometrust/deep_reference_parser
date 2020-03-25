@@ -162,7 +162,7 @@ class DeepReferenceParser:
             [self.X_train, self.X_test, self.X_valid], self.digits_word
         )
 
-        # Compute indexes for words+labels in the training data
+        # Compute indices for words+labels in the training data
 
         self.word2ind, self.ind2word = index_x(self.X_train_merged, self.ukn_words)
 
@@ -171,7 +171,7 @@ class DeepReferenceParser:
         self.ind2label = [ind2label for _, ind2label in y_labels]
         self.label2ind = [label2ind for label2ind, _ in y_labels]
 
-        # Convert data into indexes data
+        # Convert data into indices data
 
         # Encode X variables
 
@@ -283,39 +283,35 @@ class DeepReferenceParser:
 
         if save:
 
-            # Save intermediate objects to data
-
-            write_pickle(self.word2ind, "word2ind.pickle", path=self.output_path)
-            write_pickle(self.ind2word, "ind2word.pickle", path=self.output_path)
-            write_pickle(self.label2ind, "label2ind.pickle", path=self.output_path)
-            write_pickle(self.ind2label, "ind2label.pickle", path=self.output_path)
-            write_pickle(self.char2ind, "char2ind.pickle", path=self.output_path)
-
-            maxes = {
+            indices = {
+                "word2ind": self.word2ind,
+                "ind2word": self.ind2word,
+                "label2ind": self.label2ind,
+                "ind2label": self.ind2label,
+                "char2ind": self.char2ind,
                 "max_char": self.max_char,
                 "max_len": self.max_len,
             }
 
-            write_pickle(maxes, "maxes.pickle", path=self.output_path)
+            # Save intermediate objects to data
+
+            write_pickle(self.word2ind, "indices.pickle", path=self.output_path)
 
     def load_data(self, out_path):
         """
         Loads the intermediate model objects created that are created and saved
         out by prepare_data. But not the data used to train the model.
-
-        NOTE: This method is not yet fully tested.
         """
 
-        self.word2ind = read_pickle("word2ind.pickle", path=out_path)
-        self.ind2word = read_pickle("ind2word.pickle", path=out_path)
-        self.label2ind = read_pickle("label2ind.pickle", path=out_path)
-        self.ind2label = read_pickle("ind2label.pickle", path=out_path)
-        self.char2ind = read_pickle("char2ind.pickle", path=out_path)
+        indices = read_pickle("word2ind.pickle", path=out_path)
 
-        maxes = read_pickle("maxes.pickle", path=out_path)
-
-        self.max_len = maxes["max_len"]
-        self.max_char = maxes["max_char"]
+        self.word2ind = indices["word2ind"]
+        self.ind2word = indices["ind2word"]
+        self.label2ind = indices["label2ind"]
+        self.ind2label = indices["ind2label"]
+        self.char2ind = indices["char2ind.pickle"]
+        self.max_len = indices["max_len"]
+        self.max_char = indices["max_char"]
 
         logger.debug("Setting max_len to %s", self.max_len)
         logger.debug("Setting max_char to %s", self.max_char)
@@ -927,7 +923,7 @@ class DeepReferenceParser:
 
     def prepare_X_data(self, X):
         """
-        Convert data to encoded word and character indexes
+        Convert data to encoded word and character indices
 
         TODO: Create a more generic function that can also be used in
         `self.prepare_data()`.

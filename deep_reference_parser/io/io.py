@@ -110,7 +110,7 @@ def load_tsv(filepath, split_char="\t"):
 
     out = _unpack(unpacked_tuples)
 
-    logger.info("Loaded %s training examples", len(out[0]))
+    logger.debug("Loaded %s training examples", len(out[0]))
 
     return tuple(out)
 

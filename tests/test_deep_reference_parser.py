@@ -23,13 +23,8 @@ def cfg():
     cfg = get_config(TEST_CFG)
 
     artefacts = [
-        "char2ind.pickle",
-        "ind2label.pickle",
-        "ind2word.pickle",
-        "label2ind.pickle",
-        "maxes.pickle",
+        "indices.pickle",
         "weights.h5",
-        "word2ind.pickle",
     ]
 
     S3_SLUG = cfg["data"]["s3_slug"]
