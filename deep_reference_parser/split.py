@@ -74,7 +74,7 @@ class Splitter:
                 msg.good(f"Found {WORD_EMBEDDINGS}")
             except:
                 msg.fail(f"Could not download {S3_SLUG}{WORD_EMBEDDINGS}")
-                logger.exception()
+                logger.exception("Could not download %s", WORD_EMBEDDINGS)
 
         OUTPUT = cfg["build"]["output"]
         PRETRAINED_EMBEDDING = cfg["build"]["pretrained_embedding"]
