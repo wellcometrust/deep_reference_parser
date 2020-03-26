@@ -1,5 +1,5 @@
 __name__ = "deep_reference_parser"
-__version__ = "2020.3.2"
+__version__ = "2020.3.3"
 __description__ = "Deep learning model for finding and parsing references"
 __url__ = "https://github.com/wellcometrust/deep_reference_parser"
 __author__ = "Wellcome Trust DataLabs Team"
