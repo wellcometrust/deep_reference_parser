@@ -1,5 +1,10 @@
 # Changelog 
 
+## 2020.3.3 - Pre-release
+
+* Adds support for a Multitask models as in the original Rodrigues paper
+* Combines artefacts into a single `indices.pickle` rather than the several previous pickles. Now the model just requires the embedding, `indices.pickle`, and `weights.h5`.
+
 ## 2020.3.2 - Pre-release
 
 * Adds parse command that can be called with `python -m deep_reference_parser parse` 
