@@ -98,7 +98,7 @@ def load_tsv(filepath, split_char="\t"):
         filepath.
 
     """
-    df = pd.read_csv(filepath, delimiter=split_char, header=None, skip_blank_lines=False)
+    df = pd.read_csv(filepath, delimiter=split_char, header=None, skip_blank_lines=False, encoding="utf-8", quoting=csv.QUOTE_NONE, engine="python")
 
     tuples = _split_list_by_linebreaks(df.to_records(index=False))
 
