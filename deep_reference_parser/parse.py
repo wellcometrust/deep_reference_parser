@@ -58,7 +58,7 @@ class Parser:
                     msg.good(f"Found {artefact}")
                 except:
                     msg.fail(f"Could not download {S3_SLUG}{artefact}")
-                    logger.exception()
+                    logger.exception("Could not download %s%s", S3_SLUG, artefact)
 
         # Check on word embedding and download if not exists
 
