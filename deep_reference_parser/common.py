@@ -47,13 +47,9 @@ def download_model_artefacts(model_dir, s3_slug, artefacts=None):
     if not artefacts:
 
         artefacts = [
-            "char2ind.pickle",
-            "ind2label.pickle",
-            "ind2word.pickle",
-            "label2ind.pickle",
+            "indices.pickle"
             "maxes.pickle",
             "weights.h5",
-            "word2ind.pickle",
         ]
 
     for artefact in artefacts:
