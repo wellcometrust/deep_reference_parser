@@ -12,11 +12,13 @@ if __name__ == "__main__":
     from .train import train
     from .split import split
     from .parse import parse
+    from .split_parse import split_parse
 
     commands = {
         "split": split,
         "parse": parse,
         "train": train,
+        "split_parse": split_parse,
     }
 
     if len(sys.argv) == 1:
