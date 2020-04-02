@@ -83,7 +83,10 @@ datasets = data/splitting/2019.12.0_splitting_train.tsv \
            data/splitting/2019.12.0_splitting_valid.tsv \
 		   data/parsing/2020.3.2_parsing_train.tsv \
            data/parsing/2020.3.2_parsing_test.tsv \
-           data/parsing/2020.3.2_parsing_valid.tsv
+           data/parsing/2020.3.2_parsing_valid.tsv \
+           data/multitask/2020.3.18_multitask_train.tsv \
+           data/multitask/2020.3.18_multitask_test.tsv \
+           data/multitask/2020.3.18_multitask_valid.tsv
 
 
 rodrigues_datasets = data/rodrigues/clean_train.txt \
