@@ -13,6 +13,8 @@ import os
 
 import numpy as np
 
+
+from functools import partial
 import h5py
 from keras.engine import saving
 from keras.callbacks import EarlyStopping
@@ -1019,35 +1021,33 @@ g        Expects data in the following format:
 
         _, X_combined = self.prepare_X_data(X)
 
-        pred = self.model.predict(X_combined)
-
-        pred = np.asarray(pred)
-
         # Compute validation score
 
+        pred = np.asarray(self.model.predict(X_combined))
+        pred = np.asarray(pred)
         pred_index = np.argmax(pred, axis=-1)
 
-        # NOTE: indexing ind2label[0] will only work in the case of making
-        # predictions with a single task model.
 
-        ind2labelNew = self.ind2label[0].copy()
+        # Add 0 to labels to account for padding
 
-        # Index 0 in the predictions refers to padding
+        ind2labelNew = self.ind2label.copy()
+        [labels.update({0: "null"}) for labels in ind2labelNew]
 
-        ind2labelNew.update({0: "null"})
+        # Compute the labels for each prediction for each task
 
-        # Compute the labels for each prediction
-        pred_label = [[ind2labelNew[x] for x in a] for a in pred_index]
+        pred_label = []
+        for i in range(len(ind2labelNew)):
+            out = [[ind2labelNew[i][x] for x in a] for a in pred_index[i]]
+            pred_label.append(out)
 
         # Flatten data
 
         # Remove the padded tokens. This is done by counting the number of
         # tokens in the input example, and then removing the additional padded
-        # tokens that are added before this. It has to be done this way because
-        # the model can predict padding tokens, and sometimes it gets it wrong
-        # so if we remove all padding tokens, then we end up with mismatches in
-        # the length of input tokens and the length of predictions.
+        # tokens that are added before this.
 
-        out = remove_padding_from_predictions(X, pred_label, self.padding_style)
+        # This is performed on each set of predictions relating to each task
+
+        out = list(map(lambda x: remove_padding_from_predictions(X, x, self.padding_style), pred_label))
 
         return out
