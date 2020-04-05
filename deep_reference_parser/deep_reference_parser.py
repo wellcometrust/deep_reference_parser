@@ -13,6 +13,8 @@ import os
 
 import numpy as np
 
+import h5py
+from keras.engine import saving
 from keras.callbacks import EarlyStopping
 from keras.layers import (
     LSTM,
@@ -30,7 +32,6 @@ from keras.layers import (
 from keras.models import Model
 from keras.optimizers import Adam, RMSprop
 from keras_contrib.layers import CRF
-from keras_contrib.utils import save_load_utils
 from sklearn_crfsuite import metrics
 
 from deep_reference_parser.logger import logger
@@ -976,26 +977,17 @@ class DeepReferenceParser:
 
         if not self.model:
 
-            # Assumes that model has been buit with build_model!
-
             logger.exception(
                 "No model. you must build the model first with build_model"
             )
 
-        # NOTE: This is not required if incldue_optimizer is set to false in
-        # load_all_weights.
-
-        # Run the model for one epoch to initialise network weights. Then load
-        # full trained weights
-
-        # self.model.fit(x=self.X_testing, y=self.y_test_encoded,
-        #    batch_size=2500, epochs=1)
-
         logger.debug("Loading weights from %s", self.weights_path)
 
-        save_load_utils.load_all_weights(
-            self.model, self.weights_path, include_optimizer=False
-        )
+        with h5py.File(self.weights_path, mode='r') as f:
+            saving.load_weights_from_hdf5_group(
+                f['model_weights'], self.model.layers
+            )
+
 
     def predict(self, X, load_weights=False):
         """
