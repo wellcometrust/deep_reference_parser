@@ -115,28 +115,26 @@ class SplitParser:
 
         preds = self.drp.predict(tokens, load_weights=True)
 
-        return preds
-
         # If tokens argument passed, return the labelled tokens
 
-        #if return_tokens:
+        if return_tokens:
 
-        #    flat_predictions = list(itertools.chain.from_iterable(preds))
-        #    flat_X = list(itertools.chain.from_iterable(tokens))
-        #    rows = [i for i in zip(flat_X, flat_predictions)]
+            flat_preds_list = list(map(itertools.chain.from_iterable,preds))
+            flat_X = list(itertools.chain.from_iterable(tokens))
+            rows = [i for i in zip(*[flat_X] + flat_preds_list)]
 
-        #    if verbose:
+            if verbose:
 
-        #        msg.divider("Token Results")
+                msg.divider("Token Results")
 
-        #        header = ("token", "label")
-        #        aligns = ("r", "l")
-        #        formatted = wasabi.table(
-        #            rows, header=header, divider=True, aligns=aligns
-        #        )
-        #        print(formatted)
+                header = tuple(["token"] + ["label"] * len(flat_preds_list))
+                aligns = tuple(["r"] +  ["l"] * len(flat_preds_list))
+                formatted = wasabi.table(
+                    rows, header=header, divider=True, aligns=aligns
+                )
+                print(formatted)
 
-        #    out = rows
+            out = rows
 
         #else:
 
@@ -185,7 +183,7 @@ def split_parse(text, config_file=MULTITASK_CFG, tokens=False, outfile=None):
     """
     mt = SplitParser(config_file)
     if outfile:
-        out = mt.split_parse(text, return_tokens=tokens, verbose=False)
+        out = mt.split_parse(text, return_tokens=tokens, verbose=True)
 
         try:
             with open(outfile, "w") as fb:
