@@ -124,7 +124,7 @@ class Splitter:
 
         if return_tokens:
 
-            flat_predictions = list(itertools.chain.from_iterable(preds))
+            flat_predictions = list(itertools.chain.from_iterable(preds))[0]
             flat_X = list(itertools.chain.from_iterable(tokens))
             rows = [i for i in zip(flat_X, flat_predictions)]
 
@@ -145,7 +145,7 @@ class Splitter:
 
             # Otherwise convert the tokens into references and return
 
-            refs = tokens_to_references(tokens, preds)
+            refs = tokens_to_references(tokens, preds[0])
 
             if verbose:
 

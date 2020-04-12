@@ -1035,11 +1035,16 @@ g        Expects data in the following format:
 
         # Compute the labels for each prediction for each task
 
+        # If running a single task model, wrap pred_index in a list so that it
+        # can use the same logic as multitask models.
+
+        if len(pred_index) == 1 :
+            pred_index = [pred_index]
+
         pred_label = []
         for i in range(len(ind2labelNew)):
             out = [[ind2labelNew[i][x] for x in a] for a in pred_index[i]]
             pred_label.append(out)
-
         # Flatten data
 
         # Remove the padded tokens. This is done by counting the number of

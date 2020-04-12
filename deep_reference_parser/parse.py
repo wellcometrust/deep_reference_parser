@@ -116,7 +116,7 @@ class Parser:
 
         preds = self.drp.predict(tokens, load_weights=True)
 
-        flat_predictions = list(itertools.chain.from_iterable(preds))
+        flat_predictions = list(itertools.chain.from_iterable(preds))[0]
         flat_X = list(itertools.chain.from_iterable(tokens))
         rows = [i for i in zip(flat_X, flat_predictions)]
 
