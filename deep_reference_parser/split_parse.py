@@ -136,7 +136,13 @@ class SplitParser:
 
             out = rows
 
-        #else:
+        else:
+
+            # TODO: return references with attributes (author, title, year)
+            # in json format. For now just return predictions as they are to
+            # allow testing of endpoints.
+
+            return preds
 
         #    # Otherwise convert the tokens into references and return
 
