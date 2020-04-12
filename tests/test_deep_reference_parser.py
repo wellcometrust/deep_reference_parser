@@ -146,7 +146,7 @@ def test_DeepReferenceParser_predict(tmpdir, cfg):
         "And so is this".split(" "),
     ]
 
-    preds = drp.predict(examples, load_weights=True)
+    preds = drp.predict(examples, load_weights=True)[0]
 
     assert len(preds) == len(examples)
 
