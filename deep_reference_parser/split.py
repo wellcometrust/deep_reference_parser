@@ -37,14 +37,19 @@ class Splitter:
 
         cfg = get_config(config_file)
 
+        # Build config
+        try:
+            OUTPUT_PATH = cfg["build"]["output_path"]
+            S3_SLUG = cfg["data"]["s3_slug"]
+        except KeyError:
+            config_dir, missing_config = os.path.split(config_file)
+            files = os.listdir(config_dir)
+            other_configs = [f for f in os.listdir(config_dir) if os.path.isfile(os.path.join(config_dir, f))]
+            msg.fail(f"Could not find config {missing_config}, perhaps you meant one of {other_configs}")
+
         msg.info(
             f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time..."
         )
-
-        # Build config
-
-        OUTPUT_PATH = cfg["build"]["output_path"]
-        S3_SLUG = cfg["data"]["s3_slug"]
 
         # Check whether the necessary artefacts exists and download them if
         # not.
