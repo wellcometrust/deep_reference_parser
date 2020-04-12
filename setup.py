@@ -35,6 +35,7 @@ setuptools.setup(
         "deep_reference_parser": [
             f"configs/{about['__splitter_model_version__']}.ini",
             f"configs/{about['__parser_model_version__']}.ini",
+            f"configs/{about['__splitparser_model_version__']}.ini",
         ]
     },
     classifiers=[
