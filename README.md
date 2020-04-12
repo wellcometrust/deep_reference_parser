@@ -2,54 +2,77 @@
 
 # Deep Reference Parser
 
-Deep Reference Parser is a Bi-direction Long Short Term Memory (BiLSTM) Deep Neural Network with a stacked Conditional Random Field (CRF) for identifying references from text. It is designed to be used in the [Reach](https://github.com/wellcometrust/reach) tool to replace a number of existing machine learning models which find references, and extract the constituent parts (e.g. author, year, publication, volume, etc).
+Deep Reference Parser is a Deep Learning Model for recognising references in free text. In this context we mean references to other works, for example an academic paper, or a book. Given an arbitrary block of text (nominally a section containing references), the model will extract the limits of the individual references, and identify key information like: authors, year published, and title.
 
-The BiLSTM model is based on Rodrigues et al. (2018), and like this project, the intention is to implement a MultiTask model which will complete three tasks simultaneously: reference span detection (splitting), reference component detection (parsing), and reference type classification (classification) in a single neural network and stacked CRF.
+The model itself is a Bi-directional Long Short Term Memory (BiLSTM) Deep Neural Network with a stacked Conditional Random Field (CRF). It is designed to be used in the [Reach](https://github.com/wellcometrust/reach) application to replace a number of existing machine learning models which find references, and extract the constituent parts.
+
+The BiLSTM model is based on [Rodrigues et al. (2018)](https://github.com/dhlab-epfl/LinkedBooksDeepReferenceParsing) who developed a model to find (split) references, parse them into contituent parts, and classify them according to the type of reference (e.g. primary reference, secondary reference, etc). This implementation of the model implements a the first two tasks and is intened for use in the medical field. Three models are implemented here: individual splitting and parsing models, and a combined multitask model which both splits and parses. We have not yet attempted to include reference type classification, but this may be done in the future.
 
 ### Current status:
 
 |Component|Individual|MultiTask|
 |---|---|---|
-|Spans (splitting)|✔️ Implemented|❌ Not Implemented|
-|Components (parsing)|✔️ Implemented|❌ Not Implemented|
+|Spans (splitting)|✔️ Implemented|✔️ Implemented|
+|Components (parsing)|✔️ Implemented|✔️ Implemented|
 |Type (classification)|❌ Not Implemented|❌ Not Implemented|
 
 ### The model
 
 The model itself is based on the work of [Rodrigues et al. (2018)](https://github.com/dhlab-epfl/LinkedBooksDeepReferenceParsing), although the implemention here differs significantly. The main differences are:
 
-* We use a combination of the training data used by Rodrigues, et al. (2018) in addition to data that we have labelled ourselves. No Rodrigues et al. data are included in the test and validation sets.
-* We also use a new word embedding that has been trained on documents relevant to the medicine.
+* We use a combination of the training data used by Rodrigues, et al. (2018) in addition to data that we have annotated ourselves. No Rodrigues et al. data are included in the test and validation sets.
+* We also use a new word embedding that has been trained on documents relevant to the field of medicine.
 * Whereas Rodrigues at al. split documents on lines, and sent the lines to the model, we combine the lines of the document together, and then send larger chunks to the model, giving it more context to work with when training and predicting.
-* Whilst the model makes predictions at the token level, it outputs references by naively splitting on these tokens ([source](https://github.com/wellcometrust/deep_reference_parser/blob/master/deep_reference_parser/tokens_to_references.py)).
+* Whilst the splitter model makes predictions at the token level, it outputs references by naively splitting on these tokens ([source](https://github.com/wellcometrust/deep_reference_parser/blob/master/deep_reference_parser/tokens_to_references.py)).
 * Hyperparameters are passed to the model in a config (.ini) file. This is to keep track of experiments, but also because it is difficult to save the model with the CRF architecture, so it is necesary to rebuild (not re-train!) the model object each time you want to use it. Storing the hyperparameters in a config file makes this easier.
-* The package ships with a [config file](https://github.com/wellcometrust/deep_reference_parser/blob/master/deep_reference_parser/configs/2019.12.0.ini) which defines the latest, highest performing model. The config file defines where to find the various objects required to build the model (dictionaries, weights, embeddings), and will automatically fetch them when run, if they are not found locally.
+* The package ships with a [config file](https://github.com/wellcometrust/deep_reference_parser/blob/master/deep_reference_parser/configs/2020.3.19_multitask.ini) which defines the latest, highest performing model. The config file defines where to find the various objects required to build the model (index dictionaries, weights, embeddings), and will automatically fetch them when run, if they are not found locally.
 * The model includes a command line interface inspired by [SpaCy](https://github.com/explosion/spaCy); functions can be called from the command line with `python -m deep_reference_parser` ([source](https://github.com/wellcometrust/deep_reference_parser/blob/master/deep_reference_parser/predict.py)).
-* Python version updated to 3.7, along with dependencies (although more to do)
+* Python version updated to 3.7, along with dependencies (although more to do).
 
 ### Performance
 
 On the validation set.
 
-#### Span detection (splitting)
+#### Finding references spans (splitting)
 
-|token|f1|support|
-|---|---|---|
-|b-r|0.9364|2472|
-|e-r|0.9312|2424|
-|i-r|0.9833|92398|
-|o|0.9561|32666|
-|weighted avg|0.9746|129959|
+Current mode version: *2020.3.6_splitting*
 
-#### Components (parsing)
+|token|f1|
+|---|---|
+|b-r|0.8146|
+|e-r|0.7075|
+|i-r|0.9623|
+|o|0.8463|
+|weighted avg|0.9326|
 
-|token|f1|support|
-|---|---|---|
-|author|0.9467|2818|
-|title|0.8994|4931|
-|year|0.8774|418|
-|o|0.9592|13685|
-|weighted avg|0.9425|21852|
+#### Identifying reference components (parsing)
+
+Current mode version: *2020.3.8_parsing*
+
+|token|f1|
+|---|---|
+|author|0.9053|
+|title|0.8607|
+|year|0.0.8639|
+|o|0.0.9340|
+|weighted avg|0.9124|
+
+#### Multitask model (splitting and parsing)
+
+Current mode version: *2020.3.19_multitask*
+
+|token|f1|
+|---|---|
+|author|0.9102|
+|title|0.8809|
+|year|0.7469|
+|o|0.8892|
+|parsing weighted avg|0.8869|
+|b-r|0.8254|
+|e-r|0.7908|
+|i-r|0.9563|
+|o|0.7560|
+|weighted avg|0.9240|
 
 #### Computing requirements
 
@@ -57,8 +80,9 @@ Models are trained on AWS instances using CPU only.
 
 |Model|Time Taken|Instance type|Instance cost (p/h)|Total cost|
 |---|---|---|---|---|
-|Span detection|16:02:00|m4.4xlarge|$0.88|$14.11|
-|Components|11:02:59|m4.4xlarge|$0.88|$9.72|
+|Span detection|00:26:41|m4.4xlarge|$0.88|$0.39|
+|Components|00:17:22|m4.4xlarge|$0.88|$0.25|
+|MultiTask|00:19:56|m4.4xlarge|$0.88|$0.29|
 
 ## tl;dr: Just get me to the references!
 
@@ -77,15 +101,20 @@ cat > references.txt <<EOF
 EOF
 
 
-# Run the splitter model. This will take a little time while the weights and 
+# Run the MultiTask model. This will take a little time while the weights and 
 # embeddings are downloaded. The weights are about 300MB, and the embeddings 
 # 950MB.
 
-python -m deep_reference_parser split "$(cat references.txt)"
+python -m deep_reference_parser split_parse -t "$(cat references.txt)"
 
 # For parsing:
 
 python -m deep_reference_parser parse "$(cat references.txt)"
+
+# For splitting:
+
+python -m deep_reference_parser split "$(cat references.txt)"
+
 ```
 
 ## The longer guide
@@ -106,7 +135,9 @@ A [config file](https://github.com/wellcometrust/deep_reference_parser/blob/mast
 
 ```
 [DEFAULT]
-version = 2019.12.0
+version = 2020.3.19_multitask
+description = Same as 2020.3.13 but with adam rather than rmsprop
+deep_reference_parser_version = b61de984f95be36445287c40af4e65a403637692
 
 [data]
 test_proportion = 0.25
@@ -114,14 +145,14 @@ valid_proportion = 0.25
 data_path = data/
 respect_line_endings = 0
 respect_doc_endings = 1
-line_limit = 250
-policy_train = data/2019.12.0_train.tsv
-policy_test = data/2019.12.0_test.tsv
-policy_valid = data/2019.12.0_valid.tsv
+line_limit = 150
+policy_train = data/multitask/2020.3.19_multitask_train.tsv
+policy_test = data/multitask/2020.3.19_multitask_test.tsv
+policy_valid = datamultitask/2020.3.19_multitask_valid.tsv
 s3_slug = https://datalabs-public.s3.eu-west-2.amazonaws.com/deep_reference_parser/
 
 [build]
-output_path = models/2020.2.0/
+output_path = models/multitask/2020.3.19_multitask/
 output = crf
 word_embeddings = embeddings/2020.1.1-wellcome-embeddings-300.txt
 pretrained_embedding = 0
@@ -133,13 +164,10 @@ char_embedding_type = BILSTM
 optimizer = rmsprop
 
 [train]
-epochs = 10
+epochs = 60
 batch_size = 100
 early_stopping_patience = 5
 metric = val_f1
-
-[evaluate]
-out_file = evaluation_data.tsv
 ```
 
 ### Getting help
@@ -198,21 +226,21 @@ Data must be prepared in the following tab separated format (tsv). We use [prodi
 You must provide the train/test/validation data splits in this format in pre-prepared files that are defined in the config file.
 
 ```
-References  o
-1   o
-The	b-r
-potency	i-r
-of	i-r
-history	i-r
-was	i-r
-on	i-r
-display	i-r
-at	i-r
-a	i-r
-workshop	i-r
-held	i-r
-in	i-r
-February	i-r
+References  o o
+1   o   o
+The	b-r title
+potency	i-r title
+of	i-r title
+history	i-r title
+was	i-r title
+on	i-r title
+display	i-r title
+at	i-r title
+a	i-r title
+workshop    i-r title
+held	i-r title
+in	i-r title
+February	i-r title
 ```
 
 ### Making predictions
