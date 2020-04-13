@@ -33,26 +33,26 @@ class Parser:
 
         cfg = get_config(config_file)
 
+        # Build config
+        try:
+            OUTPUT_PATH = cfg["build"]["output_path"]
+            S3_SLUG = cfg["data"]["s3_slug"]
+        except KeyError:
+            config_dir, missing_config = os.path.split(config_file)
+            files = os.listdir(config_dir)
+            other_configs = [f for f in os.listdir(config_dir) if os.path.isfile(os.path.join(config_dir, f))]
+            msg.fail(f"Could not find config {missing_config}, perhaps you meant one of {other_configs}")
+
         msg.info(
             f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time..."
         )
-
-        # Build config
-
-        OUTPUT_PATH = cfg["build"]["output_path"]
-        S3_SLUG = cfg["data"]["s3_slug"]
 
         # Check whether the necessary artefacts exists and download them if
         # not.
 
         artefacts = [
-            "char2ind.pickle",
-            "ind2label.pickle",
-            "ind2word.pickle",
-            "label2ind.pickle",
-            "maxes.pickle",
+            "indices.pickle",
             "weights.h5",
-            "word2ind.pickle",
         ]
 
         for artefact in artefacts:
@@ -63,7 +63,7 @@ class Parser:
                     msg.good(f"Found {artefact}")
                 except:
                     msg.fail(f"Could not download {S3_SLUG}{artefact}")
-                    logger.exception()
+                    logger.exception("Could not download %s%s", S3_SLUG, artefact)
 
         # Check on word embedding and download if not exists
 
@@ -75,7 +75,7 @@ class Parser:
                 msg.good(f"Found {WORD_EMBEDDINGS}")
             except:
                 msg.fail(f"Could not download {S3_SLUG}{WORD_EMBEDDINGS}")
-                logger.exception()
+                logger.exception("Could not download %s", WORD_EMBEDDINGS)
 
         OUTPUT = cfg["build"]["output"]
         PRETRAINED_EMBEDDING = cfg["build"]["pretrained_embedding"]
@@ -116,7 +116,7 @@ class Parser:
 
         preds = self.drp.predict(tokens, load_weights=True)
 
-        flat_predictions = list(itertools.chain.from_iterable(preds))
+        flat_predictions = list(itertools.chain.from_iterable(preds))[0]
         flat_X = list(itertools.chain.from_iterable(tokens))
         rows = [i for i in zip(flat_X, flat_predictions)]
 

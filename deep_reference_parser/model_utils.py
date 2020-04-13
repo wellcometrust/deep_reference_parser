@@ -154,9 +154,9 @@ def encode_y(y, label2ind, max_len, padding_style):
 
     # Encode y (with pad)
 
-    # Transform each label into its index in the data
+    # Transform each label into its index and adding "pre" padding
 
-    y_pad = [[0] * (max_len - len(ey)) + [label2ind[c] for c in ey] for ey in y]
+    y_pad = [[0] * (max_len - len(yi)) + [label2ind[label] for label in yi] for yi in y]
 
     # One-hot-encode label
 
@@ -205,10 +205,9 @@ def character_index(X, digits_word):
 
     # For padding
 
-    max_words = max([len(s) for s in X])
     max_char = max([len(w) for s in X for w in s])
 
-    return char2ind, max_words, max_char
+    return char2ind, max_char
 
 
 def character_data(X, char2ind, max_words, max_char, digits_word, padding_style):
@@ -457,7 +456,7 @@ class Classification_Scores(Callback):
         """
 
         in_length = len(self.model._input_layers)
-        out_length = len(self.model.layers)
+        out_length = len(self.model._output_layers)
         predictions = self.model.predict(self.train_data[0])
 
         if len(predictions) != out_length:
@@ -552,7 +551,7 @@ class Classification_Scores(Callback):
 
         # Number of tasks
 
-        out_length = len(self.model.layers)
+        out_length = len(self.model._output_layers)
 
         # Compute the model predictions
 

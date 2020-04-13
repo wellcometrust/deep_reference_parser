@@ -23,13 +23,8 @@ def cfg():
     cfg = get_config(TEST_CFG)
 
     artefacts = [
-        "char2ind.pickle",
-        "ind2label.pickle",
-        "ind2word.pickle",
-        "label2ind.pickle",
-        "maxes.pickle",
+        "indices.pickle",
         "weights.h5",
-        "word2ind.pickle",
     ]
 
     S3_SLUG = cfg["data"]["s3_slug"]
@@ -68,7 +63,7 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
     X_test, y_test = load_tsv(TEST_TSV_TRAIN)
 
     X_test = X_test[0:100]
-    y_test = y_test[0:100]
+    y_test = [y_test[0:100]]
 
     drp = DeepReferenceParser(
         X_train=X_test,
@@ -77,7 +72,9 @@ def test_DeepReferenceParser_train(tmpdir, cfg):
         y_train=y_test,
         y_test=y_test,
         y_valid=y_test,
+        max_len=250,
         output_path=tmpdir,
+
     )
 
     # Prepare the data
@@ -149,7 +146,7 @@ def test_DeepReferenceParser_predict(tmpdir, cfg):
         "And so is this".split(" "),
     ]
 
-    preds = drp.predict(examples, load_weights=True)
+    preds = drp.predict(examples, load_weights=True)[0]
 
     assert len(preds) == len(examples)
 

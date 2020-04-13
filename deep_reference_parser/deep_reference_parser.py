@@ -13,6 +13,10 @@ import os
 
 import numpy as np
 
+
+from functools import partial
+import h5py
+from keras.engine import saving
 from keras.callbacks import EarlyStopping
 from keras.layers import (
     LSTM,
@@ -30,7 +34,6 @@ from keras.layers import (
 from keras.models import Model
 from keras.optimizers import Adam, RMSprop
 from keras_contrib.layers import CRF
-from keras_contrib.utils import save_load_utils
 from sklearn_crfsuite import metrics
 
 from deep_reference_parser.logger import logger
@@ -47,7 +50,7 @@ from deep_reference_parser.model_utils import (
     save_confusion_matrix,
     word2vec_embeddings,
 )
-from .io import load_tsv, read_pickle, write_pickle, write_to_csv
+from .io import read_pickle, write_pickle, write_to_csv, write_tsv
 
 
 class DeepReferenceParser:
@@ -72,6 +75,7 @@ class DeepReferenceParser:
         y_train=None,
         y_test=None,
         y_valid=None,
+        max_len=250,
         digits_word="$NUM$",
         ukn_words="out-of-vocabulary",
         padding_style="pre",
@@ -126,9 +130,8 @@ class DeepReferenceParser:
         self.X_validation = list()
         self.X_testing = list()
 
-        self.max_len = int()
+        self.max_len = max_len
         self.max_char = int()
-        self.max_words = int()
 
         # Defined in prepare_data
 
@@ -156,24 +159,22 @@ class DeepReferenceParser:
             Save(bool): If True, then data objects will be saved to
                 `self.output_path`.
         """
-        self.max_len = max([len(xx) for xx in self.X_train])
+        #self.max_len = max([len(xx) for xx in self.X_train])
 
         self.X_train_merged, self.X_test_merged, self.X_valid_merged = merge_digits(
             [self.X_train, self.X_test, self.X_valid], self.digits_word
         )
 
-        # Compute indexes for words+labels in the training data
+        # Compute indices for words+labels in the training data
 
         self.word2ind, self.ind2word = index_x(self.X_train_merged, self.ukn_words)
-        self.label2ind, ind2label = index_y(self.y_train)
 
-        # NOTE: The original code expected self.ind2label to be a list,
-        # in case you are training a multi-task model. For this reason,
-        # self.index2label is wrapped in a list.
+        y_labels = list(map(index_y, self.y_train))
 
-        self.ind2label.append(ind2label)
+        self.ind2label = [ind2label for _, ind2label in y_labels]
+        self.label2ind = [label2ind for label2ind, _ in y_labels]
 
-        # Convert data into indexes data
+        # Convert data into indices data
 
         # Encode X variables
 
@@ -209,33 +210,53 @@ class DeepReferenceParser:
 
         # Encode y variables
 
-        self.y_train_encoded = encode_y(
-            self.y_train, self.label2ind, self.max_len, self.padding_style
-        )
+        for i, labels in enumerate(self.y_train):
+            self.y_train_encoded.append(
+                encode_y(
+                    labels,
+                    self.label2ind[i],
+                    self.max_len,
+                    self.padding_style
+                )
+            )
 
-        self.y_test_encoded = encode_y(
-            self.y_test, self.label2ind, self.max_len, self.padding_style
-        )
+        for i, labels in enumerate(self.y_test):
+            self.y_test_encoded.append(
+                encode_y(
+                    labels,
+                    self.label2ind[i],
+                    self.max_len,
+                    self.padding_style
+                )
+            )
 
-        self.y_valid_encoded = encode_y(
-            self.y_valid, self.label2ind, self.max_len, self.padding_style
-        )
+        for i, labels in enumerate(self.y_valid):
+            self.y_valid_encoded.append(
+                encode_y(
+                    labels,
+                    self.label2ind[i],
+                    self.max_len,
+                    self.padding_style
+                )
+            )
 
-        logger.debug("Training target dimensions: %s", self.y_train_encoded.shape)
-        logger.debug("Test target dimensions: %s", self.y_test_encoded.shape)
-        logger.debug("Validation target dimensions: %s", self.y_valid_encoded.shape)
+
+        logger.debug("Training target dimensions: %s", self.y_train_encoded[0].shape)
+        logger.debug("Test target dimensions: %s", self.y_test_encoded[0].shape)
+        logger.debug("Validation target dimensions: %s", self.y_valid_encoded[0].shape)
+
 
         # Create character level data
 
         # Create the character level data
-        self.char2ind, self.max_words, self.max_char = character_index(
+        self.char2ind, self.max_char = character_index(
             self.X_train, self.digits_word
         )
 
         self.X_train_char = character_data(
             self.X_train,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,
@@ -244,7 +265,7 @@ class DeepReferenceParser:
         self.X_test_char = character_data(
             self.X_test,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,
@@ -253,7 +274,7 @@ class DeepReferenceParser:
         self.X_valid_char = character_data(
             self.X_valid,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,
@@ -265,45 +286,38 @@ class DeepReferenceParser:
 
         if save:
 
-            # Save intermediate objects to data
-
-            write_pickle(self.word2ind, "word2ind.pickle", path=self.output_path)
-            write_pickle(self.ind2word, "ind2word.pickle", path=self.output_path)
-            write_pickle(self.label2ind, "label2ind.pickle", path=self.output_path)
-            write_pickle(self.ind2label, "ind2label.pickle", path=self.output_path)
-            write_pickle(self.char2ind, "char2ind.pickle", path=self.output_path)
-
-            maxes = {
-                "max_words": self.max_words,
+            indices = {
+                "word2ind": self.word2ind,
+                "ind2word": self.ind2word,
+                "label2ind": self.label2ind,
+                "ind2label": self.ind2label,
+                "char2ind": self.char2ind,
                 "max_char": self.max_char,
                 "max_len": self.max_len,
             }
 
-            write_pickle(maxes, "maxes.pickle", path=self.output_path)
+            # Save intermediate objects to data
+
+            write_pickle(indices, "indices.pickle", path=self.output_path)
 
     def load_data(self, out_path):
         """
         Loads the intermediate model objects created that are created and saved
         out by prepare_data. But not the data used to train the model.
-
-        NOTE: This method is not yet fully tested.
         """
 
-        self.word2ind = read_pickle("word2ind.pickle", path=out_path)
-        self.ind2word = read_pickle("ind2word.pickle", path=out_path)
-        self.label2ind = read_pickle("label2ind.pickle", path=out_path)
-        self.ind2label = read_pickle("ind2label.pickle", path=out_path)
-        self.char2ind = read_pickle("char2ind.pickle", path=out_path)
+        indices = read_pickle("indices.pickle", path=out_path)
 
-        maxes = read_pickle("maxes.pickle", path=out_path)
-
-        self.max_len = maxes["max_len"]
-        self.max_char = maxes["max_char"]
-        self.max_words = maxes["max_words"]
+        self.word2ind = indices["word2ind"]
+        self.ind2word = indices["ind2word"]
+        self.label2ind = indices["label2ind"]
+        self.ind2label = indices["ind2label"]
+        self.char2ind = indices["char2ind"]
+        self.max_len = indices["max_len"]
+        self.max_char = indices["max_char"]
 
         logger.debug("Setting max_len to %s", self.max_len)
         logger.debug("Setting max_char to %s", self.max_char)
-        logger.debug("Setting max_words to %s", self.max_words)
 
     def build_model(
         self,
@@ -352,7 +366,7 @@ class DeepReferenceParser:
 
         if word_embeddings:
 
-            word_input = Input((self.max_words,))
+            word_input = Input((self.max_len,))
             inputs.append(word_input)
 
             # TODO: More sensible handling of options for pretrained embedding.
@@ -388,7 +402,7 @@ class DeepReferenceParser:
 
         if self.max_char != 0:
 
-            character_input = Input((self.max_words, self.max_char,))
+            character_input = Input((self.max_len, self.max_char,))
 
             char_embedding = self.character_embedding_layer(
                 char_embedding_type=char_embedding_type,
@@ -456,7 +470,7 @@ class DeepReferenceParser:
 
         self.model = model
 
-#        logger.debug(self.model.summary(line_length=150))
+        #logger.debug(self.model.summary(line_length=150))
 
     def train_model(
         self, epochs=25, batch_size=100, early_stopping_patience=5, metric="val_f1"
@@ -481,10 +495,8 @@ class DeepReferenceParser:
 
         # Use custom classification scores callback
 
-        # NOTE: X lists are important for input here
-
         classification_scores = Classification_Scores(
-            [self.X_training, [self.y_train_encoded]], self.ind2label, self.weights_path
+            [self.X_training, self.y_train_encoded], self.ind2label, self.weights_path
         )
 
         callbacks.append(classification_scores)
@@ -503,12 +515,12 @@ class DeepReferenceParser:
 
         hist = self.model.fit(
             x=self.X_training,
-            y=[self.y_train_encoded],
-            validation_data=[self.X_testing, [self.y_test_encoded]],
+            y=self.y_train_encoded,
+            validation_data=[self.X_testing, self.y_test_encoded],
             epochs=epochs,
             batch_size=batch_size,
             callbacks=callbacks,
-            verbose=2,
+            verbose=1,
         )
 
         logger.info(
@@ -541,7 +553,6 @@ class DeepReferenceParser:
         test_set=False,
         validation_set=False,
         print_padding=False,
-        out_file=None,
     ):
         """
         Evaluate model results
@@ -553,8 +564,6 @@ class DeepReferenceParser:
                 validation set.
             print_padding(bool): Should the confusion matrix include the
                 the prediction of padding characters?
-            out_file(str): File into which the predictions and targets will be
-                saved. Defaults to `None` which saves nothing if not set.
         """
 
         if load_weights:
@@ -569,7 +578,7 @@ class DeepReferenceParser:
             # under a multi-task scenario. This will need adjusting when
             # using this syntax for a multi-task model.
 
-            for i, y_target in enumerate([self.y_test_encoded]):
+            for i, y_target in enumerate(self.y_test_encoded):
 
                 # Compute predictions, flatten
 
@@ -600,11 +609,7 @@ class DeepReferenceParser:
 
             # Compute classification report
 
-            # NOTE: self.y_valid_encoded goes in a list here, as it would
-            # under a multi-task scenario. This will need adjusting when
-            # using this syntax for a multi-task model.
-
-            for i, y_target in enumerate([self.y_valid_encoded]):
+            for i, y_target in enumerate(self.y_valid_encoded):
 
                 # Compute predictions, flatten
 
@@ -658,65 +663,58 @@ class DeepReferenceParser:
                         figure_path=figure_path,
                     )
 
-                    if out_file:
+                    # Save out the predictions
 
-                        tokens = list(itertools.chain.from_iterable(self.X_valid))
+                    tokens = list(itertools.chain.from_iterable(self.X_valid))
 
-                        # Strip out the padding
+                    # Strip out the padding
 
-                        target_len = np.mean([len(line) for line in target])
-                        prediction_len = np.mean([len(line) for line in predictions])
+                    target_len = np.mean([len(line) for line in target])
+                    prediction_len = np.mean([len(line) for line in predictions])
 
-                        # Strip out the nulls from the target
+                    # Strip out the nulls from the target
 
-                        clean_target = [
-                            [label for label in line if label != "null"]
-                            for line in target
+                    clean_target = [
+                        [label for label in line if label != "null"]
+                        for line in target
+                    ]
+
+                    # Strip out the nulls in the predictions that match the
+                    # nulls in the target
+
+                    clean_predictions = remove_padding_from_predictions(
+                        clean_target, predictions, self.padding_style
+                    )
+
+                    # Record any token length mismatches.
+
+                    num_mismatches = len(clean_target) - np.sum(
+                        [
+                            len(x) == len(y)
+                            for x, y in zip(clean_target, clean_predictions)
                         ]
+                    )
 
-                        # Strip out the nulls in the predictions that match the
-                        # nulls in the target
+                    logger.debug("Number of mismatches: %s", num_mismatches)
 
-                        clean_predictions = remove_padding_from_predictions(
-                            clean_target, predictions, self.padding_style
-                        )
+                    # Flatten the target and predicted into one list.
 
-                        # Record any token length mismatches.
+                    clean_target = list(itertools.chain.from_iterable(clean_target))
+                    clean_predictions = list(
+                        itertools.chain.from_iterable(clean_predictions)
+                    )
 
-                        num_mismatches = len(clean_target) - np.sum(
-                            [
-                                len(x) == len(y)
-                                for x, y in zip(clean_target, clean_predictions)
-                            ]
-                        )
+                    logger.debug("tokens: %s", len(tokens))
+                    logger.debug("target: %s", len(clean_target))
+                    logger.debug("predictions: %s", len(clean_predictions))
 
-                        logger.info("Number of mismatches: %s", num_mismatches)
-
-                        # Flatten the target and predicted into one list.
-
-                        clean_target = list(itertools.chain.from_iterable(clean_target))
-                        clean_predictions = list(
-                            itertools.chain.from_iterable(clean_predictions)
-                        )
-                        # NOTE: this needs some attention. The current outputs
-                        # seem to have different lengths and will therefore be
-                        # offset unequally. - Don't trust them!
-
-                        logger.info("tokens: %s", len(tokens))
-                        logger.info("target: %s", len(clean_target))
-                        logger.info("predictions: %s", len(clean_predictions))
-
-                        out = list(zip(tokens, clean_target, clean_predictions))
-
-                        out_file_path = os.path.join(self.output_path, out_file)
-
-                        logger.info("Writing results to %s", out_file_path)
-
-                        with open(out_file_path, "w") as fb:
-                            writer = csv.writer(fb, delimiter="\t")
-
-                            for i in out:
-                                writer.writerow(i)
+                    out = list(zip(tokens, clean_target, clean_predictions))
+                    out_file_path = os.path.join(
+                        self.output_path, 
+                        f"validation_predictions_{i}.tsv"
+                    )
+                    
+                    write_tsv(out, out_file_path)
 
     def character_embedding_layer(
         self,
@@ -928,7 +926,7 @@ class DeepReferenceParser:
 
     def prepare_X_data(self, X):
         """
-        Convert data to encoded word and character indexes
+        Convert data to encoded word and character indices
 
         TODO: Create a more generic function that can also be used in
         `self.prepare_data()`.
@@ -964,7 +962,7 @@ class DeepReferenceParser:
         X_char = character_data(
             X,
             self.char2ind,
-            self.max_words,
+            self.max_len,
             self.max_char,
             self.digits_word,
             self.padding_style,
@@ -981,26 +979,17 @@ class DeepReferenceParser:
 
         if not self.model:
 
-            # Assumes that model has been buit with build_model!
-
             logger.exception(
                 "No model. you must build the model first with build_model"
             )
 
-        # NOTE: This is not required if incldue_optimizer is set to false in
-        # load_all_weights.
-
-        # Run the model for one epoch to initialise network weights. Then load
-        # full trained weights
-
-        # self.model.fit(x=self.X_testing, y=self.y_test_encoded,
-        #    batch_size=2500, epochs=1)
-
         logger.debug("Loading weights from %s", self.weights_path)
 
-        save_load_utils.load_all_weights(
-            self.model, self.weights_path, include_optimizer=False
-        )
+        with h5py.File(self.weights_path, mode='r') as f:
+            saving.load_weights_from_hdf5_group(
+                f['model_weights'], self.model.layers
+            )
+
 
     def predict(self, X, load_weights=False):
         """
@@ -1032,35 +1021,38 @@ g        Expects data in the following format:
 
         _, X_combined = self.prepare_X_data(X)
 
-        pred = self.model.predict(X_combined)
-
-        pred = np.asarray(pred)
-
         # Compute validation score
 
+        pred = np.asarray(self.model.predict(X_combined))
+        pred = np.asarray(pred)
         pred_index = np.argmax(pred, axis=-1)
 
-        # NOTE: indexing ind2label[0] will only work in the case of making
-        # predictions with a single task model.
 
-        ind2labelNew = self.ind2label[0].copy()
+        # Add 0 to labels to account for padding
 
-        # Index 0 in the predictions refers to padding
+        ind2labelNew = self.ind2label.copy()
+        [labels.update({0: "null"}) for labels in ind2labelNew]
 
-        ind2labelNew.update({0: "null"})
+        # Compute the labels for each prediction for each task
 
-        # Compute the labels for each prediction
-        pred_label = [[ind2labelNew[x] for x in a] for a in pred_index]
+        # If running a single task model, wrap pred_index in a list so that it
+        # can use the same logic as multitask models.
 
+        if len(ind2labelNew) == 1:
+            pred_index = [pred_index]
+
+        pred_label = []
+        for i in range(len(ind2labelNew)):
+            out = [[ind2labelNew[i][x] for x in a] for a in pred_index[i]]
+            pred_label.append(out)
         # Flatten data
 
         # Remove the padded tokens. This is done by counting the number of
         # tokens in the input example, and then removing the additional padded
-        # tokens that are added before this. It has to be done this way because
-        # the model can predict padding tokens, and sometimes it gets it wrong
-        # so if we remove all padding tokens, then we end up with mismatches in
-        # the length of input tokens and the length of predictions.
+        # tokens that are added before this.
 
-        out = remove_padding_from_predictions(X, pred_label, self.padding_style)
+        # This is performed on each set of predictions relating to each task
+
+        out = list(map(lambda x: remove_padding_from_predictions(X, x, self.padding_style), pred_label))
 
         return out

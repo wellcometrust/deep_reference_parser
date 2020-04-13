@@ -5,8 +5,12 @@ import os
 from logging import getLogger
 from urllib import parse, request
 
+from .__version__ import (
+    __parser_model_version__,
+    __splitparser_model_version__,
+    __splitter_model_version__,
+)
 from .logger import logger
-from .__version__ import __splitter_model_version__, __parser_model_version__
 
 
 def get_path(path):
@@ -15,6 +19,7 @@ def get_path(path):
 
 SPLITTER_CFG = get_path(f"configs/{__splitter_model_version__}.ini")
 PARSER_CFG = get_path(f"configs/{__parser_model_version__}.ini")
+MULTITASK_CFG = get_path(f"configs/{__splitparser_model_version__}.ini")
 
 
 def download_model_artefact(artefact, s3_slug):
@@ -47,13 +52,8 @@ def download_model_artefacts(model_dir, s3_slug, artefacts=None):
     if not artefacts:
 
         artefacts = [
-            "char2ind.pickle",
-            "ind2label.pickle",
-            "ind2word.pickle",
-            "label2ind.pickle",
-            "maxes.pickle",
+            "indices.pickle" "maxes.pickle",
             "weights.h5",
-            "word2ind.pickle",
         ]
 
     for artefact in artefacts:

@@ -20,7 +20,7 @@ with warnings.catch_warnings():
 
     from deep_reference_parser import __file__
     from deep_reference_parser.__version__ import __splitter_model_version__
-    from deep_reference_parser.common import SPLITTER_CFG, download_model_artefact
+    from deep_reference_parser.common import MULTITASK_CFG, download_model_artefact
     from deep_reference_parser.deep_reference_parser import DeepReferenceParser
     from deep_reference_parser.logger import logger
     from deep_reference_parser.model_utils import get_config
@@ -30,14 +30,13 @@ with warnings.catch_warnings():
 msg = wasabi.Printer(icons={"check": "\u2023"})
 
 
-class Splitter:
+class SplitParser:
     def __init__(self, config_file):
 
         msg.info(f"Using config file: {config_file}")
 
         cfg = get_config(config_file)
 
-        # Build config
         try:
             OUTPUT_PATH = cfg["build"]["output_path"]
             S3_SLUG = cfg["data"]["s3_slug"]
@@ -46,10 +45,6 @@ class Splitter:
             files = os.listdir(config_dir)
             other_configs = [f for f in os.listdir(config_dir) if os.path.isfile(os.path.join(config_dir, f))]
             msg.fail(f"Could not find config {missing_config}, perhaps you meant one of {other_configs}")
-
-        msg.info(
-            f"Attempting to download model artefacts if they are not found locally in {cfg['build']['output_path']}. This may take some time..."
-        )
 
         # Check whether the necessary artefacts exists and download them if
         # not.
@@ -111,7 +106,7 @@ class Splitter:
             char_embedding_size=CHAR_EMBEDDING_SIZE,
         )
 
-    def split(self, text, return_tokens=False, verbose=False):
+    def split_parse(self, text, return_tokens=False, verbose=False):
 
         nlp = en_core_web_sm.load()
         doc = nlp(text)
@@ -124,16 +119,16 @@ class Splitter:
 
         if return_tokens:
 
-            flat_predictions = list(itertools.chain.from_iterable(preds))[0]
+            flat_preds_list = list(map(itertools.chain.from_iterable,preds))
             flat_X = list(itertools.chain.from_iterable(tokens))
-            rows = [i for i in zip(flat_X, flat_predictions)]
+            rows = [i for i in zip(*[flat_X] + flat_preds_list)]
 
             if verbose:
 
                 msg.divider("Token Results")
 
-                header = ("token", "label")
-                aligns = ("r", "l")
+                header = tuple(["token"] + ["label"] * len(flat_preds_list))
+                aligns = tuple(["r"] +  ["l"] * len(flat_preds_list))
                 formatted = wasabi.table(
                     rows, header=header, divider=True, aligns=aligns
                 )
@@ -143,29 +138,35 @@ class Splitter:
 
         else:
 
-            # Otherwise convert the tokens into references and return
+            # TODO: return references with attributes (author, title, year)
+            # in json format. For now just return predictions as they are to
+            # allow testing of endpoints.
 
-            refs = tokens_to_references(tokens, preds[0])
+            return preds
 
-            if verbose:
+        #    # Otherwise convert the tokens into references and return
 
-                msg.divider("Results")
+        #    refs = tokens_to_references(tokens, preds)
 
-                if refs:
+        #    if verbose:
 
-                    msg.good(f"Found {len(refs)} references.")
-                    msg.info("Printing found references:")
+        #        msg.divider("Results")
 
-                    for ref in refs:
-                        msg.text(ref, icon="check", spaced=True)
+        #        if refs:
 
-                else:
+        #            msg.good(f"Found {len(refs)} references.")
+        #            msg.info("Printing found references:")
 
-                    msg.fail("Failed to find any references.")
+        #            for ref in refs:
+        #                msg.text(ref, icon="check", spaced=True)
 
-            out = refs
+        #        else:
 
-        return out
+        #            msg.fail("Failed to find any references.")
+
+        #    out = refs
+
+        #return out
 
 
 @plac.annotations(
@@ -174,7 +175,7 @@ class Splitter:
     tokens=("Output tokens instead of complete references", "flag", "t", str),
     outfile=("Path to json file to which results will be written", "option", "o", str),
 )
-def split(text, config_file=SPLITTER_CFG, tokens=False, outfile=None):
+def split_parse(text, config_file=MULTITASK_CFG, tokens=False, outfile=None):
     """
     Runs the default splitting model and pretty prints results to console unless
     --outfile is parsed with a path. Files output to the path specified in
@@ -186,9 +187,9 @@ def split(text, config_file=SPLITTER_CFG, tokens=False, outfile=None):
     use in a production setting, a more sensible approach would be to replicate
     the split or parse functions within your own logic.
     """
-    splitter = Splitter(config_file)
+    mt = SplitParser(config_file)
     if outfile:
-        out = splitter.split(text, return_tokens=tokens, verbose=False)
+        out = mt.split_parse(text, return_tokens=tokens, verbose=True)
 
         try:
             with open(outfile, "w") as fb:
@@ -198,4 +199,4 @@ def split(text, config_file=SPLITTER_CFG, tokens=False, outfile=None):
             msg.fail(f"Failed to write output to {outfile}")
 
     else:
-        out = splitter.split(text, return_tokens=tokens, verbose=True)
+        out = mt.split_parse(text, return_tokens=tokens, verbose=True)
