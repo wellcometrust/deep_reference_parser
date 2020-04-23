@@ -1,5 +1,14 @@
 .DEFAULT_GOAL := all
 
+# Determine OS (from https://gist.github.com/sighingnow/deee806603ec9274fd47)
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	OSFLAG := linux
+endif
+ifeq ($(UNAME_S),Darwin)
+	OSFLAG := macosx
+endif
+
 #
 # Set file and version for embeddings and model, plus local paths
 #
@@ -84,9 +93,9 @@ datasets = data/splitting/2019.12.0_splitting_train.tsv \
 		   data/parsing/2020.3.2_parsing_train.tsv \
            data/parsing/2020.3.2_parsing_test.tsv \
            data/parsing/2020.3.2_parsing_valid.tsv \
-           data/multitask/2020.3.19_multitask_train.tsv \
-           data/multitask/2020.3.19_multitask_test.tsv \
-           data/multitask/2020.3.19_multitask_valid.tsv
+           data/multitask/2020.3.18_multitask_train.tsv \
+           data/multitask/2020.3.18_multitask_test.tsv \
+           data/multitask/2020.3.18_multitask_valid.tsv
 
 
 rodrigues_datasets = data/rodrigues/clean_train.txt \
@@ -121,9 +130,10 @@ sync_model_to_s3:
 # artefacts otherwise they can make a mess of your build! Public access to
 # the wheel is granted with the --acl public-read flag.
 
+
 .PHONY: dist
 dist:
-	-rm build/bin build/bdist.linux-x86_64 -r
+	-rm build/lib build/bin build/bdist.$(OSFLAG)* -r
 	-rm deep_reference_parser-20* -r
 	-rm deep_reference_parser.egg-info -r
 	-rm dist/*
