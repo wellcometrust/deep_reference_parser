@@ -1,7 +1,6 @@
 .DEFAULT_GOAL := all
 
 # Determine OS (from https://gist.github.com/sighingnow/deee806603ec9274fd47)
-
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	OSFLAG := linux
