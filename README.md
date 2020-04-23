@@ -82,7 +82,7 @@ Models are trained on AWS instances using CPU only.
 |---|---|---|---|---|
 |Span detection|00:26:41|m4.4xlarge|$0.88|$0.39|
 |Components|00:17:22|m4.4xlarge|$0.88|$0.25|
-|MultiTask|00:42:43|c4.4xlarge|$0.88|$0.63|
+|MultiTask|00:42:43|c4.4xlarge|$0.91|$0.63|
 
 ## tl;dr: Just get me to the references!
 
