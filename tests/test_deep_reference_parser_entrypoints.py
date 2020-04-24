@@ -7,7 +7,7 @@ from deep_reference_parser.parse import Parser
 from deep_reference_parser.split import Splitter
 from deep_reference_parser.split_parse import SplitParser
 
-from .common import TEST_CFG, TEST_REFERENCES
+from .common import TEST_CFG, TEST_CFG_MULTITASK, TEST_REFERENCES
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def parser():
 
 @pytest.fixture
 def split_parser():
-    return SplitParser(TEST_CFG)
+    return SplitParser(TEST_CFG_MULTITASK)
 
 
 @pytest.fixture
@@ -67,7 +67,7 @@ def test_split_parser_list_output(text, split_parser):
     If the model artefacts and embeddings are not present this test will
     downloaded them, which can be slow.
     """
-    out = split_parser.split_parse(text, verbose=False)
+    out = split_parser.split_parse(text, return_tokens=False, verbose=False)
     print(out)
 
     assert isinstance(out, list)
@@ -100,13 +100,10 @@ def test_parser_tokens_output(text, parser):
 def test_split_parser_tokens_output(text, split_parser):
     """
     """
-    out = split_parser.split_parse(text, verbose=False)
+    out = split_parser.split_parse(text, return_tokens=True, verbose=False)
 
-    assert isinstance(out, list)
-
-    # NOTE: full functionality of split_parse is not yet implemented.
-
-    # assert isinstance(out[0], tuple)
-    # assert len(out[0]) == 2
-    # assert isinstance(out[0][0], str)
-    # assert isinstance(out[0][1], str)
+    assert isinstance(out[0], tuple)
+    assert len(out[0]) == 3
+    assert isinstance(out[0][0], str)
+    assert isinstance(out[0][1], str)
+    assert isinstance(out[0][2], str)
