@@ -110,6 +110,6 @@ def tokens_to_reference_lists(tokens, spans, components):
         ref_components = flat_components[token_start : token_end + 1]
         flat_ref = " ".join(ref_tokens)
 
-        references_components.append({'Reference': flat_ref, 'Attributes': zip(ref_tokens, ref_components)})
+        references_components.append({'Reference': flat_ref, 'Attributes': list(zip(ref_tokens, ref_components))})
 
     return references_components
