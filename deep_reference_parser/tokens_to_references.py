@@ -59,3 +59,57 @@ def tokens_to_references(tokens, labels):
         references.append(flat_ref)
 
     return references
+
+
+def tokens_to_reference_lists(tokens, spans, components):
+    """
+    Given a corresponding list of tokens, a list of
+    reference spans (e.g. 'b-r') and components (e.g. 'author;):
+    split the tokens according to the spans and return a
+    list of reference components for each reference.
+
+    Args:
+        tokens(list): A list of tokens.
+        spans(list): A corresponding list of reference spans.
+        components(list): A corresponding list of reference components.
+
+    """
+
+    # Flatten the lists of tokens and predictions into a single list.
+
+    flat_tokens = list(itertools.chain.from_iterable(tokens))
+    flat_spans = list(itertools.chain.from_iterable(spans))
+    flat_components = list(itertools.chain.from_iterable(components))
+
+    # Find all b-r and e-r tokens.
+
+    ref_starts = [
+        index for index, label in enumerate(flat_spans) if label == "b-r"
+    ]
+
+    ref_ends = [index for index, label in enumerate(flat_spans) if label == "e-r"]
+
+    logger.debug("Found %s b-r tokens", len(ref_starts))
+    logger.debug("Found %s e-r tokens", len(ref_ends))
+
+    references_components = []
+
+    n_refs = len(ref_starts)
+
+    # Split on each b-r.
+
+    for i in range(0, n_refs):
+        token_start = ref_starts[i]
+        if i + 1 < n_refs:
+
+            token_end = ref_starts[i + 1] - 1
+        else:
+            token_end = len(flat_tokens)
+        
+        ref_tokens = flat_tokens[token_start : token_end + 1]
+        ref_components = flat_components[token_start : token_end + 1]
+        flat_ref = " ".join(ref_tokens)
+
+        references_components.append({'Reference': flat_ref, 'Attributes': zip(ref_tokens, ref_components)})
+
+    return references_components

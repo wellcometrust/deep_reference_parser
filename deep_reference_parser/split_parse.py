@@ -25,7 +25,7 @@ with warnings.catch_warnings():
     from deep_reference_parser.logger import logger
     from deep_reference_parser.model_utils import get_config
     from deep_reference_parser.reference_utils import break_into_chunks
-    from deep_reference_parser.tokens_to_references import tokens_to_references
+    from deep_reference_parser.tokens_to_references import tokens_to_reference_lists
 
 msg = wasabi.Printer(icons={"check": "\u2023"})
 
@@ -138,35 +138,31 @@ class SplitParser:
 
         else:
 
-            # TODO: return references with attributes (author, title, year)
-            # in json format. For now just return predictions as they are to
-            # allow testing of endpoints.
+            # Return references with attributes (author, title, year)
+            # in json format.
+            # List of lists for each reference - each reference list contains all token attributes predictions
+            # [[(token, attribute), ... , (token, attribute)], ..., [(token, attribute), ...]]
 
-            return preds
+            references_components = tokens_to_reference_lists(tokens, spans=preds[1], components=preds[0])
+            if verbose:
 
-        #    # Otherwise convert the tokens into references and return
+                msg.divider("Results")
 
-        #    refs = tokens_to_references(tokens, preds)
+                if references_components:
 
-        #    if verbose:
+                    msg.good(f"Found {len(references_components)} references.")
+                    msg.info("Printing found references:")
 
-        #        msg.divider("Results")
+                    for ref in references_components:
+                        msg.text(ref['Reference'], icon="check", spaced=True)
 
-        #        if refs:
+                else:
 
-        #            msg.good(f"Found {len(refs)} references.")
-        #            msg.info("Printing found references:")
+                    msg.fail("Failed to find any references.")
 
-        #            for ref in refs:
-        #                msg.text(ref, icon="check", spaced=True)
+            out = references_components
 
-        #        else:
-
-        #            msg.fail("Failed to find any references.")
-
-        #    out = refs
-
-        #return out
+        return out
 
 
 @plac.annotations(
