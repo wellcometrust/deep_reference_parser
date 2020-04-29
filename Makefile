@@ -20,7 +20,7 @@ WORD_EMBEDDING := 2020.1.1-wellcome-embeddings-300
 WORD_EMBEDDING_TEST := 2020.1.1-wellcome-embeddings-10-test
 
 MODEL_PATH := models
-MODEL_VERSION := 2019.12.0
+MODEL_VERSION := multitask/2020.4.5_multitask
 
 #
 # S3 Bucket

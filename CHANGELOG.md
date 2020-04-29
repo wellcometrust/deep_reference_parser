@@ -1,5 +1,12 @@
 # Changelog 
 
+## 2020.4.23 - Pre-release
+
+* Add multitask split_parse command and tests, called with python -m deep_reference_parser split_parse
+* Fix issues with training data creation
+* Output predictions of validation data by default
+* Various improvements - using tox for testing, refactoring, improving error messages, README and tests
+
 ## 2020.3.3 - Pre-release
 
 NOTE: This version includes changes to both the way that model artefacts are packaged and saved, and the way that data are laded and parsed from tsv files. This results in a significantly faster training time (c.14 hours -> c.0.5 hour), but older models will no longer be compatible. For compatibility you must use multitask modles > 2020.3.19, splitting models > 2020.3.6, and parisng models > 2020.3.8. These models currently perform less well than previous versions, but performance is expected to improve with more data and experimentation predominatly around sequence length.

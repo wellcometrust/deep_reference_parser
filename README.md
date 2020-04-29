@@ -59,20 +59,20 @@ Current mode version: *2020.3.8_parsing*
 
 #### Multitask model (splitting and parsing)
 
-Current mode version: *2020.3.19_multitask*
+Current mode version: *2020.4.5_multitask*
 
 |token|f1|
 |---|---|
-|author|0.9102|
-|title|0.8809|
-|year|0.7469|
-|o|0.8892|
-|parsing weighted avg|0.8869|
-|b-r|0.8254|
-|e-r|0.7908|
-|i-r|0.9563|
-|o|0.7560|
-|weighted avg|0.9240|
+|author|0.9458|
+|title|0.9002|
+|year|0.8704|
+|o|0.9407|
+|parsing weighted avg|0.9285|
+|b-r|0.9111|
+|e-r|0.8788|
+|i-r|0.9726|
+|o|0.9332|
+|weighted avg|0.9591|
 
 #### Computing requirements
 
@@ -82,7 +82,7 @@ Models are trained on AWS instances using CPU only.
 |---|---|---|---|---|
 |Span detection|00:26:41|m4.4xlarge|$0.88|$0.39|
 |Components|00:17:22|m4.4xlarge|$0.88|$0.25|
-|MultiTask|00:19:56|m4.4xlarge|$0.88|$0.29|
+|MultiTask|00:42:43|c4.4xlarge|$0.91|$0.63|
 
 ## tl;dr: Just get me to the references!
 
