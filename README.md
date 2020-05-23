@@ -53,8 +53,8 @@ Current mode version: *2020.3.8_parsing*
 |---|---|
 |author|0.9053|
 |title|0.8607|
-|year|0.0.8639|
-|o|0.0.9340|
+|year|0.8639|
+|o|0.9340|
 |weighted avg|0.9124|
 
 #### Multitask model (splitting and parsing)
