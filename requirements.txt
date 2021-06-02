@@ -48,7 +48,7 @@ tensorflow-estimator==1.15.1
 termcolor==1.1.0
 thinc==7.0.8
 tqdm==4.42.1
-urllib3==1.25.8
+urllib3==1.26.5
 wasabi==0.6.0
 wcwidth==0.1.8
 Werkzeug==0.16.1
