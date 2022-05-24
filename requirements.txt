@@ -43,7 +43,7 @@ spacy==2.1.7
 srsly==1.0.1
 tabulate==0.8.6
 tensorboard==1.15.0
-tensorflow==1.15.4
+tensorflow==2.6.4
 tensorflow-estimator==1.15.1
 termcolor==1.1.0
 thinc==7.0.8
