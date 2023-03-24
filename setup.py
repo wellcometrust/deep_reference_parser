@@ -45,7 +45,7 @@ setuptools.setup(
     install_requires=[
         "spacy<2.2.0",
         "pandas",
-        "tensorflow==1.15.4",
+        "tensorflow==2.11.1",
         "keras==2.2.5",
         "keras-contrib @ https://github.com/keras-team/keras-contrib/tarball/5ffab172661411218e517a50170bb97760ea567b",
         "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.1.0/en_core_web_sm-2.1.0.tar.gz#egg=en_core_web_sm==2.1.0",
